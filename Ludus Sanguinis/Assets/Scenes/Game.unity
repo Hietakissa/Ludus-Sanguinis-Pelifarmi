@@ -794,6 +794,7 @@ MonoBehaviour:
   textures:
   - {fileID: 2800000, guid: e7e419281f7624448bcb74068c532558, type: 3}
   - {fileID: 2800000, guid: 596d61c08c1f39147a459b2e813b9a1e, type: 3}
+  - {fileID: 2800000, guid: 8d6c6ea159f2ee240ad25134a69d1859, type: 3}
   path: Assets/Individual Folders/Pyry
   filename: BloodArray
 --- !u!4 &1601475249
