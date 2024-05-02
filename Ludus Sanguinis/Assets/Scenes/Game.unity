@@ -2330,7 +2330,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce55679ec50f79d45845f97e3d83bf5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testVector: {x: 0, y: 0, z: 0}
   <StartPos>k__BackingField: {x: 0, y: 0, z: 0}
+  <StartForward>k__BackingField: {x: 0, y: 0, z: 0}
+  <StartUp>k__BackingField: {x: 0, y: 0, z: 0}
   PlayableByPlayer: 1
 --- !u!65 &1376197745
 BoxCollider:

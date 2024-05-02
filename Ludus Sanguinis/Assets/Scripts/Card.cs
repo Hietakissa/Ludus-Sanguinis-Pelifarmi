@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    [field: SerializeField] public Vector3 StartPos { get; private set; }
-    [field: SerializeField] public Vector3 StartForward { get; private set; }
-    [field: SerializeField] public Vector3 StartUp { get; private set; }
+    public Vector3 StartPos { get; private set; }
+    public Vector3 StartForward { get; private set; }
+    public Vector3 StartUp { get; private set; }
+
     [SerializeField] public bool PlayableByPlayer = true;
 
     void Awake()
