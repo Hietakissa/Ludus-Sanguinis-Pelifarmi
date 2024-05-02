@@ -1,4 +1,8 @@
 using HietakissaUtils;
+
+using System;
+using System.Collections;
+
 using UnityEngine;
 public class HandController : MonoBehaviour
 {
@@ -24,12 +28,16 @@ public class HandController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card))
+            if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card) && card.PlayableByPlayer)
             {
                 grabbedCard = card;
             }
         }
-        else if (Input.GetMouseButtonUp(0)) grabbedCard = null;
+        else if (Input.GetMouseButtonUp(0) && grabbedCard)
+        {
+            StartCoroutine(MoveCardToStartPosCor(grabbedCard));
+            grabbedCard = null;
+        }
 
 
         if (grabbedCard)
@@ -62,4 +70,47 @@ public class HandController : MonoBehaviour
             grabbedCard.transform.rotation = Quaternion.Slerp(grabbedCard.transform.rotation, target, cardPointSpeed * Time.deltaTime);
         }
     }
+
+    IEnumerator MoveCardToStartPosCor(Card card)
+    {
+        card.PlayableByPlayer = false;
+
+        float t = 0f;
+
+        Vector3 from = card.transform.position;
+        Vector3 to = card.StartPos;
+
+        Quaternion startRot = card.transform.rotation;
+
+        Vector3 velocity = Vector3.zero;
+        Vector3 rotVelocity = Vector3.zero;
+
+        //while (Vector3.Distance(card.transform.position, to) > 0.05f)
+        while (true)
+        {
+            t += Time.deltaTime;
+            float ease = EaseOutCubic(t);
+
+            //card.transform.position = Vector3.Lerp(from, to, t);
+            //card.transform.position = Vector3.SmoothDamp(card.transform.position, to, ref velocity, 0.4f);
+            card.transform.position = Vector3.Slerp(from, to, ease);
+
+            Quaternion target = Quaternion.LookRotation(card.StartForward, card.StartUp);
+            card.transform.rotation = Quaternion.Slerp(startRot, target, ease);
+
+            if (t >= 1f) break;
+            else yield return null;
+        }
+
+        card.PlayableByPlayer = true;
+    }
+
+    float EaseOutCubic(float t)
+    {
+        return 1f - Mathf.Pow(1f - t, 3f);
+    }
+     //function easeOutCubic(x: number): number
+     //{
+     //return 1 - Math.pow(1 - x, 3);
+     //}
 }
