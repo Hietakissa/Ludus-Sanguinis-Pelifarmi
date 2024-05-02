@@ -107,9 +107,9 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BloodIndex: 0.65
+    - _BloodIndex: 0.85
     - _BumpScale: 1
-    - _CardIndex: 0.4
+    - _CardIndex: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
