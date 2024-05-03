@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class HandController : MonoBehaviour
 {
+    [SerializeField] Player player;
+    [SerializeField] Table table;
+
     [SerializeField] Camera cam;
     [SerializeField] LayerMask interactMask;
     [SerializeField] LayerMask alignMask;
@@ -18,14 +21,15 @@ public class HandController : MonoBehaviour
     Card hoveredCard;
     Card grabbedCard;
 
+
     void Update()
     {
         Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y, 0f, Screen.height), 0f);
         Ray mouseRay = cam.ScreenPointToRay(clampedMousePos);
 
-        if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card) && card.PlayableByPlayer)
+        if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card))
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && card.IsInteractable)
             {
                 grabbedCard = card;
                 grabbedCard.ForceStopAnimations();
@@ -34,14 +38,14 @@ public class HandController : MonoBehaviour
             {
                 // Card under mouse, didn't try to grab
 
-                if (hoveredCard && hoveredCard != card)
+                if (hoveredCard && hoveredCard.IsHoverable && hoveredCard != card)
                 {
                     // Is hovering a different card
                     hoveredCard.EndHover();
                     hoveredCard = card;
                     hoveredCard.StartHover();
                 }
-                else
+                else if (card.IsHoverable)
                 {
                     // Not hovering a card
                     hoveredCard = card;
@@ -60,7 +64,10 @@ public class HandController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && grabbedCard)
         {
-            StartCoroutine(MoveCardToStartPosCor(grabbedCard));
+            //StartCoroutine(MoveCardToStartPosCor(grabbedCard));
+            //grabbedCard.ForceStopAnimations();
+            grabbedCard.EndHover();
+            table.PlayCard(player, grabbedCard);
             grabbedCard = null;
         }
 
@@ -98,7 +105,7 @@ public class HandController : MonoBehaviour
 
     IEnumerator MoveCardToStartPosCor(Card card)
     {
-        card.PlayableByPlayer = false;
+        card.IsInteractable = false;
 
         float t = 0f;
 
@@ -121,6 +128,6 @@ public class HandController : MonoBehaviour
             else yield return null;
         }
 
-        card.PlayableByPlayer = true;
+        card.IsInteractable = true;
     }
 }
