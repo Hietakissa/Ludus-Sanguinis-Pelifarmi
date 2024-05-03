@@ -329,6 +329,12 @@ namespace HietakissaUtils
                 else return -1f;
             }
         }
+
+
+        public static class Easing
+        {
+            public static float EaseOutCubic(float t) => 1f - Mathf.Pow(1f - t, 3f);
+        }
     }
 
     public static class ControlRebinding

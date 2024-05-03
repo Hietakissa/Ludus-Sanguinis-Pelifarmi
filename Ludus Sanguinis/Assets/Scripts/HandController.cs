@@ -1,9 +1,7 @@
-using HietakissaUtils;
-
-using System;
 using System.Collections;
-
+using HietakissaUtils;
 using UnityEngine;
+
 public class HandController : MonoBehaviour
 {
     [SerializeField] Camera cam;
@@ -16,24 +14,51 @@ public class HandController : MonoBehaviour
 
 
     Vector3 cardVelocity;
-    Vector3 cardDirVelocity;
 
+    Card hoveredCard;
     Card grabbedCard;
 
     void Update()
     {
         Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y, 0f, Screen.height), 0f);
-        //Ray mouseRay = cam.ScreenPointToRay(Input.mousePosition);
         Ray mouseRay = cam.ScreenPointToRay(clampedMousePos);
 
-        if (Input.GetMouseButtonDown(0))
+        if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card) && card.PlayableByPlayer)
         {
-            if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card) && card.PlayableByPlayer)
+            if (Input.GetMouseButtonDown(0))
             {
                 grabbedCard = card;
+                grabbedCard.ForceStopAnimations();
+            }
+            else if (!grabbedCard)
+            {
+                // Card under mouse, didn't try to grab
+
+                if (hoveredCard && hoveredCard != card)
+                {
+                    // Is hovering a different card
+                    hoveredCard.EndHover();
+                    hoveredCard = card;
+                    hoveredCard.StartHover();
+                }
+                else
+                {
+                    // Not hovering a card
+                    hoveredCard = card;
+                    hoveredCard.StartHover();
+                }
             }
         }
-        else if (Input.GetMouseButtonUp(0) && grabbedCard)
+        else
+        {
+            if (!grabbedCard && hoveredCard)
+            {
+                hoveredCard.EndHover();
+                hoveredCard = null;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0) && grabbedCard)
         {
             StartCoroutine(MoveCardToStartPosCor(grabbedCard));
             grabbedCard = null;
@@ -47,7 +72,7 @@ public class HandController : MonoBehaviour
 
             bool hitSurface = false;
 
-            if (Physics.Raycast(mouseRay, out RaycastHit hit, 3f, alignMask))
+            if (Physics.Raycast(mouseRay, out hit, 3f, alignMask))
             {
                 targetPos = hit.point + hit.normal * 0.01f;
                 targetDir = hit.normal;
@@ -82,18 +107,12 @@ public class HandController : MonoBehaviour
 
         Quaternion startRot = card.transform.rotation;
 
-        Vector3 velocity = Vector3.zero;
-        Vector3 rotVelocity = Vector3.zero;
-
-        //while (Vector3.Distance(card.transform.position, to) > 0.05f)
         while (true)
         {
             t += Time.deltaTime;
-            float ease = EaseOutCubic(t);
+            float ease = Maf.Easing.EaseOutCubic(t);
 
-            //card.transform.position = Vector3.Lerp(from, to, t);
-            //card.transform.position = Vector3.SmoothDamp(card.transform.position, to, ref velocity, 0.4f);
-            card.transform.position = Vector3.Slerp(from, to, ease);
+            card.transform.position = Vector3.Lerp(from, to, ease);
 
             Quaternion target = Quaternion.LookRotation(card.StartForward, card.StartUp);
             card.transform.rotation = Quaternion.Slerp(startRot, target, ease);
@@ -104,13 +123,4 @@ public class HandController : MonoBehaviour
 
         card.PlayableByPlayer = true;
     }
-
-    float EaseOutCubic(float t)
-    {
-        return 1f - Mathf.Pow(1f - t, 3f);
-    }
-     //function easeOutCubic(x: number): number
-     //{
-     //return 1 - Math.pow(1 - x, 3);
-     //}
 }
