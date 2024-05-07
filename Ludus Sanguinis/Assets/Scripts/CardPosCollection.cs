@@ -73,10 +73,8 @@ public class CardPosCollection
     }
     int GetPosIndexForCard(Card card)
     {
-        Debug.Log($"card positions length: {(cardPositions == null ? -1 : cardPositions.Length)}");
         for (int i = 0; i < cardPositions.Length; i++)
         {
-            Debug.Log($"i: {i}");
             if (cardPositions[i].HasCard && cardPositions[i].Card == card) return i;
         }
 

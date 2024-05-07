@@ -85,13 +85,10 @@ public class HandController : MonoBehaviour
         {
             if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, alignMask) && hit.transform.TryGetComponent(out table))
             {
-                Debug.Log($"playing card...");
-                player.CardCollection.TakeCard(grabbedCard);
                 table.PlayCard(player, grabbedCard);
             }
             else
             {
-                //grabbedCard.SetTargetTransform(grabbedCard.StartTargetTransform);
                 player.CardCollection.PlaceCard(grabbedCard);
                 grabbedCard.State = CardState.InHand;
             }
