@@ -1,9 +1,7 @@
 using System.Collections;
 using HietakissaUtils;
-
-using TMPro;
-
 using UnityEngine;
+using TMPro;
 
 public class Card : MonoBehaviour
 {
@@ -12,11 +10,24 @@ public class Card : MonoBehaviour
     public Vector3 StartUp { get; private set; }
 
     [HideInInspector] public bool IsInteractable = true;
-    [HideInInspector] public bool IsHoverable = true;
+    [HideInInspector] public bool CanStartHover = true;
 
-    Vector3 startScale;
 
     [SerializeField] TextMeshPro debugText;
+
+    public Transform StartTargetTransform { get; private set; }
+    public Transform TargetTransform { get; private set; }
+    Vector3 posOffset;
+
+    Vector3 startScale;
+    Vector3 targetScale;
+    Vector3 scaleVel;
+    Vector3 posVel;
+    [SerializeField] float posSmoothTime = 0.1f;
+    [SerializeField] float rotateSmoothing = 0.1f;
+    [SerializeField] float scaleSmoothTime = 0.1f;
+
+    public CardState State = CardState.InHand;
 
     void Awake()
     {
@@ -25,92 +36,59 @@ public class Card : MonoBehaviour
         StartUp = transform.up;
 
         startScale = transform.localScale;
+        targetScale = startScale;
+    }
+
+    void Start()
+    {
+        if (TargetTransform)
+        {
+            StartTargetTransform = TargetTransform;
+
+            transform.position = TargetTransform.position;
+            transform.rotation = TargetTransform.rotation;
+        }
     }
 
     void Update()
     {
-        if (debugText) debugText.text = $"Interactable: {IsInteractable}\nHoverable: {IsHoverable}";
+        if (debugText) debugText.text = $"Interactable: {IsInteractable}\nHoverable: {CanStartHover}\nTarget: {TargetTransform.name}";
+
+
+        Vector3 targetPos = TargetTransform.position + posOffset;
+        transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref posVel, posSmoothTime);
+
+        Quaternion target = Quaternion.LookRotation(TargetTransform.forward, TargetTransform.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, target, rotateSmoothing * Time.deltaTime);
+        
+        transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVel, scaleSmoothTime);
+
+
+        Debug.DrawRay(transform.position, TargetTransform.forward * 0.1f, Color.blue);
+        Debug.DrawRay(transform.position, TargetTransform.up * 0.1f, Color.green);
+        Debug.DrawRay(transform.position, TargetTransform.right * 0.1f, Color.red);
     }
 
 
-    public void ForceStopAnimations()
-    {
-        IsInteractable = true;
-        StopAllCoroutines();
-    }
-
-    public void MoveToTransform(Transform t)
-    {
-        StartCoroutine(MoveToTransformCor(t));
-    }
+    public void SetTargetTransform(Transform target) => TargetTransform = target;
 
     public void StartHover()
     {
-        Debug.Log($"start hover");
-        StopAllCoroutines();
-        StartCoroutine(AnimateScaleAndPosCor(startScale * 1.1f, StartPos + (transform.up * 0.05f)));
-
-        IsHoverable = false;
+        targetScale = startScale * 1.1f;
+        //localOffset = -Vector3.forward * 0.05f + Vector3.up * 0.02f;
+        posOffset = transform.up * 0.04f;
     }
 
     public void EndHover()
     {
-        StopAllCoroutines();
-        StartCoroutine(AnimateScaleAndPosCor(startScale, StartPos));
-
-        IsHoverable = true;
+        targetScale = startScale;
+        posOffset = Vector3.zero;
     }
+}
 
-    IEnumerator AnimateScaleAndPosCor(Vector3 targetScale, Vector3 targetPos)
-    {
-        Vector3 lerpStartScale = transform.localScale;
-        Vector3 lerpStartPos = transform.position;
-        float t = 0f;
-
-        while (true)
-        {
-            t += Time.deltaTime * 2f;
-            float ease = Maf.Easing.EaseOutCubic(t);
-
-            //Debug.Log($"hover coroutine, t: {t}");
-
-            transform.localScale = Vector3.Lerp(lerpStartScale, targetScale, ease);
-            //transform.position = Vector3.Lerp(lerpStartPos, targetPos, ease);
-            
-
-            if (t >= 1f) break;
-            else yield return null;
-        }
-    }
-
-    IEnumerator MoveToTransformCor(Transform transform)
-    {
-        IsInteractable = false;
-        IsHoverable = false;
-
-        float t = 0f;
-
-        Vector3 from = this.transform.position;
-        Vector3 to = transform.position;
-
-        Quaternion startRot = this.transform.rotation;
-
-        while (true)
-        {
-            t += Time.deltaTime;
-            float ease = Maf.Easing.EaseOutCubic(t);
-
-            Debug.Log($"moving to transform cor, t: {t}");
-
-            this.transform.position = Vector3.Lerp(from, to, ease);
-
-            Quaternion target = Quaternion.LookRotation(transform.forward, transform.up);
-            this.transform.rotation = Quaternion.Slerp(startRot, target, ease);
-
-            if (t >= 1f) break;
-            else yield return null;
-        }
-
-        IsInteractable = true;
-    }
+public enum CardState
+{
+    InHand,
+    OnTable,
+    Drag
 }

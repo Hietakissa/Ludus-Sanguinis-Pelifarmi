@@ -9,5 +9,7 @@ public class Player
 
     public bool IsDealer;
 
-    public Hand Hand;
+    //public Hand Hand;
+    public CardPosCollection CardCollection => cardCollection;
+    [SerializeField] CardPosCollection cardCollection;
 }

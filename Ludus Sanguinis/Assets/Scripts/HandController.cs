@@ -5,7 +5,6 @@ using UnityEngine;
 public class HandController : MonoBehaviour
 {
     [SerializeField] Player player;
-    [SerializeField] Table table;
 
     [SerializeField] Camera cam;
     [SerializeField] LayerMask interactMask;
@@ -15,41 +14,60 @@ public class HandController : MonoBehaviour
     [SerializeField] float cardMoveSpeed;
     [SerializeField] float cardPointSpeed;
 
+    [SerializeField] Transform target;
 
+    Table table;
     Vector3 cardVelocity;
 
     Card hoveredCard;
     Card grabbedCard;
 
+    const float CONST_PLAY_DISTANCE = 10f;
+
+
+    void Awake()
+    {
+        for (int i = 0; i < player.CardCollection.CardPositions.Length; i++)
+        {
+            Card card = player.CardCollection.CardPositions[i].Card;
+            card.SetTargetTransform(player.CardCollection.CardPositions[i].Transform);
+        }
+    }
 
     void Update()
     {
         Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y, 0f, Screen.height), 0f);
         Ray mouseRay = cam.ScreenPointToRay(clampedMousePos);
 
-        if (Physics.Raycast(mouseRay, out RaycastHit hit, 10f, interactMask) && hit.transform.TryGetComponent(out Card card))
+        if (Physics.Raycast(mouseRay, out RaycastHit hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card))
         {
             if (Input.GetMouseButtonDown(0) && card.IsInteractable)
             {
+                hoveredCard?.EndHover();
                 grabbedCard = card;
-                grabbedCard.ForceStopAnimations();
+
+                if (grabbedCard.State == CardState.OnTable) table.FreeSpotForCard(player, card);
+                else if (grabbedCard.State == CardState.InHand) player.CardCollection.TakeCard(card);
+                grabbedCard.State = CardState.Drag;
             }
             else if (!grabbedCard)
             {
                 // Card under mouse, didn't try to grab
 
-                if (hoveredCard && hoveredCard.IsHoverable && hoveredCard != card)
+                if (card)
                 {
-                    // Is hovering a different card
-                    hoveredCard.EndHover();
-                    hoveredCard = card;
-                    hoveredCard.StartHover();
+                    if (card.CanStartHover || hoveredCard != card)
+                    {
+                        hoveredCard?.EndHover();
+
+                        hoveredCard = card;
+                        hoveredCard.StartHover();
+                    }
                 }
-                else if (card.IsHoverable)
+                else
                 {
-                    // Not hovering a card
-                    hoveredCard = card;
-                    hoveredCard.StartHover();
+                    hoveredCard?.EndHover();
+                    hoveredCard = null;
                 }
             }
         }
@@ -62,29 +80,37 @@ public class HandController : MonoBehaviour
             }
         }
 
+
         if (Input.GetMouseButtonUp(0) && grabbedCard)
         {
-            //StartCoroutine(MoveCardToStartPosCor(grabbedCard));
-            //grabbedCard.ForceStopAnimations();
-            grabbedCard.EndHover();
-            table.PlayCard(player, grabbedCard);
+            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, alignMask) && hit.transform.TryGetComponent(out table))
+            {
+                Debug.Log($"playing card...");
+                player.CardCollection.TakeCard(grabbedCard);
+                table.PlayCard(player, grabbedCard);
+            }
+            else
+            {
+                //grabbedCard.SetTargetTransform(grabbedCard.StartTargetTransform);
+                player.CardCollection.PlaceCard(grabbedCard);
+                grabbedCard.State = CardState.InHand;
+            }
+            
             grabbedCard = null;
         }
 
 
-        if (grabbedCard)
+        if (grabbedCard) MoveTarget();
+
+        void MoveTarget()
         {
             Vector3 targetPos = Vector3.zero;
             Vector3 targetDir = Vector3.zero;
-
-            bool hitSurface = false;
 
             if (Physics.Raycast(mouseRay, out hit, 3f, alignMask))
             {
                 targetPos = hit.point + hit.normal * 0.01f;
                 targetDir = hit.normal;
-
-                hitSurface = true;
             }
             else
             {
@@ -96,38 +122,16 @@ public class HandController : MonoBehaviour
                 }
             }
 
-            grabbedCard.transform.position = Vector3.SmoothDamp(grabbedCard.transform.position, targetPos, ref cardVelocity, cardMoveSpeed);
+            target.position = targetPos;
+            target.forward = -mouseRay.direction;
+            grabbedCard.SetTargetTransform(target);
 
-            Quaternion target = Quaternion.LookRotation(targetDir, hitSurface ? cam.transform.forward.SetY(grabbedCard.transform.position.y) : Vector3.up);
-            grabbedCard.transform.rotation = Quaternion.Slerp(grabbedCard.transform.rotation, target, cardPointSpeed * Time.deltaTime);
+            target.rotation = Quaternion.LookRotation(targetDir, cam.transform.forward.SetY(target.position.y));
+
+
+            //grabbedCard.transform.position = Vector3.SmoothDamp(grabbedCard.transform.position, targetPos, ref cardVelocity, cardMoveSpeed);
+            //Quaternion targetRot = Quaternion.LookRotation(targetDir, hitSurface ? cam.transform.forward.SetY(grabbedCard.transform.position.y) : Vector3.up);
+            //target.rotation = Quaternion.Slerp(target.rotation, targetRot, cardPointSpeed * Time.deltaTime);
         }
-    }
-
-    IEnumerator MoveCardToStartPosCor(Card card)
-    {
-        card.IsInteractable = false;
-
-        float t = 0f;
-
-        Vector3 from = card.transform.position;
-        Vector3 to = card.StartPos;
-
-        Quaternion startRot = card.transform.rotation;
-
-        while (true)
-        {
-            t += Time.deltaTime;
-            float ease = Maf.Easing.EaseOutCubic(t);
-
-            card.transform.position = Vector3.Lerp(from, to, ease);
-
-            Quaternion target = Quaternion.LookRotation(card.StartForward, card.StartUp);
-            card.transform.rotation = Quaternion.Slerp(startRot, target, ease);
-
-            if (t >= 1f) break;
-            else yield return null;
-        }
-
-        card.IsInteractable = true;
     }
 }
