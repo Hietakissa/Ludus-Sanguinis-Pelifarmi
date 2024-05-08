@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
@@ -15,12 +16,19 @@ public class HandController : MonoBehaviour
     [SerializeField] float cardPointSpeed;
 
     [SerializeField] Transform target;
+    [SerializeField] Transform hand;
+    [SerializeField] Vector3 cardHandOffset;
+    [SerializeField] float handMoveTime = 0.1f;
+    [SerializeField] float handRotSpeed = 12f;
 
     Table table;
     Vector3 cardVelocity;
+    Vector3 handVelocity;
 
     Card hoveredCard;
     Card grabbedCard;
+
+    Plane viewPlane;
 
     const float CONST_PLAY_DISTANCE = 10f;
 
@@ -83,8 +91,9 @@ public class HandController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && grabbedCard)
         {
-            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, alignMask) && hit.transform.TryGetComponent(out table))
+            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, alignMask) && hit.transform.TryGetComponent(out CardPlayArea playArea))
             {
+                table = playArea.Table;
                 table.PlayCard(player, grabbedCard);
             }
             else
@@ -98,6 +107,14 @@ public class HandController : MonoBehaviour
 
 
         if (grabbedCard) MoveTarget();
+        //else
+        //{
+        //    hand.rotation = Quaternion.LookRotation(-mouseRay.direction, transform.up);
+        //    hand.position = mouseRay.origin + mouseRay.direction * cardDistanceOffset + hand.InverseTransformPoint(idleHandOffset);
+        //}
+
+        MoveHand();
+
 
         void MoveTarget()
         {
@@ -111,12 +128,16 @@ public class HandController : MonoBehaviour
             }
             else
             {
-                Plane viewPlane = new Plane(-cam.transform.forward, cam.transform.position.magnitude + cardDistanceOffset);
-                if (viewPlane.Raycast(mouseRay, out float distance))
-                {
-                    targetPos = mouseRay.origin + mouseRay.direction * distance;
-                    targetDir = Maf.Direction(grabbedCard.transform.position, cam.transform.position);
-                }
+                //Plane viewPlane = new Plane(-cam.transform.forward, cam.transform.position.magnitude + cardDistanceOffset);
+                //viewPlane.SetNormalAndPosition(cam.transform.forward, cam.transform.forward * cardDistanceOffset);
+                //if (viewPlane.Raycast(mouseRay, out float distance))
+                //{
+                //    targetPos = mouseRay.origin + mouseRay.direction * distance;
+                //    targetDir = Maf.Direction(grabbedCard.transform.position, cam.transform.position);
+                //}
+
+                targetPos = mouseRay.origin + mouseRay.direction * cardDistanceOffset;
+                targetDir = -mouseRay.direction;
             }
 
             target.position = targetPos;
@@ -124,11 +145,37 @@ public class HandController : MonoBehaviour
             grabbedCard.SetTargetTransform(target);
 
             target.rotation = Quaternion.LookRotation(targetDir, cam.transform.forward.SetY(target.position.y));
+        }
 
+        void MoveHand()
+        {
+            Vector3 targetPos = Vector3.zero;
+            Quaternion targetRot = Quaternion.identity;
+            float moveTime = 0f;
 
-            //grabbedCard.transform.position = Vector3.SmoothDamp(grabbedCard.transform.position, targetPos, ref cardVelocity, cardMoveSpeed);
-            //Quaternion targetRot = Quaternion.LookRotation(targetDir, hitSurface ? cam.transform.forward.SetY(grabbedCard.transform.position.y) : Vector3.up);
-            //target.rotation = Quaternion.Slerp(target.rotation, targetRot, cardPointSpeed * Time.deltaTime);
+            Card targetCard = grabbedCard ?? hoveredCard;
+
+            if (targetCard)
+            {
+                //hand.position = /*grabbedCard.transform.position +*/ grabbedCard.transform.TransformPoint(cardHandOffset);
+                //hand.rotation = Quaternion.LookRotation(-grabbedCard.transform.forward, grabbedCard.transform.up);
+                targetPos = targetCard.transform.TransformPoint(cardHandOffset);
+                targetRot = Quaternion.LookRotation(-targetCard.transform.forward, targetCard.transform.up);
+            }
+            else
+            {
+                //hand.position = mouseRay.origin + mouseRay.direction * cardDistanceOffset;
+                targetPos = mouseRay.origin + mouseRay.direction * cardDistanceOffset;
+                //hand.transform.forward = mouseRay.direction;
+                //hand.transform.rotation = Quaternion.LookRotation(mouseRay.direction);
+                targetRot = Quaternion.LookRotation(mouseRay.direction);
+                moveTime = handMoveTime;
+            }
+
+            //hand.position = targetPos;
+            hand.position = Vector3.SmoothDamp(hand.position, targetPos, ref handVelocity, moveTime);
+            //hand.rotation = targetRot;
+            hand.rotation = Quaternion.Slerp(hand.rotation, targetRot, handRotSpeed * Time.deltaTime);
         }
     }
 }
