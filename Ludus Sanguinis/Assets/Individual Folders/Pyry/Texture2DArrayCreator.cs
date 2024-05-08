@@ -17,6 +17,8 @@ public class Texture2DArrayCreator : MonoBehaviour
             return;
         }
 
+        string uri = System.IO.Path.Combine(path, filename) + ".asset";
+
         Texture2D sample = textures[0];
         Texture2DArray textureArray = new Texture2DArray(sample.width, sample.height, textures.Length, sample.format, false);
         textureArray.filterMode = sample.filterMode;
@@ -28,10 +30,11 @@ public class Texture2DArrayCreator : MonoBehaviour
             textureArray.SetPixels(tex.GetPixels(0), i, 0);
         }
         textureArray.Apply();
-        
-        //string uri = path + filename + ".asset";
-        string uri = System.IO.Path.Combine(path, filename) + ".asset";
+
+
         AssetDatabase.CreateAsset(textureArray, uri);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
         Debug.Log($"Successfully created asset '{uri}'");
     }
 }

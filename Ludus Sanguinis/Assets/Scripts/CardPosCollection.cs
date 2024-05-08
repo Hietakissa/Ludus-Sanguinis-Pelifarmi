@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -32,6 +33,18 @@ public class CardPosCollection
         cardPositions[index].Card = card;
         card.SetTargetTransform(cardPositions[index].Transform);
         Shift();
+    }
+
+    public Card[] GetCards()
+    {
+        List<Card> cards = new List<Card>();
+
+        foreach (PlayedCardPosition cardPos in cardPositions)
+        {
+            if (cardPos.HasCard) cards.Add(cardPos.Card);
+        }
+
+        return cards.ToArray();
     }
 
     void Shift()
