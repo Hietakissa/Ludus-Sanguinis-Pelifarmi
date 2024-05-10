@@ -27,6 +27,7 @@ public class Card : MonoBehaviour
     Vector3 posVel;
     Vector3 posOffset;
 
+    Material backMat;
     Material frontMat;
 
 
@@ -35,6 +36,7 @@ public class Card : MonoBehaviour
         startScale = transform.localScale;
         targetScale = startScale;
 
+        backMat = GetComponent<MeshRenderer>().materials[0];
         frontMat = GetComponent<MeshRenderer>().materials[1];
     }
 
@@ -89,6 +91,7 @@ public class Card : MonoBehaviour
         Value = value;
 
         frontMat.SetFloat("_CardIndex", Value);
+        backMat.SetFloat("_BloodIndex", Random.Range(0, GameManager.MAX_BLOOD_INDEX));
         Debug.Log($"set card value to: {value}");
     }
 }

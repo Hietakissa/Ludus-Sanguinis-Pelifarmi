@@ -3,6 +3,8 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public const int MAX_BLOOD_INDEX = 1;
+
     [SerializeField] Table table;
     [SerializeField] Player dealer;
 

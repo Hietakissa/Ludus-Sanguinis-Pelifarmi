@@ -104,7 +104,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6964115667968012420
 RectTransform:
   m_ObjectHideFlags: 0
@@ -431,7 +431,8 @@ MonoBehaviour:
   IsInteractable: 1
   CanStartHover: 1
   debugText: {fileID: 8935566068814511595}
+  <Owner>k__BackingField: 0
+  State: 0
   posSmoothTime: 0.1
   rotateSmoothing: 12
   scaleSmoothTime: 0.1
-  State: 0
