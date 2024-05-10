@@ -33,11 +33,7 @@ public class HandController : MonoBehaviour
 
     void Awake()
     {
-        for (int i = 0; i < player.CardCollection.CardPositions.Length; i++)
-        {
-            Card card = player.CardCollection.CardPositions[i].Card;
-            card.SetTargetTransform(player.CardCollection.CardPositions[i].Transform);
-        }
+        player.InitCards();
     }
 
     void Update()
@@ -72,7 +68,7 @@ public class HandController : MonoBehaviour
 
         void HandleCardGrabbingAndHovering()
         {
-            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card))
+            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card) && card.Owner == PlayerType.Player)
             {
                 if (Input.GetMouseButtonDown(0) && card.IsInteractable)
                 {
@@ -113,6 +109,7 @@ public class HandController : MonoBehaviour
                 }
             }
 
+            // Interacting
             if (!grabbedCard && !hoveredCard)
             {
                 if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out IInteractable interactable))

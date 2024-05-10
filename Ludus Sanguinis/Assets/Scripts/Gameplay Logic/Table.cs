@@ -16,6 +16,8 @@ public class Table : MonoBehaviour
         CardPosCollection cardCollection = GetCollectionForPlayer(player);
         cardCollection.PlaceCard(card);
         card.State = CardState.OnTable;
+
+        //card.SetValue(Random.Range(0, 2));
     }
 
     public void FreeSpotForCard(Player player, Card card)

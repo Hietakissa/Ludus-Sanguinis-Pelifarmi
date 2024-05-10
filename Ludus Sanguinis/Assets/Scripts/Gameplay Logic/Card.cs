@@ -5,38 +5,37 @@ using TMPro;
 
 public class Card : MonoBehaviour
 {
-    public Vector3 StartPos { get; private set; }
-    public Vector3 StartForward { get; private set; }
-    public Vector3 StartUp { get; private set; }
-
     [HideInInspector] public bool IsInteractable = true;
     [HideInInspector] public bool CanStartHover = true;
 
-
     [SerializeField] TextMeshPro debugText;
 
+    [field: SerializeField] public PlayerType Owner { get; private set; }
     public Transform StartTargetTransform { get; private set; }
     public Transform TargetTransform { get; private set; }
-    Vector3 posOffset;
+    public CardState State = CardState.InHand;
 
+    public int Value { get; private set; } = 1;
+
+
+    [SerializeField] float posSmoothTime = 0.1f;
+    [SerializeField] float rotateSmoothing = 0.1f;
+    [SerializeField] float scaleSmoothTime = 0.1f;
     Vector3 startScale;
     Vector3 targetScale;
     Vector3 scaleVel;
     Vector3 posVel;
-    [SerializeField] float posSmoothTime = 0.1f;
-    [SerializeField] float rotateSmoothing = 0.1f;
-    [SerializeField] float scaleSmoothTime = 0.1f;
+    Vector3 posOffset;
 
-    public CardState State = CardState.InHand;
+    Material frontMat;
+
 
     void Awake()
     {
-        StartPos = transform.position;
-        StartForward = transform.forward;
-        StartUp = transform.up;
-
         startScale = transform.localScale;
         targetScale = startScale;
+
+        frontMat = GetComponent<MeshRenderer>().materials[1];
     }
 
     void Start()
@@ -75,7 +74,6 @@ public class Card : MonoBehaviour
     public void StartHover()
     {
         targetScale = startScale * 1.1f;
-        //localOffset = -Vector3.forward * 0.05f + Vector3.up * 0.02f;
         posOffset = transform.up * 0.04f;
     }
 
@@ -83,6 +81,15 @@ public class Card : MonoBehaviour
     {
         targetScale = startScale;
         posOffset = Vector3.zero;
+    }
+
+
+    public void SetValue(int value)
+    {
+        Value = value;
+
+        frontMat.SetFloat("_CardIndex", Value);
+        Debug.Log($"set card value to: {value}");
     }
 }
 
