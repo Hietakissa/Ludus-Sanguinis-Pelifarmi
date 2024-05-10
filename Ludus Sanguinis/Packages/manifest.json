@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.hk.hietakissautils": "https://github.com/Hietakissa/HietakissaUtils.git",
     "com.unity.ide.visualstudio": "2.0.22",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.render-pipelines.universal": "14.0.10",

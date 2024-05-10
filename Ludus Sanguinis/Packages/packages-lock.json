@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.hk.hietakissautils": {
+      "version": "https://github.com/Hietakissa/HietakissaUtils.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      },
+      "hash": "f1f3656736240801591857454921bd18797cecf1"
+    },
     "com.unity.burst": {
       "version": "1.8.12",
       "depth": 1,
