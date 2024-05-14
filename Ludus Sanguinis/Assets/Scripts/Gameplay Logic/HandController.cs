@@ -33,12 +33,14 @@ public class HandController : MonoBehaviour
 
     void Awake()
     {
-        player.InitCards();
+        GameManager.Instance.player = player;
     }
 
     void Update()
     {
-        Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y, 0f, Screen.height), 0f);
+        float xOffset = Mathf.Cos(Time.time * 0.15f) * 3f;
+        float yOffset = Mathf.Sin(Time.time * 0.25f) * 15f;
+        Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x + xOffset, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y + yOffset, 0f, Screen.height), 0f);
         Ray mouseRay = cam.ScreenPointToRay(clampedMousePos);
 
         HandleCardGrabbingAndHovering();
@@ -68,7 +70,7 @@ public class HandController : MonoBehaviour
 
         void HandleCardGrabbingAndHovering()
         {
-            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card) && card.Owner == PlayerType.Player)
+            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card) && card.Owner == PlayerType.Player && card.IsInteractable)
             {
                 if (Input.GetMouseButtonDown(0) && card.IsInteractable)
                 {

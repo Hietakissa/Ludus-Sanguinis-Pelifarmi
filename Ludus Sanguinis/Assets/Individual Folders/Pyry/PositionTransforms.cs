@@ -13,7 +13,7 @@ public class PositionTransforms : MonoBehaviour
 
     void OnValidate()
     {
-        Debug.Log($"validate, null: {transforms == null}, length: {(transforms != null ? transforms.Length : -1)}");
+        //Debug.Log($"validate, null: {transforms == null}, length: {(transforms != null ? transforms.Length : -1)}");
         if (transforms == null || transforms.Length == 0) return;
 
         int count = transforms.Length;

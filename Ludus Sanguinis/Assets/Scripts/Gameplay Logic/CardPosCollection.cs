@@ -20,11 +20,12 @@ public class CardPosCollection
         }
     }
 
-    public void TakeCard(Card card)
+    public Card TakeCard(Card card, bool shift = true)
     {
         int index = GetPosIndexForCard(card);
         cardPositions[index].Card = null;
-        Shift();
+        if (shift) Shift();
+        return card;
     }
 
     public void PlaceCard(Card card)
@@ -46,6 +47,16 @@ public class CardPosCollection
 
         return cards.ToArray();
     }
+
+    public bool IsEmpty()
+    {
+        foreach (PlayedCardPosition cardPos in cardPositions)
+        {
+            if (cardPos.HasCard) return false;
+        }
+        return true;
+    }
+
 
     void Shift()
     {

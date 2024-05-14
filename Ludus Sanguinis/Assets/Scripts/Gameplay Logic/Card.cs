@@ -9,9 +9,10 @@ public class Card : MonoBehaviour
     [HideInInspector] public bool CanStartHover = true;
 
     [SerializeField] TextMeshPro debugText;
+    [SerializeField] Vector3 valueTextOffset;
+    [SerializeField] TextMeshPro valueText;
 
     [field: SerializeField] public PlayerType Owner { get; private set; }
-    public Transform StartTargetTransform { get; private set; }
     public Transform TargetTransform { get; private set; }
     public CardState State = CardState.InHand;
 
@@ -40,17 +41,6 @@ public class Card : MonoBehaviour
         frontMat = GetComponent<MeshRenderer>().materials[1];
     }
 
-    void Start()
-    {
-        if (TargetTransform)
-        {
-            StartTargetTransform = TargetTransform;
-
-            transform.position = TargetTransform.position;
-            transform.rotation = TargetTransform.rotation;
-        }
-    }
-
     void Update()
     {
         if (debugText) debugText.text = $"Interactable: {IsInteractable}\nHoverable: {CanStartHover}\nTarget: {TargetTransform.name}";
@@ -65,6 +55,14 @@ public class Card : MonoBehaviour
         transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVel, scaleSmoothTime);
 
 
+
+        if (valueText.gameObject.activeSelf)
+        {
+            valueText.transform.forward = -Maf.Direction(transform.position, Camera.main.transform.position);
+            valueText.transform.position = transform.position + valueTextOffset;
+        }
+
+
         Debug.DrawRay(transform.position, TargetTransform.forward * 0.1f, Color.blue);
         Debug.DrawRay(transform.position, TargetTransform.up * 0.1f, Color.green);
         Debug.DrawRay(transform.position, TargetTransform.right * 0.1f, Color.red);
@@ -72,13 +70,17 @@ public class Card : MonoBehaviour
 
 
     public void SetTargetTransform(Transform target) => TargetTransform = target;
+    public void InstaMoveToTarget()
+    {
+        transform.position = TargetTransform.position;
+        transform.rotation = TargetTransform.rotation;
+    }
 
     public void StartHover()
     {
         targetScale = startScale * 1.1f;
         posOffset = transform.up * 0.04f;
     }
-
     public void EndHover()
     {
         targetScale = startScale;
@@ -93,6 +95,12 @@ public class Card : MonoBehaviour
         frontMat.SetFloat("_CardIndex", Value);
         backMat.SetFloat("_BloodIndex", Random.Range(0, GameManager.MAX_BLOOD_INDEX));
         Debug.Log($"set card value to: {value}");
+    }
+
+    public void SetRevealState(bool state)
+    {
+        valueText.gameObject.SetActive(state);
+        if (state) valueText.text = Value.ToString();
     }
 }
 

@@ -50,7 +50,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CardTextures:
-        m_Texture: {fileID: 18700000, guid: ab7884ac90c1b3741ac9ba28d985a7df, type: 2}
+        m_Texture: {fileID: 18700000, guid: d56e68f3d2560da439f8a479b457d485, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -107,7 +107,7 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BloodIndex: 0.85
+    - _BloodIndex: 0
     - _BumpScale: 1
     - _CardIndex: 0
     - _ClearCoatMask: 0

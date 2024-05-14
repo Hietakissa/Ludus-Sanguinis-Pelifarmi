@@ -1,12 +1,16 @@
+using HietakissaUtils.QOL;
+using System.Collections;
 using UnityEngine;
 
 public static class Dealer
 {
-    public static void PlayTurn(Table table, Player player)
+    public static IEnumerator PlayTurn(Table table, Player dealer)
     {
-        Card card = player.CardCollection.CardPositions[0].Card;
-        player.CardCollection.TakeCard(card);
+        yield return QOL.GetWaitForSeconds(1f);
 
-        table.PlayCard(player, card);
+        Card card = dealer.CardCollection.CardPositions[0].Card;
+        dealer.CardCollection.TakeCard(card);
+
+        table.PlayCard(dealer, card);
     }
 }
