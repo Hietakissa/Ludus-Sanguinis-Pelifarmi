@@ -48,6 +48,19 @@ public class CardPosCollection
         return cards.ToArray();
     }
 
+    public int GetSum()
+    {
+        int sum = 0;
+
+        for (int i = 0; i < cardPositions.Length; i++)
+        {
+            PlayedCardPosition cardPos = cardPositions[i];
+            if (cardPos.HasCard) sum += cardPos.Card.Value;
+        }
+
+        return sum;
+    }
+
     public bool IsEmpty()
     {
         foreach (PlayedCardPosition cardPos in cardPositions)

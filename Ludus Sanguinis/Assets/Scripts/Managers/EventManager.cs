@@ -20,4 +20,10 @@ public static class EventManager
     {
         OnEndGame?.Invoke();
     }
+
+    public static event Action<int> OnPotOverflow;
+    public static void PotOverflow(int times)
+    {
+        OnPotOverflow?.Invoke(times);
+    }
 }

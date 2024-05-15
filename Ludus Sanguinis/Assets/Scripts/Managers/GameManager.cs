@@ -1,18 +1,17 @@
-using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using HietakissaUtils.QOL;
 using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
-using System;
-using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public const int MAX_BLOOD_INDEX = 1;
 
+    public Table Table => table;
     [SerializeField] Table table;
+
     public Player player;
     [SerializeField] Player dealer;
 
@@ -25,6 +24,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] LootTable<int> normalCardValueTable;
     [SerializeField] LootTable<int> lowCardValueTable;
+
+    public Pot Pot => pot;
+    [SerializeField] Pot pot;
+
+    Player lastHighestPlayedPlayer;
 
 
     void Awake() => Instance = this;
@@ -42,7 +46,11 @@ public class GameManager : MonoBehaviour
 
 
     void StartGame() => StartCoroutine(StartGameCor());
-    void EndGame() => InitializeGameState();
+    void EndGame()
+    {
+        Dealer.GameEnded();
+        InitializeGameState();
+    }
 
     void InitializeGameState()
     {
@@ -75,6 +83,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
+        pot.SetCapacity(30);
+
         yield return QOL.GetWaitForSeconds(2f);
         yield return MoveCardsFromDeckToHands();
         yield return QOL.GetWaitForSeconds(1.5f);
@@ -154,7 +164,23 @@ public class GameManager : MonoBehaviour
             }
             yield return QOL.GetWaitForSeconds(2f);
 
+            int playerSum = table.PlayerCards.GetSum();
+            int dealerSum = table.DealerCards.GetSum();
+            int sumDifference = Mathf.Abs(playerSum - dealerSum);
 
+            if (playerSum > dealerSum) lastHighestPlayedPlayer = player;
+            else lastHighestPlayedPlayer = dealer;
+
+            yield return pot.AddValue(sumDifference);
+            yield return MoveCardsToDeck();
+            
+
+            table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
+        }
+
+
+        IEnumerator MoveCardsToDeck()
+        {
             int maxCardCount = Mathf.Max(table.PlayerCards.GetCards().Length, table.DealerCards.GetCards().Length);
             for (int i = maxCardCount - 1; i >= 0; i--)
             {
@@ -175,8 +201,6 @@ public class GameManager : MonoBehaviour
                     card.SetRevealState(false);
                 }
             }
-
-            table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
         }
 
         IEnumerator GiveCardsAndItems()
@@ -221,6 +245,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    void OnPotOverflow(int times)
+    {
+        Debug.Log($"{(lastHighestPlayedPlayer.IsDealer ? "Dealer" : "Player")} took damage!");
+    }
 
     void SetPlayerCardLock(bool locked)
     {
@@ -292,6 +321,8 @@ public class GameManager : MonoBehaviour
 
         EventManager.OnStartGame += StartGame;
         EventManager.OnEndGame += EndGame;
+
+        EventManager.OnPotOverflow += OnPotOverflow;
     }
 
     void OnDisable()
@@ -300,6 +331,8 @@ public class GameManager : MonoBehaviour
 
         EventManager.OnStartGame -= StartGame;
         EventManager.OnEndGame -= EndGame;
+
+        EventManager.OnPotOverflow -= OnPotOverflow;
     }
 }
 
