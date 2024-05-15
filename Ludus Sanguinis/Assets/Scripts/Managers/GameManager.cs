@@ -2,6 +2,7 @@ using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using HietakissaUtils.QOL;
 using System.Collections;
+using HietakissaUtils;
 using UnityEngine;
 using System;
 using TMPro;
@@ -16,20 +17,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] Player dealer;
 
     [SerializeField] Transform deckPos;
-    [SerializeField] TextMeshPro text;
 
     bool playerPlayedCards;
 
     Card[] dealerCardReferences;
     Card[] playerCardReferences;
 
+    [SerializeField] LootTable<int> normalCardValueTable;
+    [SerializeField] LootTable<int> lowCardValueTable;
 
-    void Awake()
-    {
-        Instance = this;
-    }
 
-    IEnumerator Start()
+    void Awake() => Instance = this;
+
+    void Start()
     {
         dealer.InitCards(deckPos);
         player.InitCards(deckPos);
@@ -37,34 +37,58 @@ public class GameManager : MonoBehaviour
         dealerCardReferences = dealer.CardCollection.GetCards();
         playerCardReferences = player.CardCollection.GetCards();
 
+        InitializeGameState();
+    }
+
+
+    void StartGame() => StartCoroutine(StartGameCor());
+    void EndGame() => InitializeGameState();
+
+    void InitializeGameState()
+    {
         SetPlayerCardLock(true);
 
-        foreach (Card card in playerCardReferences)
+        //foreach (Card card in playerCardReferences) HandleCardReset(player.CardCollection.TakeCard(card, false));
+        //foreach (Card card in dealerCardReferences) HandleCardReset(dealer.CardCollection.TakeCard(card, false));
+
+        TakeCardsFromCollection(player.CardCollection);
+        TakeCardsFromCollection(dealer.CardCollection);
+        TakeCardsFromCollection(table.PlayerCards);
+        TakeCardsFromCollection(table.DealerCards);
+
+
+
+        void TakeCardsFromCollection(CardPosCollection collection)
         {
-            player.CardCollection.TakeCard(card, false);
-            card.InstaMoveToTarget();
-        }
-        foreach (Card card in dealerCardReferences)
-        {
-            dealer.CardCollection.TakeCard(card, false);
-            card.InstaMoveToTarget();
+            foreach (PlayedCardPosition cardPos in collection.CardPositions)
+            {
+                if (cardPos.HasCard) HandleCardReset(collection.TakeCard(cardPos.Card, false));
+            }
         }
 
+        void HandleCardReset(Card card)
+        {
+            card.SetTargetTransform(deckPos);
+            card.InstaMoveToTarget();
+        }
+    }
+
+    IEnumerator StartGameCor()
+    {
         yield return QOL.GetWaitForSeconds(2f);
-        Debug.Log($"moving");
         yield return MoveCardsFromDeckToHands();
-        Debug.Log($"moved");
-        Debug.Log($"waiting");
         yield return QOL.GetWaitForSeconds(1.5f);
-        Debug.Log($"waited");
+
         StartCoroutine(PlayTurn());
     }
 
 
 #if UNITY_EDITOR
     bool visibleState = false;
+#endif
     void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.T))
         {
             visibleState = !visibleState;
@@ -81,29 +105,20 @@ public class GameManager : MonoBehaviour
 
 
         Cursor.visible = state;
-    }
 #endif
+    }
+
 
     void TryEndTurn()
     {
-        int playerSum = GetCardSumForCollection(table.PlayerCards);
-        bool canEndTurn = table.PlayerCards.GetCards().Length > 0;
+        bool canEndTurn = !table.PlayerCards.IsEmpty();
 
-        Debug.Log($"Tried to end turn, would have been successful: {canEndTurn}");
-
-        /// thís shouldn't actually be here, but whatever for now. The dealer should play their turn first
         if (canEndTurn)
         {
-            //Dealer.PlayTurn(table, dealer);
-            //
-            //int dealerSum = GetCardSumForCollection(table.DealerCards);
-            //int sumDifference = Mathf.Abs(playerSum - dealerSum);
-            //
-            //text.text = $"{dealerSum}\n" +
-            //    $"diff: {sumDifference}\n" +
-            //    $"{playerSum}";
             playerPlayedCards = true;
+            Debug.Log($"Ended turn.");
         }
+        else Debug.Log($"Tried to end turn but player cards on table are empty.");
     }
 
     IEnumerator PlayTurn()
@@ -122,88 +137,90 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Turn done");
         StartCoroutine(PlayTurn());
-    }
 
-    IEnumerator PlayAnimations()
-    {
-        // Turn/move camera, move cards to deck etc. here
 
-        Debug.Log($"Playing turn animations");
 
-        table.DealerPosHolder.localScale = Vector3.one;
-        foreach (PlayedCardPosition cardPos in table.DealerCards.CardPositions)
+
+        IEnumerator PlayAnimations()
         {
-            if (cardPos.HasCard) cardPos.Card.SetRevealState(true);
-        }
-        yield return QOL.GetWaitForSeconds(2f);
-        foreach (PlayedCardPosition cardPos in table.DealerCards.CardPositions)
-        {
-            if (cardPos.HasCard) cardPos.Card.SetRevealState(false);
-        }
+            // Turn/move camera, move cards to deck etc. here
 
+            Debug.Log($"Playing turn animations");
 
-        int maxCardCount = Mathf.Max(table.PlayerCards.GetCards().Length, table.DealerCards.GetCards().Length);
-        for (int i = maxCardCount - 1; i >= 0; i--)
-        {
-            yield return QOL.GetWaitForSeconds(0.3f);
-            Debug.Log($"animating index: {i}");
-            PlayedCardPosition playerCardPos = table.PlayerCards.CardPositions[i];
-            PlayedCardPosition dealerCardPos = table.DealerCards.CardPositions[i];
-
-            if (playerCardPos.HasCard)
+            table.DealerPosHolder.localScale = Vector3.one;
+            foreach (PlayedCardPosition cardPos in table.DealerCards.CardPositions)
             {
-                Card card = table.PlayerCards.TakeCard(playerCardPos.Card);
-                card.SetTargetTransform(deckPos);
+                if (cardPos.HasCard) cardPos.Card.SetRevealState(true);
             }
-            if (dealerCardPos.HasCard)
+            yield return QOL.GetWaitForSeconds(2f);
+
+
+            int maxCardCount = Mathf.Max(table.PlayerCards.GetCards().Length, table.DealerCards.GetCards().Length);
+            for (int i = maxCardCount - 1; i >= 0; i--)
             {
-                Card card = table.DealerCards.TakeCard(dealerCardPos.Card);
-                card.SetTargetTransform(deckPos);
+                yield return QOL.GetWaitForSeconds(0.3f);
+
+                PlayedCardPosition playerCardPos = table.PlayerCards.CardPositions[i];
+                PlayedCardPosition dealerCardPos = table.DealerCards.CardPositions[i];
+
+                if (playerCardPos.HasCard)
+                {
+                    Card card = table.PlayerCards.TakeCard(playerCardPos.Card);
+                    card.SetTargetTransform(deckPos);
+                }
+                if (dealerCardPos.HasCard)
+                {
+                    Card card = table.DealerCards.TakeCard(dealerCardPos.Card);
+                    card.SetTargetTransform(deckPos);
+                    card.SetRevealState(false);
+                }
             }
+
+            table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
         }
 
-        table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
-
-        if (player.CardCollection.IsEmpty() || dealer.CardCollection.IsEmpty())
+        IEnumerator GiveCardsAndItems()
         {
-            yield return QOL.GetWaitForSeconds(1.5f);
-            yield return MoveCardsFromDeckToHands();
+            // Give both players their new hands (if empty), and items (if new hand)
+
+            Debug.Log($"Giving cards and items");
+            if (player.CardCollection.IsEmpty() || dealer.CardCollection.IsEmpty())
+            {
+                yield return QOL.GetWaitForSeconds(1.5f);
+                yield return MoveCardsFromDeckToHands();
+            }
         }
     }
 
     IEnumerator MoveCardsFromDeckToHands()
     {
-        if (player.CardCollection.IsEmpty())
-        {
-            foreach (Card card in playerCardReferences)
-            {
-                yield return QOL.GetWaitForSeconds(0.1f);
-                card.SetValue(Random.Range(0, 17));
-                player.CardCollection.PlaceCard(card);
-                card.State = CardState.InHand;
-            }
-        }
+        yield return HandleCollectionForPlayer(player);
+        yield return HandleCollectionForPlayer(dealer);
 
-        if (dealer.CardCollection.IsEmpty())
+
+        IEnumerator HandleCollectionForPlayer(Player player)
         {
-            foreach (Card card in dealerCardReferences)
+            CardPosCollection collection = player.CardCollection;
+
+            if (collection.IsEmpty())
             {
-                yield return QOL.GetWaitForSeconds(0.1f);
-                card.SetValue(Random.Range(0, 17));
-                dealer.CardCollection.PlaceCard(card);
-                card.State = CardState.InHand;
+                Card[] cards = player.IsDealer ? dealerCardReferences : playerCardReferences;
+                int[] cardValues = GetCardValues();
+
+                for (int i = 0; i < cards.Length; i++)
+                {
+                    yield return QOL.GetWaitForSeconds(0.1f);
+
+                    Card card = cards[i];
+                    card.SetValue(cardValues[i]);
+                    card.State = CardState.InHand;
+
+                    collection.PlaceCard(card);
+                }
             }
         }
     }
 
-    IEnumerator GiveCardsAndItems()
-    {
-        // Give both players their new hands (if empty), and items (if new hand)
-
-        Debug.Log($"Giving cards and items");
-
-        yield return null;
-    }
 
     void SetPlayerCardLock(bool locked)
     {
@@ -232,27 +249,57 @@ public class GameManager : MonoBehaviour
     /// give item(s) (if applicable)
     /// repeat
 
-
-
-    int GetCardSumForCollection(CardPosCollection collection)
+    int[] GetCardValues()
     {
-        int sum = 0;
-        foreach (PlayedCardPosition cardPos in collection.CardPositions)
+        List<int> values = new List<int>();
+
+        float total = 0f;
+        for (int i = 0; i < 3; i++)
         {
-            if (cardPos.HasCard) sum += cardPos.Card.Value;
+            int value = normalCardValueTable.GetItem();
+            values.Add(value);
+            total += value;
         }
-        return sum;
+
+        const int NUM_OF_CARDS = 17;
+        const int MAX_AVERAGE_FOR_LOW_TABLE = 11;
+        if (total / NUM_OF_CARDS > MAX_AVERAGE_FOR_LOW_TABLE)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                int value = lowCardValueTable.GetItem();
+                values.Add(value);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                int value = normalCardValueTable.GetItem();
+                values.Add(value);
+            }
+        }
+
+
+        values.Sort();
+        return values.ToArray();
     }
 
 
     void OnEnable()
     {
         EventManager.OnBellRung += TryEndTurn;
+
+        EventManager.OnStartGame += StartGame;
+        EventManager.OnEndGame += EndGame;
     }
 
     void OnDisable()
     {
         EventManager.OnBellRung -= TryEndTurn;
+
+        EventManager.OnStartGame -= StartGame;
+        EventManager.OnEndGame -= EndGame;
     }
 }
 

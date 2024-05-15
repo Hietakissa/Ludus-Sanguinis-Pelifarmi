@@ -24,12 +24,9 @@ public class HandController : MonoBehaviour
     Card grabbedCard;
 
     Transform hoveredInteractable;
-
-
     RaycastHit hit;
 
     const float CONST_PLAY_DISTANCE = 10f;
-
 
     void Awake()
     {
@@ -42,6 +39,7 @@ public class HandController : MonoBehaviour
         float yOffset = Mathf.Sin(Time.time * 0.25f) * 15f;
         Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x + xOffset, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y + yOffset, 0f, Screen.height), 0f);
         Ray mouseRay = cam.ScreenPointToRay(clampedMousePos);
+
 
         HandleCardGrabbingAndHovering();
 
