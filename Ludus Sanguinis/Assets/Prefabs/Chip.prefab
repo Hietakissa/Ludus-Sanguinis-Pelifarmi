@@ -11,17 +11,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 30467d9854805ce458b1c1fb3bfd4ea1,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.1522393
+      value: -2.4233
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 30467d9854805ce458b1c1fb3bfd4ea1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.84
+      value: 1.7802
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 30467d9854805ce458b1c1fb3bfd4ea1,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.563658
+      value: -8.4502
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 30467d9854805ce458b1c1fb3bfd4ea1,
         type: 3}
@@ -79,6 +79,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 30467d9854805ce458b1c1fb3bfd4ea1,
         type: 3}
       insertIndex: -1
+      addedObject: {fileID: 5540816563611746141}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 30467d9854805ce458b1c1fb3bfd4ea1,
+        type: 3}
+      insertIndex: -1
       addedObject: {fileID: 660450982138398466}
   m_SourcePrefab: {fileID: 100100000, guid: 30467d9854805ce458b1c1fb3bfd4ea1, type: 3}
 --- !u!1 &2499413162538376345 stripped
@@ -104,11 +108,32 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2359605460251376175, guid: 30467d9854805ce458b1c1fb3bfd4ea1, type: 3}
+--- !u!65 &5540816563611746141
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2499413162538376345}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.082546875, y: 0.007660916, z: 0.082546875}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &660450982138398466
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -117,7 +142,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2499413162538376345}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 0.2
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}

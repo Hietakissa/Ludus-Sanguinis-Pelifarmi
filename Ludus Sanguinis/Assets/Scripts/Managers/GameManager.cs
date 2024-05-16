@@ -7,12 +7,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public const int MAX_BLOOD_INDEX = 1;
+    public const int MAX_BLOOD_INDEX = 4;
 
     public Table Table => table;
     [SerializeField] Table table;
 
-    public Player player;
+    public Player Player;
     [SerializeField] Player dealer;
 
     [SerializeField] Transform deckPos;
@@ -31,15 +31,21 @@ public class GameManager : MonoBehaviour
     Player lastHighestPlayedPlayer;
 
 
-    void Awake() => Instance = this;
+    void Awake()
+    {
+        Instance = this;
+
+        table.PlayerItemCollection.Init();
+        table.DealerItemCollection.Init();
+    }
 
     void Start()
     {
         dealer.InitCards(deckPos);
-        player.InitCards(deckPos);
+        Player.InitCards(deckPos);
 
         dealerCardReferences = dealer.CardCollection.GetCards();
-        playerCardReferences = player.CardCollection.GetCards();
+        playerCardReferences = Player.CardCollection.GetCards();
 
         InitializeGameState();
     }
@@ -59,14 +65,14 @@ public class GameManager : MonoBehaviour
         //foreach (Card card in playerCardReferences) HandleCardReset(player.CardCollection.TakeCard(card, false));
         //foreach (Card card in dealerCardReferences) HandleCardReset(dealer.CardCollection.TakeCard(card, false));
 
-        TakeCardsFromCollection(player.CardCollection);
+        TakeCardsFromCollection(Player.CardCollection);
         TakeCardsFromCollection(dealer.CardCollection);
         TakeCardsFromCollection(table.PlayerCards);
         TakeCardsFromCollection(table.DealerCards);
 
 
 
-        void TakeCardsFromCollection(CardPosCollection collection)
+        void TakeCardsFromCollection(CardCollection collection)
         {
             foreach (PlayedCardPosition cardPos in collection.CardPositions)
             {
@@ -83,7 +89,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
-        pot.SetCapacity(30);
+        pot.SetCapacity(50);
 
         yield return QOL.GetWaitForSeconds(2f);
         yield return MoveCardsFromDeckToHands();
@@ -137,13 +143,16 @@ public class GameManager : MonoBehaviour
         yield return Dealer.PlayTurn(table, dealer);
         SetPlayerCardLock(false);
 
-        Debug.Log($"Waiting for player's turn");
+        Debug.Log($"Waiting for the player's turn!");
         while (!playerPlayedCards) yield return null;
         SetPlayerCardLock(true);
         playerPlayedCards = false;
 
         yield return PlayAnimations();
         yield return GiveCardsAndItems();
+
+        table.PlayerPlayedItems.Clear();
+        table.DealerPlayedItems.Clear();
 
         Debug.Log("Turn done");
         StartCoroutine(PlayTurn());
@@ -168,12 +177,12 @@ public class GameManager : MonoBehaviour
             int dealerSum = table.DealerCards.GetSum();
             int sumDifference = Mathf.Abs(playerSum - dealerSum);
 
-            if (playerSum > dealerSum) lastHighestPlayedPlayer = player;
+            if (playerSum > dealerSum) lastHighestPlayedPlayer = Player;
             else lastHighestPlayedPlayer = dealer;
 
             yield return pot.AddValue(sumDifference);
             yield return MoveCardsToDeck();
-            
+
 
             table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
         }
@@ -208,7 +217,7 @@ public class GameManager : MonoBehaviour
             // Give both players their new hands (if empty), and items (if new hand)
 
             Debug.Log($"Giving cards and items");
-            if (player.CardCollection.IsEmpty() || dealer.CardCollection.IsEmpty())
+            if (Player.CardCollection.IsEmpty() || dealer.CardCollection.IsEmpty())
             {
                 yield return QOL.GetWaitForSeconds(1.5f);
                 yield return MoveCardsFromDeckToHands();
@@ -218,13 +227,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator MoveCardsFromDeckToHands()
     {
-        yield return HandleCollectionForPlayer(player);
+        yield return HandleCollectionForPlayer(Player);
         yield return HandleCollectionForPlayer(dealer);
 
 
         IEnumerator HandleCollectionForPlayer(Player player)
         {
-            CardPosCollection collection = player.CardCollection;
+            CardCollection collection = player.CardCollection;
 
             if (collection.IsEmpty())
             {
@@ -241,6 +250,9 @@ public class GameManager : MonoBehaviour
 
                     collection.PlaceCard(card);
                 }
+
+                if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 7));
+                else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 7));
             }
         }
     }
@@ -248,12 +260,12 @@ public class GameManager : MonoBehaviour
 
     void OnPotOverflow(int times)
     {
-        Debug.Log($"{(lastHighestPlayedPlayer.IsDealer ? "Dealer" : "Player")} took damage!");
+        Debug.Log($"{(lastHighestPlayedPlayer.IsDealer ? "Dealer" : "Player")} took {times} damage!");
     }
 
     void SetPlayerCardLock(bool locked)
     {
-        Debug.Log($"set card lock to: {locked}, player hand cardpositions: {player.CardCollection.CardPositions.Length}");
+        Debug.Log($"set card lock to: {locked}, player hand cardpositions: {Player.CardCollection.CardPositions.Length}");
 
         foreach (PlayedCardPosition cardPos in table.PlayerCards.CardPositions)
         {
@@ -261,7 +273,7 @@ public class GameManager : MonoBehaviour
             if (cardPos.HasCard) cardPos.Card.IsInteractable = !locked;
         }
 
-        foreach (PlayedCardPosition cardPos in player.CardCollection.CardPositions)
+        foreach (PlayedCardPosition cardPos in Player.CardCollection.CardPositions)
         {
             //Debug.Log($"current: {cardPos.Transform.name}, has card: {cardPos.HasCard}");
             if (cardPos.HasCard) cardPos.Card.IsInteractable = !locked;
@@ -313,6 +325,15 @@ public class GameManager : MonoBehaviour
         values.Sort();
         return values.ToArray();
     }
+
+
+    // scale > use immediately to set scale inaccuracy to 0
+    // handmirror > use immediately to update card memory
+    // uno > in gamemanager after both, if used swap cards (not if both players use it)
+    // coin > use immediately to force-play player cards
+    // coupon > use immediately to reroll a card
+    // hook > play immediately to steal item
+    // heart > play immediately for %chance to dmg
 
 
     void OnEnable()

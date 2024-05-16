@@ -20,6 +20,7 @@ public class Pot : MonoBehaviour
     {
         Debug.Log($"adding {value} to pot; value after: {FillAmount + value}/{Capacity}");
 
+        int overflowTimes = 0;
         for (int i = 0; i < value; i++)
         {
             FillAmount++;
@@ -27,15 +28,31 @@ public class Pot : MonoBehaviour
             if (FillAmount > Capacity)
             {
                 FillAmount -= Capacity;
-                visualSpawnPos.DestroyChildren();
-                EventManager.PotOverflow(1);
+                overflowTimes++;
             }
 
-            yield return QOL.GetWaitForSeconds(0.15f);
-            Transform chip = Instantiate(chipPrefab, visualSpawnPos).transform;
-            chip.position = visualSpawnPos.position;
-            chip.rotation = Maf.GetRandomRotation();
+            yield return QOL.GetWaitForSeconds(0.12f);
+            Transform chip = Instantiate(chipPrefab, visualSpawnPos.position + Random.insideUnitSphere * 0.1f, Maf.GetRandomRotation()).transform;
+            chip.parent = visualSpawnPos;
         }
+
+        if (overflowTimes > 0)
+        {
+            int removeCount = overflowTimes * Capacity;
+            for (int i = removeCount - 1; i >= 0; i--)
+            {
+                Destroy(visualSpawnPos.GetChild(i).gameObject);
+            }
+            EventManager.PotOverflow(overflowTimes);
+        }
+    }
+
+
+    void OnDrawGizmosSelected()
+    {
+        if (!visualSpawnPos) return;
+
+        Gizmos.DrawWireSphere(visualSpawnPos.position, 0.1f);
     }
 
 

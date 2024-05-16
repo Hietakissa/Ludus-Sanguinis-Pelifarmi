@@ -4,13 +4,10 @@ using UnityEngine;
 [System.Serializable]
 public class Player
 {
-    public List<int> PlayedCards = new List<int>();
-    public List<int> PlayedItems = new List<int>();
-
     public bool IsDealer;
 
-    public CardPosCollection CardCollection => cardCollection;
-    [SerializeField] CardPosCollection cardCollection;
+    public CardCollection CardCollection => cardCollection;
+    [SerializeField] CardCollection cardCollection;
 
 
     public void InitCards(Transform overrideTransform = null)

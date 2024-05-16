@@ -17,7 +17,7 @@ public class HandController : MonoBehaviour
     [SerializeField] float handMoveTime = 0.1f;
     [SerializeField] float handRotSpeed = 12f;
 
-    Table table;
+    [SerializeField] Table table;
     Vector3 handVelocity;
 
     Card hoveredCard;
@@ -30,7 +30,7 @@ public class HandController : MonoBehaviour
 
     void Awake()
     {
-        GameManager.Instance.player = player;
+        GameManager.Instance.Player = player;
     }
 
     void Update()
@@ -48,8 +48,7 @@ public class HandController : MonoBehaviour
         {
             if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, alignMask) && hit.transform.TryGetComponent(out CardPlayArea playArea))
             {
-                table = playArea.Table;
-                table.PlayCard(player, grabbedCard);
+                playArea.Table.PlayCard(player, grabbedCard);
             }
             else
             {
@@ -70,7 +69,24 @@ public class HandController : MonoBehaviour
         {
             if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card) && card.Owner == PlayerType.Player && card.IsInteractable)
             {
-                if (Input.GetMouseButtonDown(0) && card.IsInteractable)
+                if (Input.GetMouseButtonDown(1))
+                {
+                    if (card.State == CardState.OnTable)
+                    {
+                        table.FreeSpotForCard(player, card);
+                        player.CardCollection.PlaceCard(card);
+                        card.State = CardState.InHand;
+                    }
+                    else if (card.State == CardState.InHand)
+                    {
+                        player.CardCollection.TakeCard(card);
+                        table.PlayCard(player, card);
+                        card.State = CardState.OnTable;
+                    }
+                    return;
+                }
+
+                if (Input.GetMouseButtonDown(0))
                 {
                     hoveredCard?.EndHover();
                     grabbedCard = card;

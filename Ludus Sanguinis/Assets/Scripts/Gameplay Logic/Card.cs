@@ -3,7 +3,7 @@ using HietakissaUtils;
 using UnityEngine;
 using TMPro;
 
-public class Card : MonoBehaviour
+public class Card : PlayableItem
 {
     [HideInInspector] public bool IsInteractable = true;
     [HideInInspector] public bool CanStartHover = true;
@@ -13,20 +13,20 @@ public class Card : MonoBehaviour
     [SerializeField] TextMeshPro valueText;
 
     [field: SerializeField] public PlayerType Owner { get; private set; }
-    public Transform TargetTransform { get; private set; }
+    //public Transform TargetTransform { get; private set; }
     public CardState State = CardState.InHand;
 
     public int Value { get; private set; } = 1;
 
 
-    [SerializeField] float posSmoothTime = 0.1f;
-    [SerializeField] float rotateSmoothing = 0.1f;
+    //[SerializeField] float posSmoothTime = 0.1f;
+    //[SerializeField] float rotateSmoothing = 0.1f;
     [SerializeField] float scaleSmoothTime = 0.1f;
     Vector3 startScale;
     Vector3 targetScale;
     Vector3 scaleVel;
-    Vector3 posVel;
-    Vector3 posOffset;
+    //Vector3 posVel;
+    //Vector3 posOffset;
 
     Material backMat;
     Material frontMat;
@@ -69,13 +69,6 @@ public class Card : MonoBehaviour
     }
 
 
-    public void SetTargetTransform(Transform target) => TargetTransform = target;
-    public void InstaMoveToTarget()
-    {
-        transform.position = TargetTransform.position;
-        transform.rotation = TargetTransform.rotation;
-    }
-
     public void StartHover()
     {
         targetScale = startScale * 1.1f;
@@ -93,8 +86,10 @@ public class Card : MonoBehaviour
         Value = value;
 
         frontMat.SetFloat("_CardIndex", Value);
-        backMat.SetFloat("_BloodIndex", Random.Range(0, GameManager.MAX_BLOOD_INDEX));
-        Debug.Log($"set card value to: {value}");
+
+        int bloodIndex = Random.Range(0, GameManager.MAX_BLOOD_INDEX);
+        frontMat.SetFloat("_BloodIndex", bloodIndex);
+        backMat.SetFloat("_BloodIndex", bloodIndex);
     }
 
     public void SetRevealState(bool state)

@@ -1,31 +1,70 @@
+using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Table : MonoBehaviour
 {
-    public CardPosCollection PlayerCards => player1CardCollection;
-    [SerializeField] CardPosCollection player1CardCollection;
-
-    public CardPosCollection DealerCards => player2CardCollection;
-    [SerializeField] CardPosCollection player2CardCollection;
+    public CardCollection PlayerCards => player1CardCollection;
+    [SerializeField] CardCollection player1CardCollection;
+    public CardCollection DealerCards => player2CardCollection;
+    [SerializeField] CardCollection player2CardCollection;
 
     public Transform PlayerPosHolder => playerPosHolder;
     [SerializeField] Transform playerPosHolder;
-
     public Transform DealerPosHolder => dealerPosHolder;
     [SerializeField] Transform dealerPosHolder;
 
+    public ItemCollection PlayerItemCollection => playerItemCollection;
+    [SerializeField] ItemCollection playerItemCollection;
+    public ItemCollection DealerItemCollection => dealerItemCollection;
+    [SerializeField] ItemCollection dealerItemCollection;
+
+    [HideInInspector] public List<Item> PlayerPlayedItems;
+    [HideInInspector] public List<Item> DealerPlayedItems;
+
+
     public void PlayCard(Player player, Card card)
     {
-        CardPosCollection cardCollection = GetCollectionForPlayer(player);
+        CardCollection cardCollection = GetCollectionForPlayer(player);
         cardCollection.PlaceCard(card);
         card.State = CardState.OnTable;
     }
 
+    public void PlayItem(Player player, Item item)
+    {
+        if (!CanPlayerUseItem(player, item)) return;
+
+
+        if (player.IsDealer)
+        {
+            DealerPlayedItems.Add(item);
+            dealerItemCollection.RemoveItem(item);
+
+            Debug.Log($"dealer used {item.Type}");
+        }
+        else
+        {
+            PlayerPlayedItems.Add(item);
+            PlayerItemCollection.RemoveItem(item);
+
+            Debug.Log($"player used {item.Type}");
+        }
+
+
+        bool CanPlayerUseItem(Player player, Item item)
+        {
+            if (player.IsDealer && dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
+            else if (playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
+            else return false;
+        }
+    }
+
+
     public void FreeSpotForCard(Player player, Card card)
     {
-        CardPosCollection cardCollection = GetCollectionForPlayer(player);
+        CardCollection cardCollection = GetCollectionForPlayer(player);
         cardCollection.TakeCard(card);
     }
 
-    CardPosCollection GetCollectionForPlayer(Player player) => player.IsDealer ? player2CardCollection : player1CardCollection;
+    CardCollection GetCollectionForPlayer(Player player) => player.IsDealer ? player2CardCollection : player1CardCollection;
 }
