@@ -5,14 +5,14 @@ using TMPro;
 
 public class Card : PlayableItem
 {
-    [HideInInspector] public bool IsInteractable = true;
+    //[HideInInspector] public bool IsInteractable = true;
     [HideInInspector] public bool CanStartHover = true;
 
     [SerializeField] TextMeshPro debugText;
     [SerializeField] Vector3 valueTextOffset;
     [SerializeField] TextMeshPro valueText;
 
-    [field: SerializeField] public PlayerType Owner { get; private set; }
+    //[field: SerializeField] public PlayerType Owner { get; private set; }
     //public Transform TargetTransform { get; private set; }
     public CardState State = CardState.InHand;
 
@@ -21,10 +21,10 @@ public class Card : PlayableItem
 
     //[SerializeField] float posSmoothTime = 0.1f;
     //[SerializeField] float rotateSmoothing = 0.1f;
-    [SerializeField] float scaleSmoothTime = 0.1f;
-    Vector3 startScale;
-    Vector3 targetScale;
-    Vector3 scaleVel;
+    //[SerializeField] float scaleSmoothTime = 0.1f;
+    //Vector3 startScale;
+    //Vector3 targetScale;
+    //Vector3 scaleVel;
     //Vector3 posVel;
     //Vector3 posOffset;
 
@@ -69,16 +69,16 @@ public class Card : PlayableItem
     }
 
 
-    public void StartHover()
-    {
-        targetScale = startScale * 1.1f;
-        posOffset = transform.up * 0.04f;
-    }
-    public void EndHover()
-    {
-        targetScale = startScale;
-        posOffset = Vector3.zero;
-    }
+    //public void StartHover()
+    //{
+    //    targetScale = startScale * 1.1f;
+    //    posOffset = transform.up * 0.04f;
+    //}
+    //public void EndHover()
+    //{
+    //    targetScale = startScale;
+    //    posOffset = Vector3.zero;
+    //}
 
 
     public void SetValue(int value)

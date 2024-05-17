@@ -10,7 +10,12 @@ public class Item : PlayableItem, IInteractable
     public void Interact()
     {
         GameManager.Instance.Table.PlayItem(GameManager.Instance.Player, this);
-        Debug.Log($"played item of type: {Type}");
+    }
+
+    void Awake()
+    {
+        startScale = transform.localScale;
+        targetScale = startScale;
     }
 
     void Update()
@@ -20,5 +25,7 @@ public class Item : PlayableItem, IInteractable
 
         Quaternion target = Quaternion.LookRotation(TargetTransform.forward, TargetTransform.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, target, rotateSmoothing * Time.deltaTime);
+
+        transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVel, scaleSmoothTime);
     }
 }

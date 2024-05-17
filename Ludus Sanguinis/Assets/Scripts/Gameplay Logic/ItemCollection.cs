@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-
 using UnityEngine;
 
 [System.Serializable]
@@ -12,7 +11,7 @@ public class ItemCollection
     {
         foreach (ItemSlot slot in Slots)
         {
-            slot.Item.gameObject.SetActive(slot.count > 0);
+            slot.Item.gameObject.SetActive(slot.Count > 0);
             slot.Item.SetTargetTransform(slot.TablePos);
             slot.Item.InstaMoveToTarget();
         }
@@ -24,33 +23,39 @@ public class ItemCollection
         {
             if (slot.Item.Type == itemType)
             {
-                slot.count++;
-                if (slot.count > 0) slot.Item.gameObject.SetActive(true);
+                slot.Count++;
+                if (slot.Count > 0) slot.Item.gameObject.SetActive(true);
             }
         }
     }
-    public void RemoveItem(Item item)
+    public void RemoveItem(ItemType itemType)
     {
         foreach (ItemSlot slot in Slots)
         {
-            if (slot.Item.Type == item.Type)
+            if (slot.Item.Type == itemType)
             {
-                slot.count--;
-                if (slot.count == 0) item.gameObject.SetActive(false);
+                slot.Count--;
+                if (slot.Count == 0) slot.Item.gameObject.SetActive(false);
             }
         }
+    }
+    public void RemoveItem(Item item) => RemoveItem(item.Type);
+
+    public void RemoveItems()
+    {
+        foreach (ItemSlot slot in Slots) slot.Count = 0;
     }
 
     public int GetItemCountForItem(Item item)
     {
-        foreach (ItemSlot slot in Slots) if (slot.Item.Type == item.Type) return slot.count;
+        foreach (ItemSlot slot in Slots) if (slot.Item.Type == item.Type) return slot.Count;
         return 0;
     }
 
     public List<Item> GetAvailableItems()
     {
         List<Item> itemList = new List<Item>();
-        foreach (ItemSlot slot in Slots) if (slot.count > 0) itemList.Add(slot.Item);
+        foreach (ItemSlot slot in Slots) if (slot.Count > 0) itemList.Add(slot.Item);
         return itemList;
     }
 }
@@ -63,7 +68,7 @@ public class ItemSlot
 
     public Item Item;
     //public ItemType Type;
-    public int count;
+    public int Count;
 }
 
 public enum ItemType

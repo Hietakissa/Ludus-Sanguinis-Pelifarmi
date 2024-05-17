@@ -39,16 +39,14 @@ public class Table : MonoBehaviour
         {
             DealerPlayedItems.Add(item);
             dealerItemCollection.RemoveItem(item);
-
-            Debug.Log($"dealer used {item.Type}");
         }
         else
         {
             PlayerPlayedItems.Add(item);
             PlayerItemCollection.RemoveItem(item);
-
-            Debug.Log($"player used {item.Type}");
         }
+
+        Debug.Log($"{(player.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
 
 
         bool CanPlayerUseItem(Player player, Item item)
@@ -67,4 +65,5 @@ public class Table : MonoBehaviour
     }
 
     CardCollection GetCollectionForPlayer(Player player) => player.IsDealer ? player2CardCollection : player1CardCollection;
+    public ItemCollection GetItemCollectionForPlayer(Player player) => player.IsDealer ? dealerItemCollection : playerItemCollection;
 }

@@ -6,6 +6,8 @@ public class Player
 {
     public bool IsDealer;
 
+    public int Health;
+
     public CardCollection CardCollection => cardCollection;
     [SerializeField] CardCollection cardCollection;
 

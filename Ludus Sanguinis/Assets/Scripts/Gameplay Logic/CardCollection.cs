@@ -4,13 +4,13 @@ using UnityEngine;
 [System.Serializable]
 public class CardCollection
 {
-    public PlayedCardPosition[] CardPositions => cardPositions;
-    [SerializeField] PlayedCardPosition[] cardPositions;
+    public CardPosition[] CardPositions => cardPositions;
+    [SerializeField] CardPosition[] cardPositions;
 
 
     public void InitializeCardTransforms()
     {
-        foreach (PlayedCardPosition cardPos in cardPositions)
+        foreach (CardPosition cardPos in cardPositions)
         {
             if (cardPos.HasCard) cardPos.Card.SetTargetTransform(cardPos.Transform);
             else
@@ -36,11 +36,19 @@ public class CardCollection
         Shift();
     }
 
+    public void RemoveCards()
+    {
+        foreach (CardPosition cardPos in CardPositions)
+        {
+            cardPos.Card = null;
+        }
+    }
+
     public Card[] GetCards()
     {
         List<Card> cards = new List<Card>();
 
-        foreach (PlayedCardPosition cardPos in cardPositions)
+        foreach (CardPosition cardPos in cardPositions)
         {
             if (cardPos.HasCard) cards.Add(cardPos.Card);
         }
@@ -51,7 +59,7 @@ public class CardCollection
     public List<int> GetCardValues()
     {
         List<int> values = new List<int>();
-        foreach (PlayedCardPosition cardPos in cardPositions)
+        foreach (CardPosition cardPos in cardPositions)
         {
             if (cardPos.HasCard) values.Add(cardPos.Card.Value);
         }
@@ -64,7 +72,7 @@ public class CardCollection
 
         for (int i = 0; i < cardPositions.Length; i++)
         {
-            PlayedCardPosition cardPos = cardPositions[i];
+            CardPosition cardPos = cardPositions[i];
             if (cardPos.HasCard) sum += cardPos.Card.Value;
         }
 
@@ -73,7 +81,7 @@ public class CardCollection
 
     public bool IsEmpty()
     {
-        foreach (PlayedCardPosition cardPos in cardPositions)
+        foreach (CardPosition cardPos in cardPositions)
         {
             if (cardPos.HasCard) return false;
         }
@@ -87,7 +95,7 @@ public class CardCollection
 
         for (int i = 0; i < cardPositions.Length; i++)
         {
-            PlayedCardPosition cardPos = cardPositions[i];
+            CardPosition cardPos = cardPositions[i];
             if (!cardPos.HasCard && smallestFreeIndex == -1) smallestFreeIndex = i;
             else if (cardPos.HasCard && smallestFreeIndex != -1)
             {
@@ -101,7 +109,7 @@ public class CardCollection
         }
     }
 
-    void MoveCardToCardPosition(Card card, PlayedCardPosition cardPos)
+    void MoveCardToCardPosition(Card card, CardPosition cardPos)
     {
         cardPos.Card = card;
         card.SetTargetTransform(cardPos.Transform);
@@ -131,7 +139,7 @@ public class CardCollection
 }
 
 [System.Serializable]
-public class PlayedCardPosition
+public class CardPosition
 {
     [field: SerializeField] public Transform Transform { get; private set; }
     public Card Card;

@@ -11,24 +11,25 @@ public class GameManager : MonoBehaviour
 
     public Table Table => table;
     [SerializeField] Table table;
+    [SerializeField] Transform deckPos;
 
     public Player Player;
     [SerializeField] Player dealer;
-
-    [SerializeField] Transform deckPos;
-
+    Player lastHighestPlayedPlayer;
     bool playerPlayedCards;
+    bool playerStoleItem;
+    public List<int> lastPlayerPlayedValues = new List<int>();
 
-    Card[] dealerCardReferences;
-    Card[] playerCardReferences;
 
     [SerializeField] LootTable<int> normalCardValueTable;
     [SerializeField] LootTable<int> lowCardValueTable;
 
     public Pot Pot => pot;
     [SerializeField] Pot pot;
+    
+    Card[] dealerCardReferences;
+    Card[] playerCardReferences;
 
-    Player lastHighestPlayedPlayer;
 
 
     void Awake()
@@ -69,12 +70,16 @@ public class GameManager : MonoBehaviour
         TakeCardsFromCollection(dealer.CardCollection);
         TakeCardsFromCollection(table.PlayerCards);
         TakeCardsFromCollection(table.DealerCards);
-
+        table.PlayerPlayedItems.Clear();
+        table.DealerPlayedItems.Clear();
+        // ToDo: uncomment the below linen before release, stops the items from resetting upon starting a game, disabled to allow for cheating items
+        //table.DealerItemCollection.RemoveItems();
+        //table.PlayerItemCollection.RemoveItems();
 
 
         void TakeCardsFromCollection(CardCollection collection)
         {
-            foreach (PlayedCardPosition cardPos in collection.CardPositions)
+            foreach (CardPosition cardPos in collection.CardPositions)
             {
                 if (cardPos.HasCard) HandleCardReset(collection.TakeCard(cardPos.Card, false));
             }
@@ -147,16 +152,17 @@ public class GameManager : MonoBehaviour
         while (!playerPlayedCards) yield return null;
         SetPlayerCardLock(true);
         playerPlayedCards = false;
+        lastPlayerPlayedValues = table.PlayerCards.GetCardValues();
 
+
+        yield return HandleItems();
         yield return PlayAnimations();
         yield return GiveCardsAndItems();
 
-        table.PlayerPlayedItems.Clear();
-        table.DealerPlayedItems.Clear();
+        EndOfRoundCleanup();
 
         Debug.Log("Turn done");
         StartCoroutine(PlayTurn());
-
 
 
 
@@ -167,7 +173,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Playing turn animations");
 
             table.DealerPosHolder.localScale = Vector3.one;
-            foreach (PlayedCardPosition cardPos in table.DealerCards.CardPositions)
+            foreach (CardPosition cardPos in table.DealerCards.CardPositions)
             {
                 if (cardPos.HasCard) cardPos.Card.SetRevealState(true);
             }
@@ -186,8 +192,6 @@ public class GameManager : MonoBehaviour
 
             table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
         }
-
-
         IEnumerator MoveCardsToDeck()
         {
             int maxCardCount = Mathf.Max(table.PlayerCards.GetCards().Length, table.DealerCards.GetCards().Length);
@@ -195,8 +199,8 @@ public class GameManager : MonoBehaviour
             {
                 yield return QOL.GetWaitForSeconds(0.3f);
 
-                PlayedCardPosition playerCardPos = table.PlayerCards.CardPositions[i];
-                PlayedCardPosition dealerCardPos = table.DealerCards.CardPositions[i];
+                CardPosition playerCardPos = table.PlayerCards.CardPositions[i];
+                CardPosition dealerCardPos = table.DealerCards.CardPositions[i];
 
                 if (playerCardPos.HasCard)
                 {
@@ -211,7 +215,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
         IEnumerator GiveCardsAndItems()
         {
             // Give both players their new hands (if empty), and items (if new hand)
@@ -223,6 +226,51 @@ public class GameManager : MonoBehaviour
                 yield return MoveCardsFromDeckToHands();
             }
         }
+    }
+
+    IEnumerator HandleItems()
+    {
+        if (HasItem(in table.PlayerPlayedItems, ItemType.UnoCard)) yield return SwapCards(table.PlayerCards, table.DealerCards);
+        if (HasItem(in table.DealerPlayedItems, ItemType.UnoCard)) yield return SwapCards(table.PlayerCards, table.DealerCards);
+
+        if (HasItem(in table.PlayerPlayedItems, ItemType.Heart)) yield return UseHeart();
+        if (HasItem(in table.DealerPlayedItems, ItemType.Heart)) yield return UseHeart();
+    }
+    IEnumerator SwapCards(CardCollection collection1, CardCollection collection2)
+    {
+        Card[] cards1 = collection1.GetCards();
+        Card[] cards2 = collection2.GetCards();
+
+        collection1.RemoveCards();
+        collection2.RemoveCards();
+
+        int maxLength = Mathf.Max(cards1.Length, cards2.Length);
+        for (int i = 0; i < maxLength; i++)
+        {
+            yield return QOL.GetWaitForSeconds(0.5f);
+            if (i < cards1.Length) collection2.PlaceCard(cards1[i]);
+            if (i < cards2.Length) collection1.PlaceCard(cards2[i]);
+        }
+
+        yield return QOL.GetWaitForSeconds(1f);
+    }
+    IEnumerator UseHeart()
+    {
+        bool damagePlayer = Maf.RandomBool(50);
+        if (damagePlayer) DamagePlayer(Player, 1);
+        else DamagePlayer(dealer, 1);
+        yield return null;
+    }
+
+    void DamagePlayer(Player player, int amount)
+    {
+        player.Health -= amount;
+
+        if (player.Health < 0)
+        {
+            Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage ({player.Health}/3)");
+        }
+        else Debug.Log($"Dealt {amount} damage to {(player.IsDealer ? "Dealer" : "Player")}, Health: {player.Health}");
     }
 
     IEnumerator MoveCardsFromDeckToHands()
@@ -238,7 +286,7 @@ public class GameManager : MonoBehaviour
             if (collection.IsEmpty())
             {
                 Card[] cards = player.IsDealer ? dealerCardReferences : playerCardReferences;
-                int[] cardValues = GetCardValues();
+                int[] cardValues = RandomizeNewHandValues();
 
                 for (int i = 0; i < cards.Length; i++)
                 {
@@ -257,40 +305,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void EndOfRoundCleanup()
+    {
+        table.PlayerPlayedItems.Clear();
+        table.DealerPlayedItems.Clear();
+        playerStoleItem = false;
+    }
+
 
     void OnPotOverflow(int times)
     {
-        Debug.Log($"{(lastHighestPlayedPlayer.IsDealer ? "Dealer" : "Player")} took {times} damage!");
+        DamagePlayer(lastHighestPlayedPlayer, times);
     }
 
     void SetPlayerCardLock(bool locked)
     {
-        Debug.Log($"set card lock to: {locked}, player hand cardpositions: {Player.CardCollection.CardPositions.Length}");
+        //Debug.Log($"set card lock to: {locked}, player hand cardpositions: {Player.CardCollection.CardPositions.Length}");
 
-        foreach (PlayedCardPosition cardPos in table.PlayerCards.CardPositions)
+        foreach (CardPosition cardPos in table.PlayerCards.CardPositions)
         {
             //Debug.Log($"current: {cardPos.Transform.name}, has card: {cardPos.HasCard}");
             if (cardPos.HasCard) cardPos.Card.IsInteractable = !locked;
         }
 
-        foreach (PlayedCardPosition cardPos in Player.CardCollection.CardPositions)
+        foreach (CardPosition cardPos in Player.CardCollection.CardPositions)
         {
             //Debug.Log($"current: {cardPos.Transform.name}, has card: {cardPos.HasCard}");
             if (cardPos.HasCard) cardPos.Card.IsInteractable = !locked;
         }
     }
 
-    /// start turn
-    ///	  (internal) dealer play item(s)
-    ///	  dealer play card(s)
-    ///	  player play item(s) & card(s)
-    /// end turn (ring bell)
-    /// animations
-    /// give new hand(s) (if applicable)
-    /// give item(s) (if applicable)
-    /// repeat
-
-    int[] GetCardValues()
+    int[] RandomizeNewHandValues()
     {
         List<int> values = new List<int>();
 
@@ -326,6 +371,17 @@ public class GameManager : MonoBehaviour
         return values.ToArray();
     }
 
+
+    public static bool HasItem(in List<Item> items, ItemType type)
+    {
+        foreach (Item item in items) if (item.Type == type) return true;
+        return false;
+    }
+    public void TakeItem(Player stealer, Player victim, ItemType itemType)
+    {
+        table.GetItemCollectionForPlayer(victim).RemoveItem(itemType);
+        table.GetItemCollectionForPlayer(stealer).AddItem(itemType);
+    }
 
     // scale > use immediately to set scale inaccuracy to 0
     // handmirror > use immediately to update card memory

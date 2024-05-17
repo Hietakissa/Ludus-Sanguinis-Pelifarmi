@@ -20,7 +20,8 @@ public class HandController : MonoBehaviour
     [SerializeField] Table table;
     Vector3 handVelocity;
 
-    Card hoveredCard;
+    PlayableItem hoveredPlayable;
+    //Card hoveredCard;
     Card grabbedCard;
 
     Transform hoveredInteractable;
@@ -67,9 +68,11 @@ public class HandController : MonoBehaviour
 
         void HandleCardGrabbingAndHovering()
         {
-            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out Card card) && card.Owner == PlayerType.Player && card.IsInteractable)
+            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out PlayableItem playable) && playable.Owner == PlayerType.Player && playable.IsInteractable)
             {
-                if (Input.GetMouseButtonDown(1))
+                Card card = playable as Card;
+
+                if (Input.GetMouseButtonDown(1) && card)
                 {
                     if (card.State == CardState.OnTable)
                     {
@@ -85,10 +88,9 @@ public class HandController : MonoBehaviour
                     }
                     return;
                 }
-
-                if (Input.GetMouseButtonDown(0))
+                else if (Input.GetMouseButtonDown(0) && card)
                 {
-                    hoveredCard?.EndHover();
+                    hoveredPlayable?.EndHover();
                     grabbedCard = card;
 
                     if (grabbedCard.State == CardState.OnTable) table.FreeSpotForCard(player, card);
@@ -99,34 +101,26 @@ public class HandController : MonoBehaviour
                 {
                     // Card under mouse, didn't try to grab
 
-                    if (card)
+                    if (hoveredPlayable != playable)
                     {
-                        if (card.CanStartHover || hoveredCard != card)
-                        {
-                            hoveredCard?.EndHover();
+                        hoveredPlayable?.EndHover();
 
-                            hoveredCard = card;
-                            hoveredCard.StartHover();
-                        }
-                    }
-                    else
-                    {
-                        hoveredCard?.EndHover();
-                        hoveredCard = null;
+                        hoveredPlayable = playable;
+                        hoveredPlayable.StartHover();
                     }
                 }
             }
             else
             {
-                if (!grabbedCard && hoveredCard)
+                if (!grabbedCard && hoveredPlayable)
                 {
-                    hoveredCard.EndHover();
-                    hoveredCard = null;
+                    hoveredPlayable.EndHover();
+                    hoveredPlayable = null;
                 }
             }
 
             // Interacting
-            if (!grabbedCard && !hoveredCard)
+            if (!grabbedCard)
             {
                 if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out IInteractable interactable))
                 {
@@ -167,11 +161,14 @@ public class HandController : MonoBehaviour
             Quaternion targetRot = Quaternion.identity;
             float moveTime = 0f;
 
-            Transform targetTransform = grabbedCard?.transform ?? hoveredCard?.transform ?? hoveredInteractable;
+            Transform targetTransform;
+            if (hoveredPlayable is Item) targetTransform = grabbedCard?.transform ?? hoveredInteractable;
+            else targetTransform = grabbedCard?.transform ?? hoveredPlayable?.transform ?? hoveredInteractable;
 
             if (targetTransform)
             {
-                targetPos = targetTransform.TransformPoint(cardHandOffset);
+                Vector3 offset = hoveredPlayable != null && targetTransform == hoveredPlayable.transform && hoveredPlayable is Item ? Vector3.zero : cardHandOffset;
+                targetPos = targetTransform.TransformPoint(offset);
                 targetRot = Quaternion.LookRotation(-targetTransform.forward, targetTransform.up);
             }
             else

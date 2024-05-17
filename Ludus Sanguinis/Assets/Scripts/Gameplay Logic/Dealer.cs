@@ -11,7 +11,7 @@ public static class Dealer
 
     static int currentVariation;
 
-    static List<int> playerCardValues;
+    static List<int> playerCardValues = new List<int>();
     static List<Item> items;
 
     static Table table;
@@ -20,6 +20,13 @@ public static class Dealer
     public static IEnumerator PlayTurn(Table _table, Player dealer)
     {
         table = _table;
+
+        List<int> playerValues = table.PlayerCards.GetCardValues();
+        Player player = GameManager.Instance.Player;
+
+        // Remove all items the player played last turn from the memory
+        foreach (int value in playerValues) playerCardValues.Remove(value);
+
         yield return QOL.GetWaitForSeconds(0.5f);
 
         items = table.DealerItemCollection.GetAvailableItems();
@@ -30,7 +37,7 @@ public static class Dealer
                 table.PlayItem(dealer, item);
 
                 if (item.Type == ItemType.Scale) currentVariation = 0;
-                else if (item.Type == ItemType.Mirror) playerCardValues = table.PlayerCards.GetCardValues();
+                else if (item.Type == ItemType.Mirror) playerCardValues = player.CardCollection.GetCardValues();
             }
         }
 
@@ -65,7 +72,7 @@ public static class Dealer
         currentVariation = Mathf.Min(currentVariation + 1, MAX_VARIATION);
 
         Debug.Log($"dealer played turn, listing available items:");
-        foreach (ItemSlot slot in table.DealerItemCollection.Slots) if (slot.count > 0) Debug.Log($"{slot.Item.Type}");
+        foreach (ItemSlot slot in table.DealerItemCollection.Slots) if (slot.Count > 0) Debug.Log($"{slot.Item.Type}");
     }
 
     static bool ShouldUseItem(Item item)
@@ -77,18 +84,12 @@ public static class Dealer
             case ItemType.UnoCard: return Maf.RandomBool(ITEM_USE_CHANCE);
             case ItemType.Coin: return Maf.RandomBool(ITEM_USE_CHANCE);
             case ItemType.Coupon: return Maf.RandomBool(ITEM_USE_CHANCE);
-            //case ItemType.Hook: 
-            //    if (HasItem(ref items, ItemType.Heart))
+            case ItemType.Hook: return Maf.RandomBool(ITEM_USE_CHANCE);
             case ItemType.Heart: return Maf.RandomBool(ITEM_USE_CHANCE);
             default: return false;
         }
     }
 
-    static bool HasItem(ref List<Item> items, ItemType type)
-    {
-        foreach (Item item in items) if (item.Type == type) return true;
-        return false;
-    }
 
     public static void GameEnded()
     {
@@ -97,11 +98,11 @@ public static class Dealer
 
     //* scale > use immediately to set scale inaccuracy to 0
     //* handmirror > use immediately to update card memory
-    // uno > in gamemanager after both, if used swap cards (not if both players use it)
+    //* uno > in gamemanager after both, if used swap cards (not if both players use it)
     // coin > use immediately to force-play player cards
     // coupon > use immediately to reroll a card
     // hook > play immediately to steal item
-    // heart > play immediately for %chance to dmg
+    //* heart > play immediately for %chance to dmg
 
 
     // Joillain itemeill‰ joku x% chance k‰ytt‰‰ itemi vuorollaan jos on itemi, k‰ytt‰‰ random itemin,
