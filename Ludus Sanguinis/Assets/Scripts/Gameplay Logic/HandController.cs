@@ -124,6 +124,8 @@ public class HandController : MonoBehaviour
             {
                 if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out IInteractable interactable))
                 {
+                    if (hit.transform.TryGetComponent(out PlayableItem playableItem) && playableItem.Owner == PlayerType.Dealer) return;
+
                     hoveredInteractable = interactable.GetHoverCopyTransform();
                     if (Input.GetMouseButtonDown(0)) interactable.Interact();
                 }
@@ -162,8 +164,11 @@ public class HandController : MonoBehaviour
             float moveTime = 0f;
 
             Transform targetTransform;
-            if (hoveredPlayable is Item) targetTransform = grabbedCard?.transform ?? hoveredInteractable;
+            if (hoveredPlayable is Item) targetTransform = /*grabbedCard?.transform ?? */hoveredInteractable;
             else targetTransform = grabbedCard?.transform ?? hoveredPlayable?.transform ?? hoveredInteractable;
+
+            //Debug.Log($"target transform: {(targetTransform == null ? "null" : targetTransform.name + (targetTransform.parent == null ? "" : $", parent: {targetTransform.parent.name}"))}");
+            //Debug.Log($"hovered is item: {hoveredPlayable is Item}");
 
             if (targetTransform)
             {

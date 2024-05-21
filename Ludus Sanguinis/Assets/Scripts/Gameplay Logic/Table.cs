@@ -1,3 +1,5 @@
+using HietakissaUtils.CameraShake;
+
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -22,12 +24,16 @@ public class Table : MonoBehaviour
     [HideInInspector] public List<Item> PlayerPlayedItems;
     [HideInInspector] public List<Item> DealerPlayedItems;
 
+    [SerializeField] CameraShakeSO playCardShake;
+
 
     public void PlayCard(Player player, Card card)
     {
         CardCollection cardCollection = GetCollectionForPlayer(player);
         cardCollection.PlaceCard(card);
         card.State = CardState.OnTable;
+
+        CameraShaker.Instance.Shake(playCardShake);
     }
 
     public void PlayItem(Player player, Item item)

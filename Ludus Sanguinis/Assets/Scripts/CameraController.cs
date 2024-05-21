@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
         float horizontal = (Mathf.Clamp(Input.mousePosition.x + xOffset, 0f, Screen.width) / Screen.width * 2) - 1f;
 
         bool zooming = Input.GetKey(KeyCode.F);
-        float zoomMultiplier = zooming ? 35f : 1f;
+        float zoomMultiplier = zooming ? 3f : 1f;
 
         Quaternion rot = startRot * Quaternion.Euler(Vector3.up * horizontal * rotationAmount * zoomMultiplier);
         rot *= Quaternion.Euler(Vector3.left * vertical * rotationAmount * zoomMultiplier);
