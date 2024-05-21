@@ -19,7 +19,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void PlaySoundAtPosition(HKSoundContainer sound, Vector3 position)
+    public void PlaySoundAtPosition(SoundContainer sound, Vector3 position)
     {
         AudioSource source = audioSources[sourceIndex];
         source.transform.position = position;

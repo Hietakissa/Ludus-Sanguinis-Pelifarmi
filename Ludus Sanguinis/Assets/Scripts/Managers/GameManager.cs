@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HietakissaUtils.LootTable;
 using HietakissaUtils.QOL;
 using System.Collections;
 using HietakissaUtils;
@@ -38,6 +39,9 @@ public class GameManager : MonoBehaviour
 
         table.PlayerItemCollection.Init();
         table.DealerItemCollection.Init();
+
+        normalCardValueTable.BakeTable();
+        lowCardValueTable.BakeTable();
     }
 
     void Start()
@@ -72,7 +76,8 @@ public class GameManager : MonoBehaviour
         TakeCardsFromCollection(table.DealerCards);
         table.PlayerPlayedItems.Clear();
         table.DealerPlayedItems.Clear();
-        // ToDo: uncomment the below linen before release, stops the items from resetting upon starting a game, disabled to allow for cheating items
+
+        // ToDo: uncomment the below lines before release, stops the items from resetting upon starting a game, disabled to allow for cheating items
         //table.DealerItemCollection.RemoveItems();
         //table.PlayerItemCollection.RemoveItems();
 
@@ -95,6 +100,8 @@ public class GameManager : MonoBehaviour
     IEnumerator StartGameCor()
     {
         pot.SetCapacity(50);
+        Player.Health = 3;
+        dealer.Health = 3;
 
         yield return QOL.GetWaitForSeconds(2f);
         yield return MoveCardsFromDeckToHands();
@@ -342,7 +349,7 @@ public class GameManager : MonoBehaviour
         float total = 0f;
         for (int i = 0; i < 3; i++)
         {
-            int value = normalCardValueTable.GetItem();
+            int value = normalCardValueTable.Get();
             values.Add(value);
             total += value;
         }
@@ -353,7 +360,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < 2; i++)
             {
-                int value = lowCardValueTable.GetItem();
+                int value = lowCardValueTable.Get();
                 values.Add(value);
             }
         }
@@ -361,7 +368,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < 2; i++)
             {
-                int value = normalCardValueTable.GetItem();
+                int value = normalCardValueTable.Get();
                 values.Add(value);
             }
         }
