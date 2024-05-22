@@ -55,6 +55,7 @@ public class HandController : MonoBehaviour
             {
                 player.CardCollection.PlaceCard(grabbedCard);
                 grabbedCard.State = CardState.InHand;
+                EventManager.PlayCard();
             }
             
             grabbedCard = null;
@@ -94,7 +95,11 @@ public class HandController : MonoBehaviour
                     grabbedCard = card;
 
                     if (grabbedCard.State == CardState.OnTable) table.FreeSpotForCard(player, card);
-                    else if (grabbedCard.State == CardState.InHand) player.CardCollection.TakeCard(card);
+                    else if (grabbedCard.State == CardState.InHand)
+                    {
+                        player.CardCollection.TakeCard(card);
+                        EventManager.PlayCard();
+                    }
                     grabbedCard.State = CardState.Drag;
                 }
                 else if (!grabbedCard)

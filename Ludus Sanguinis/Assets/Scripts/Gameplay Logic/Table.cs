@@ -34,6 +34,7 @@ public class Table : MonoBehaviour
         card.State = CardState.OnTable;
 
         CameraShaker.Instance.Shake(playCardShake);
+        EventManager.PlayCard();
     }
 
     public void PlayItem(Player player, Item item)
@@ -68,6 +69,8 @@ public class Table : MonoBehaviour
     {
         CardCollection cardCollection = GetCollectionForPlayer(player);
         cardCollection.TakeCard(card);
+
+        EventManager.PlayCard();
     }
 
     CardCollection GetCollectionForPlayer(Player player) => player.IsDealer ? player2CardCollection : player1CardCollection;
