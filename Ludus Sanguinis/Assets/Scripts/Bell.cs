@@ -1,3 +1,4 @@
+using HietakissaUtils;
 using UnityEngine;
 
 public class Bell : MonoBehaviour, IInteractable

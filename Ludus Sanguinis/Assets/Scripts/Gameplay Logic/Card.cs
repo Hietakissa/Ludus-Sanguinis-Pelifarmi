@@ -17,6 +17,7 @@ public class Card : PlayableItem
     public CardState State = CardState.InHand;
 
     public int Value { get; private set; } = 1;
+    bool flip;
 
 
     //[SerializeField] float posSmoothTime = 0.1f;
@@ -49,7 +50,7 @@ public class Card : PlayableItem
         Vector3 targetPos = TargetTransform.position + posOffset;
         transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref posVel, posSmoothTime);
 
-        Quaternion target = Quaternion.LookRotation(TargetTransform.forward, TargetTransform.up);
+        Quaternion target = Quaternion.LookRotation(flip ? -TargetTransform.forward : TargetTransform.forward, TargetTransform.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, target, rotateSmoothing * Time.deltaTime);
         
         transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVel, scaleSmoothTime);
@@ -69,11 +70,13 @@ public class Card : PlayableItem
     }
 
 
-    //public void StartHover()
-    //{
-    //    targetScale = startScale * 1.1f;
-    //    posOffset = transform.up * 0.04f;
-    //}
+    public override void StartHover()
+    {
+        targetScale = startScale * 1.1f;
+        posOffset = transform.up * 0.04f;
+
+        EventManager.HoverCard();
+    }
     //public void EndHover()
     //{
     //    targetScale = startScale;
@@ -97,6 +100,9 @@ public class Card : PlayableItem
         valueText.gameObject.SetActive(state);
         if (state) valueText.text = Value.ToString();
     }
+
+    public void Flip() => flip = !flip;
+    public bool IsFlipped => flip;
 }
 
 public enum CardState
