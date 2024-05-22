@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     Player lastHighestPlayedPlayer;
     bool playerPlayedCards;
     bool playerStoleItem;
+    bool isPlayerTurn;
     public List<int> lastPlayerPlayedValues = new List<int>();
 
 
@@ -139,14 +140,14 @@ public class GameManager : MonoBehaviour
 
     void TryEndTurn()
     {
-        bool canEndTurn = !table.PlayerCards.IsEmpty();
+        bool canEndTurn = !table.PlayerCards.IsEmpty() && isPlayerTurn;
 
         if (canEndTurn)
         {
             playerPlayedCards = true;
             Debug.Log($"Ended turn.");
         }
-        else Debug.Log($"Tried to end turn but player cards on table are empty.");
+        //else Debug.Log($"Tried to end turn but player cards on table are empty.");
     }
 
     IEnumerator PlayTurn()
@@ -156,7 +157,9 @@ public class GameManager : MonoBehaviour
         SetPlayerCardLock(false);
 
         Debug.Log($"Waiting for the player's turn!");
+        isPlayerTurn = true;
         while (!playerPlayedCards) yield return null;
+        isPlayerTurn = false;
         SetPlayerCardLock(true);
         playerPlayedCards = false;
         lastPlayerPlayedValues = table.PlayerCards.GetCardValues();
@@ -179,10 +182,17 @@ public class GameManager : MonoBehaviour
 
             Debug.Log($"Playing turn animations");
 
-            table.DealerPosHolder.localScale = Vector3.one;
+            //table.DealerPosHolder.localScale = Vector3.one;
             foreach (CardPosition cardPos in table.DealerCards.CardPositions)
             {
-                if (cardPos.HasCard) cardPos.Card.SetRevealState(true);
+                if (cardPos.HasCard)
+                {
+                    yield return QOL.GetWaitForSeconds(0.2f);
+                    cardPos.Card.SetRevealState(true);
+                    cardPos.Card.Flip();
+
+                    EventManager.DealCard();
+                }
             }
             yield return QOL.GetWaitForSeconds(2f);
 
@@ -197,7 +207,7 @@ public class GameManager : MonoBehaviour
             yield return MoveCardsToDeck();
 
 
-            table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
+            //table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
         }
         IEnumerator MoveCardsToDeck()
         {
@@ -209,6 +219,7 @@ public class GameManager : MonoBehaviour
                 CardPosition playerCardPos = table.PlayerCards.CardPositions[i];
                 CardPosition dealerCardPos = table.DealerCards.CardPositions[i];
 
+                if (playerCardPos.HasCard || dealerCardPos.HasCard) EventManager.DealCard();
                 if (playerCardPos.HasCard)
                 {
                     Card card = table.PlayerCards.TakeCard(playerCardPos.Card);
@@ -219,6 +230,8 @@ public class GameManager : MonoBehaviour
                     Card card = table.DealerCards.TakeCard(dealerCardPos.Card);
                     card.SetTargetTransform(deckPos);
                     card.SetRevealState(false);
+
+                    if (card.IsFlipped) card.Flip();
                 }
             }
         }
@@ -257,6 +270,7 @@ public class GameManager : MonoBehaviour
             yield return QOL.GetWaitForSeconds(0.5f);
             if (i < cards1.Length) collection2.PlaceCard(cards1[i]);
             if (i < cards2.Length) collection1.PlaceCard(cards2[i]);
+            EventManager.DealCard();
         }
 
         yield return QOL.GetWaitForSeconds(1f);
@@ -273,11 +287,11 @@ public class GameManager : MonoBehaviour
     {
         player.Health -= amount;
 
-        if (player.Health < 0)
+        if (player.Health <= 0)
         {
-            Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage ({player.Health}/3)");
+            Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage. ({player.Health}/3)");
         }
-        else Debug.Log($"Dealt {amount} damage to {(player.IsDealer ? "Dealer" : "Player")}, Health: {player.Health}");
+        else Debug.Log($"Dealt {amount} damage to {(player.IsDealer ? "Dealer" : "Player")}, Health: {player.Health}/3");
     }
 
     IEnumerator MoveCardsFromDeckToHands()
@@ -304,6 +318,7 @@ public class GameManager : MonoBehaviour
                     card.State = CardState.InHand;
 
                     collection.PlaceCard(card);
+                    EventManager.DealCard();
                 }
 
                 if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 7));
