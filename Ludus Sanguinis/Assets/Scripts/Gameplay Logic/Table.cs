@@ -1,8 +1,7 @@
 using HietakissaUtils.CameraShake;
-
 using System.Collections.Generic;
-
 using UnityEngine;
+using TMPro;
 
 public class Table : MonoBehaviour
 {
@@ -26,6 +25,7 @@ public class Table : MonoBehaviour
 
     [SerializeField] CameraShakeSO playCardShake;
 
+    [SerializeField] TextMeshPro playerValueText;
 
     public void PlayCard(Player player, Card card)
     {
@@ -35,6 +35,8 @@ public class Table : MonoBehaviour
 
         CameraShaker.Instance.Shake(playCardShake);
         EventManager.PlayCard();
+
+        if (!player.IsDealer) UpdatePlayerValueText();
     }
 
     public void PlayItem(Player player, Item item)
@@ -64,6 +66,10 @@ public class Table : MonoBehaviour
         }
     }
 
+    public void ClearedTable()
+    {
+        UpdatePlayerValueText();
+    }
 
     public void FreeSpotForCard(Player player, Card card)
     {
@@ -71,7 +77,17 @@ public class Table : MonoBehaviour
         cardCollection.TakeCard(card);
 
         EventManager.PlayCard();
+
+        if (!player.IsDealer) UpdatePlayerValueText();
     }
+
+    void UpdatePlayerValueText()
+    {
+        int sum = player1CardCollection.GetSum();
+        if (sum == 0) playerValueText.text = "";
+        else playerValueText.text = sum.ToString();
+    }
+
 
     CardCollection GetCollectionForPlayer(Player player) => player.IsDealer ? player2CardCollection : player1CardCollection;
     public ItemCollection GetItemCollectionForPlayer(Player player) => player.IsDealer ? dealerItemCollection : playerItemCollection;

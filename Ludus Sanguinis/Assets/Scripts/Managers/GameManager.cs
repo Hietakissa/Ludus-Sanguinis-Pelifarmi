@@ -4,6 +4,7 @@ using HietakissaUtils.QOL;
 using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,7 +32,6 @@ public class GameManager : MonoBehaviour
     
     Card[] dealerCardReferences;
     Card[] playerCardReferences;
-
 
 
     void Awake()
@@ -234,6 +234,8 @@ public class GameManager : MonoBehaviour
                     if (card.IsFlipped) card.Flip();
                 }
             }
+
+            table.ClearedTable();
         }
         IEnumerator GiveCardsAndItems()
         {
