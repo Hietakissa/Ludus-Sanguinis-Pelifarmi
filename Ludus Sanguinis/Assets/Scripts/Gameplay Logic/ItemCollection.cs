@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HietakissaUtils;
 using UnityEngine;
 
 [System.Serializable]
@@ -40,15 +41,20 @@ public class ItemCollection
         }
     }
     public void RemoveItem(Item item) => RemoveItem(item.Type);
-
     public void RemoveItems()
     {
         foreach (ItemSlot slot in Slots) slot.Count = 0;
     }
 
-    public int GetItemCountForItem(Item item)
+    public Item GetItem(ItemType itemType)
     {
-        foreach (ItemSlot slot in Slots) if (slot.Item.Type == item.Type) return slot.Count;
+        foreach (ItemSlot slot in Slots) if (slot.Item.Type == itemType) return slot.Item;
+        return null;
+    }
+    public int GetItemCountForItem(Item item) => GetItemCountForItem(item.Type);
+    public int GetItemCountForItem(ItemType itemType)
+    {
+        foreach (ItemSlot slot in Slots) if (slot.Item.Type == itemType) return slot.Count;
         return 0;
     }
 
@@ -56,6 +62,13 @@ public class ItemCollection
     {
         List<Item> itemList = new List<Item>();
         foreach (ItemSlot slot in Slots) if (slot.Count > 0) itemList.Add(slot.Item);
+        return itemList;
+    }
+    
+    public List<Item> GetAvailableItems(ItemType[] types)
+    {
+        List<Item> itemList = new List<Item>();
+        foreach (ItemSlot slot in Slots) if (slot.Count > 0 && types.Contains(slot.Item.Type)) itemList.Add(slot.Item);
         return itemList;
     }
 }
@@ -76,7 +89,6 @@ public enum ItemType
     Scale,
     Mirror,
     UnoCard,
-    Coin,
     Coupon,
     Hook,
     Heart

@@ -56,6 +56,18 @@ public class CardCollection
         return cards.ToArray();
     }
 
+    public List<Card> GetCardsList()
+    {
+        List<Card> cards = new List<Card>();
+
+        foreach (CardPosition cardPos in cardPositions)
+        {
+            if (cardPos.HasCard) cards.Add(cardPos.Card);
+        }
+
+        return cards;
+    }
+
     public List<int> GetCardValues()
     {
         List<int> values = new List<int>();

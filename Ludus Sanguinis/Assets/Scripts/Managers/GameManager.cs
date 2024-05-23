@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
         table.PlayerPlayedItems.Clear();
         table.DealerPlayedItems.Clear();
 
-        // ToDo: uncomment the below lines before release, stops the items from resetting upon starting a game, disabled to allow for cheating items
+        // ToDo: uncomment the below lines before release, stops the items from resetting upon starting a game, disabled to allow for cheating in items
         //table.DealerItemCollection.RemoveItems();
         //table.PlayerItemCollection.RemoveItems();
 
@@ -182,7 +182,6 @@ public class GameManager : MonoBehaviour
 
             Debug.Log($"Playing turn animations");
 
-            //table.DealerPosHolder.localScale = Vector3.one;
             foreach (CardPosition cardPos in table.DealerCards.CardPositions)
             {
                 if (cardPos.HasCard)
@@ -205,9 +204,6 @@ public class GameManager : MonoBehaviour
 
             yield return pot.AddValue(sumDifference);
             yield return MoveCardsToDeck();
-
-
-            //table.DealerPosHolder.localScale = new Vector3(1, -1, 1);
         }
         IEnumerator MoveCardsToDeck()
         {

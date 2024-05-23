@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using HietakissaUtils.LootTable;
 using HietakissaUtils.QOL;
 using System.Collections;
 using HietakissaUtils;
@@ -7,91 +6,114 @@ using UnityEngine;
 
 public static class Dealer
 {
-    const int MAX_VARIATION = 10;
+    const int MAX_VARIATION = 8;
     const int ITEM_USE_CHANCE = 30;
 
     static int currentVariation;
 
     static List<int> playerCardValues = new List<int>();
-    static List<Item> items;
+    static List<Card> dealerCardsList = new List<Card>();
+    static ItemCollection itemCollection;
 
     static Table table;
     static Player dealer;
     static Player player;
 
+    static int potCapacity;
+    static int potInaccurateFillAmount;
+    static int potFillAmount;
+    static int largestSafeValue;
+
+    static ItemType[] reactiveItemTypes = new ItemType[]{ ItemType.UnoCard, ItemType.Coupon, ItemType.Hook };
+
+    static Item stealItem;
+    static int variation;
+
     public static IEnumerator PlayTurn(Table _table, Player dealer)
     {
+        #region Initialization
         table = _table;
 
-        List<int> playerValues = table.PlayerCards.GetCardValues();
         Dealer.dealer = dealer;
         player = GameManager.Instance.Player;
 
         // Remove all items the player played last turn from the memory
-        foreach (int value in playerValues) playerCardValues.Remove(value);
+        foreach (int cardValue in GameManager.Instance.lastPlayerPlayedValues) playerCardValues.Remove(cardValue);
 
+        variation = Random.Range(-currentVariation, currentVariation + 1);
+        TurnStartInitialCalculations();
+
+        dealerCardsList = dealer.CardCollection.GetCardsList();
+        dealerCardsList.Sort((card1, card2) => card2.Value - card1.Value); // Sort by descending, largest cards first
+        itemCollection = table.DealerItemCollection;
+        #endregion
+
+
+        Debug.Log($"Start of dealer turn. Largest safe value: {largestSafeValue}. Pot: {potInaccurateFillAmount}({potFillAmount})/{potCapacity})");
         yield return QOL.GetWaitForSeconds(0.5f);
 
 
-        items = table.DealerItemCollection.GetAvailableItems();
-        foreach (Item item in items)
+        List<Card> safeCards = GetSafeCardsToPlay();
+        if (safeCards.Count == 0)
         {
-            if (ShouldUseItem(item))
+            // Check to use reactive items
+            //List<Item> availableReactiveItems = itemCollection.GetAvailableItems(reactiveItemTypes);
+            List<Item> availableReactiveItems = GetReactiveItems();
+            if (stealItem)
             {
-                table.PlayItem(dealer, item);
+                yield return table.StealItem(player, stealItem);
+                availableReactiveItems.Add(stealItem);
+            }
 
-                if (item.Type == ItemType.Scale) currentVariation = 0;
-                else if (item.Type == ItemType.Mirror) playerCardValues = player.CardCollection.GetCardValues();
-                else if (item.Type == ItemType.Coin)
+
+            if (availableReactiveItems.Count == 0)
+            {
+                // No reactive items, no safe cards, can't steal reactive items
+
+                // Check to use heart
+                Item heartItem = itemCollection.GetItem(ItemType.Heart);
+                if (itemCollection.GetItemCountForItem(heartItem) > 0) yield return PlayItem(heartItem);
+                else
                 {
-
+                    // No heart, can steal any item?
+                    Item hookItem = itemCollection.GetItem(ItemType.Hook);
+                    if (itemCollection.GetItemCountForItem(hookItem) > 0)
+                    {
+                        List<Item> playerItems = table.PlayerItemCollection.GetAvailableItems();
+                        if (playerItems.Count > 0)
+                        {
+                            // Player has an item, steal a random one
+                            Item itemToSteal = playerItems.RandomElement();
+                            yield return table.StealItem(player, itemToSteal);
+                            yield return table.PlayItem(dealer, itemToSteal);
+                        }
+                    }
                 }
             }
+            else yield return PlayItem(availableReactiveItems.RandomElement());
+
+            if (availableReactiveItems.Count > 0)
+            {
+                // Stole a random non-reactive item to use
+
+                Item itemToPlay = availableReactiveItems.RandomElement();
+                table.PlayItem(dealer, itemToPlay);
+            }
+
+
+            List<Card> finalCards = GetFinalCardsToPlay();
+            yield return PlayCards(finalCards);
         }
-
-
-        //int potCapacity = GameManager.Instance.Pot.Capacity;
-        //int fillAmount = Mathf.Clamp(GameManager.Instance.Pot.FillAmount + Random.Range(-currentVariation, currentVariation), 0, potCapacity);
-        //
-        //int smallestPlayerCardValue = 17;
-        //for (int i = 0; i < playerCardValues.Count; i++)
-        //{
-        //    int cardValue = playerCardValues[i];
-        //    if (cardValue < smallestPlayerCardValue) smallestPlayerCardValue = cardValue;
-        //}
-        //if (smallestPlayerCardValue == 17) smallestPlayerCardValue = 0;
-        //
-        //int largestSafeValue = potCapacity - fillAmount + smallestPlayerCardValue;
-        //
-        //
-        //Card[] cards = dealer.CardCollection.GetCards();
-        //
-        //int count = Random.Range(1, cards.Length + 1);
-        //for (int i = 0; i < count; i++)
-        //{
-        //    yield return QOL.GetWaitForSeconds(0.3f);
-        //    Card card = cards[i];
-        //    dealer.CardCollection.TakeCard(card);
-        //    table.PlayCard(dealer, card);
-        //}
-
-        List<Card> cards = GetCardsToPlay();
-        for (int i = 0; i < cards.Count; i++)
-        {
-            yield return QOL.GetWaitForSeconds(0.3f);
-            Card card = cards[i];
-            dealer.CardCollection.TakeCard(card);
-            table.PlayCard(dealer, card);
-        }
+        else yield return PlayCards(safeCards);
 
         //currentVariation = Mathf.Min(currentVariation + 1, MAX_VARIATION);
     }
 
-    static List<Card> GetCardsToPlay()
+    static void TurnStartInitialCalculations()
     {
-        // Initial calculations
-        int potCapacity = GameManager.Instance.Pot.Capacity;
-        int fillAmount = Mathf.Clamp(GameManager.Instance.Pot.FillAmount + Random.Range(-currentVariation, currentVariation), 0, potCapacity);
+        potCapacity = GameManager.Instance.Pot.Capacity;
+        potFillAmount = GameManager.Instance.Pot.FillAmount;
+        potInaccurateFillAmount = Mathf.Clamp(GameManager.Instance.Pot.FillAmount + variation, 0, potCapacity);
 
         int smallestPlayerCardValue = 17;
         for (int i = 0; i < playerCardValues.Count; i++)
@@ -101,108 +123,127 @@ public static class Dealer
         }
         if (smallestPlayerCardValue == 17) smallestPlayerCardValue = 0;
 
-        int largestSafeValue = potCapacity - fillAmount + smallestPlayerCardValue;
-        List<Card> cardsToPlay = new List<Card>();
-        Card[] dealerCards = dealer.CardCollection.GetCards();
-        dealerCards.Shuffle();
+        largestSafeValue = potCapacity - potFillAmount + smallestPlayerCardValue;
+    }
 
-        Debug.Log($"Start of dealer turn. Largest safe value: {largestSafeValue}. Pot: {fillAmount}({GameManager.Instance.Pot.FillAmount})/{potCapacity})");
+    // Play highest safe cards?
+    // (3, 4, 6, 10) - 40/50 > 10
+    // (2, 2, 8) - 40/50 > (8, 2), (8) could be better to save the low value cards
+    //
+    // If no safe cards
+    // (6, 10) - 47/50 > check if items can be used(uno to reverse, coin to force player to play a high value, reroll 10-card, steal one of said items from the player with hook, last resort try to kill with heart attack)
+    //
+    //
+    // Item Types:
+    //D_ Scale - Passive random, Reactive random - Use when pot is almost full and inaccuracy is high, also override use with the same conditions when there arenít any safe cards to play
+    //D_ Mirror - Passive random, Reactive random - Use when no safe cards and inaccuracy is high, also randomly if inaccuracy is very high(>= 9 or 8)
+    //DP Uno - Reactive, play-making
+    //__ Coupon - Reactive
+    //D_ Hook - Reactive
+    //DP Heart - Reactive, last resort
 
-
-        // Get safe cards and assemble loot table
+    static List<Card> GetSafeCardsToPlay()
+    {
+        int safeSum = 0;
         List<Card> safeCards = new List<Card>();
-        foreach (CardPosition cardPos in dealer.CardCollection.CardPositions) if (cardPos.HasCard && cardPos.Card.Value <= largestSafeValue) safeCards.Add(cardPos.Card);
-        safeCards.Sort((card1, card2) => card2.Value - card1.Value); // Sort by descending
-
-
-        if (safeCards.Count == 0)
+        for (int i = 0; i < dealerCardsList.Count; i++)
         {
-            // No safe cards, play random amount of random cards
-
-            int count = Random.Range(1, dealerCards.Length + 1);
-            Debug.Log($"No safe cards, playing {count} cards");
-            for (int i = 0; i < count; i++)
+            Card card = dealerCardsList[i];
+            if (safeSum + card.Value <= largestSafeValue)
             {
-                cardsToPlay.Add(dealerCards[i]);
-                Debug.Log($"{dealerCards[i].Value}, ®{dealerCards[i].transform.name}®");
+                safeCards.Add(card);
+                safeSum += card.Value;
             }
+        }
+        return safeCards;
+    }
+
+    static List<Card> GetFinalCardsToPlay()
+    {
+        List<Card> cardsToPlay = new List<Card>();
+        
+        Item scaleItem = itemCollection.GetItem(ItemType.Scale);
+        Item mirrorItem = itemCollection.GetItem(ItemType.Mirror);
+        if (table.DealerPlayedItems.Contains(scaleItem) || table.DealerPlayedItems.Contains(mirrorItem))
+        {
+            // Played scale or mirror, redo calculations
+            TurnStartInitialCalculations();
+
+            // Check again for safe cards with updated info
+            List<Card> safeCards = GetSafeCardsToPlay();
+            if (safeCards.Count > 0) return safeCards;
+        }
+
+
+        Item unoItem = itemCollection.GetItem(ItemType.UnoCard);
+        if (table.DealerPlayedItems.Contains(unoItem))
+        {
+            // Played UNO, play all cards
+            cardsToPlay = dealerCardsList;
         }
         else
         {
-            // There are safe cards, play large-ish cards from loot table
-
-            LootTable<Card> lootTable = new LootTable<Card>();
-            for (int i = 0; i < safeCards.Count; i++)
+            // Didn't use uno, play the smallest card and pray we live due to inaccuracies
+            Card smallestCard = null;
+            foreach (Card card in dealerCardsList)
             {
-                //Debug.Log($"Adding card to loot table value: {safeCards[i].Value}, weight: {5 - i}");
-                lootTable.Add(safeCards[i], 5 - i);
+                if (smallestCard == null) smallestCard = card;
+                else if (card.Value < smallestCard.Value) smallestCard = card;
             }
-            lootTable.BakeTable();
-
-
-            // Get cards from loot table
-            int sum = 0;
-            for (int i = 0; i < 30; i++)
-            {
-                Card card = lootTable.Get();
-                if (cardsToPlay.Contains(card)) continue;
-
-                if (sum + card.Value <= largestSafeValue)
-                {
-                    cardsToPlay.Add(card);
-                    sum += card.Value;
-
-                    if (cardsToPlay.Count == dealerCards.Length) break;
-                }
-            }
+            cardsToPlay.Add(smallestCard);
         }
 
-        int cardSum = 0;
-        foreach (Card card in cardsToPlay) cardSum += card.Value;
-        Debug.Log($"Dealer played {cardsToPlay.Count} cards with sum {cardSum}. List:");
-        for (int i = 0; i < cardsToPlay.Count; i++)
-        {
-            Debug.Log($"{cardsToPlay[i].Value}, ®{cardsToPlay[i].transform.name}®");
-        }
+        
+
+        
         return cardsToPlay;
     }
 
-    // Laskee suurimman ëturvallisení pelattavan arvon: potin capacity - pot amount + pelaajan pienin kortti jos tiet‰‰
-    // ^ Tekee loot tablen k‰yville korteille, weight 5 suurimmalla turvallisella, 4 sit‰ seuraavalla yms. X yrityst‰ valita kortti,
-    // lis‰‰ kortin pelattavaksi jos ei mene turvallisesta arvosta yli, koska paino ja rajallinen m‰‰r‰ yrityksi‰ joskus pelaa enemm‰n ja joskus v‰hemm‰n.
-
-    static bool ShouldUseItem(Item item)
+    static List<Item> GetReactiveItems()
     {
-        switch (item.Type)
+        List<Item> availableReactiveItems = itemCollection.GetAvailableItems(reactiveItemTypes);
+
+        if (availableReactiveItems.Count == 0)
         {
-            case ItemType.Scale: return Maf.RandomBool(ITEM_USE_CHANCE);
-            case ItemType.Mirror: return Maf.RandomBool(ITEM_USE_CHANCE);
-            case ItemType.UnoCard: return Maf.RandomBool(ITEM_USE_CHANCE);
-            case ItemType.Coin: return Maf.RandomBool(ITEM_USE_CHANCE);
-            case ItemType.Coupon: return Maf.RandomBool(ITEM_USE_CHANCE);
-            case ItemType.Hook: return Maf.RandomBool(ITEM_USE_CHANCE);
-            case ItemType.Heart: return Maf.RandomBool(ITEM_USE_CHANCE);
-            default: return false;
+            // No reactive items, check if we have hook and the player has some
+
+            Item hookItem = itemCollection.GetItem(ItemType.Hook);
+            if (itemCollection.GetItemCountForItem(hookItem) > 0)
+            {
+                List<Item> playerReactiveItems = table.PlayerItemCollection.GetAvailableItems(reactiveItemTypes);
+                if (playerReactiveItems.Count > 0)
+                {
+                    stealItem = playerReactiveItems.RandomElement();
+                    //table.ItemToSteal = playerReactiveItems.RandomElement();
+                    //table.PlayItem(dealer, hookItem);
+                }
+            }
+        }
+        else stealItem = null;
+
+        return availableReactiveItems;
+    }
+
+    static void PlayCard(Card card)
+    {
+        dealer.CardCollection.TakeCard(card);
+        table.PlayCard(dealer, card);
+    }
+
+    static IEnumerator PlayCards(List<Card> cards)
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            yield return QOL.GetWaitForSeconds(0.3f);
+            Card card = cards[i];
+            PlayCard(card);
         }
     }
 
+    static IEnumerator PlayItem(Item item) => table.PlayItem(dealer, item);
 
     public static void GameEnded()
     {
         playerCardValues.Clear();
     }
-
-    //* scale > use immediately to set scale inaccuracy to 0
-    //* handmirror > use immediately to update card memory
-    //* uno > in gamemanager after both, if used swap cards (not if both players use it)
-    // coin > use immediately to force-play player cards
-    // coupon > use immediately to reroll a card
-    // hook > play immediately to steal item
-    //* heart > play immediately for %chance to dmg
-
-
-    // Joillain itemeill‰ joku x% chance k‰ytt‰‰ itemi vuorollaan jos on itemi, k‰ytt‰‰ random itemin,
-    // jos k‰ytt‰‰ itemin ja on viel‰ itemi rollaa uudestaan. Jotkin itemit k‰ytet‰‰n omien conditioneiden mukaan
-
-    // Itemien k‰ytˆn j‰lkeen pelaa kortit
 }

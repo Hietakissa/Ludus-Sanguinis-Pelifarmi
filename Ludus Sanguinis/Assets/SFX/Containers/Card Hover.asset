@@ -18,7 +18,7 @@ MonoBehaviour:
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 0.9, y: 1.1}
   sounds:
-  - name: Hover 1
+  - _Name: Card_Hover_1
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 15eb040768d65ff4aa1ddb1d8d9b5349, type: 3}
@@ -27,7 +27,7 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
-  - name: Hover 2
+  - _Name: Card_Hover_2
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 98bbae56ec5240844a902e4f53016067, type: 3}
@@ -36,7 +36,7 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
-  - name: Hover 3
+  - _Name: Card_Hover_3
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 2dc9e7e154e9bc54d95af533a0325a00, type: 3}

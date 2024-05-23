@@ -18,7 +18,7 @@ MonoBehaviour:
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 0.9, y: 1.1}
   sounds:
-  - name: Ring
+  - _Name: Bell_Ring
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 51bba7e559187e7449910a39b6929df3, type: 3}

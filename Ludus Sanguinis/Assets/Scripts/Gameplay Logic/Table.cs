@@ -1,5 +1,6 @@
 using HietakissaUtils.CameraShake;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
@@ -10,10 +11,10 @@ public class Table : MonoBehaviour
     public CardCollection DealerCards => player2CardCollection;
     [SerializeField] CardCollection player2CardCollection;
 
-    public Transform PlayerPosHolder => playerPosHolder;
-    [SerializeField] Transform playerPosHolder;
-    public Transform DealerPosHolder => dealerPosHolder;
-    [SerializeField] Transform dealerPosHolder;
+    //public Transform PlayerPosHolder => playerPosHolder;
+    //[SerializeField] Transform playerPosHolder;
+    //public Transform DealerPosHolder => dealerPosHolder;
+    //[SerializeField] Transform dealerPosHolder;
 
     public ItemCollection PlayerItemCollection => playerItemCollection;
     [SerializeField] ItemCollection playerItemCollection;
@@ -27,6 +28,8 @@ public class Table : MonoBehaviour
 
     [SerializeField] TextMeshPro playerValueText;
 
+    [HideInInspector] public Item ItemToSteal;
+
     public void PlayCard(Player player, Card card)
     {
         CardCollection cardCollection = GetCollectionForPlayer(player);
@@ -39,10 +42,13 @@ public class Table : MonoBehaviour
         if (!player.IsDealer) UpdatePlayerValueText();
     }
 
-    public void PlayItem(Player player, Item item)
+    public IEnumerator PlayItem(Player player, Item item)
     {
-        if (!CanPlayerUseItem(player, item)) return;
+        if (!CanPlayerUseItem(player, item)) yield break;
 
+        yield return null;
+
+        // Do item usage animation here
 
         if (player.IsDealer)
         {
@@ -63,6 +69,28 @@ public class Table : MonoBehaviour
             if (player.IsDealer && dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
             else if (playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
             else return false;
+        }
+    }
+
+    public IEnumerator StealItem(Player target, Item item)
+    {
+        yield return null;
+
+        // ToDo: some item stealing animation here
+
+        if (target.IsDealer)
+        {
+            // Stealing from dealer, remove target item, add to player, remove hook
+            dealerItemCollection.RemoveItem(item);
+            playerItemCollection.AddItem(item.Type);
+            PlayerItemCollection.RemoveItem(ItemType.Hook);
+        }
+        else
+        {
+            // Stealing from player, remove target item, add to dealer, remove hook
+            playerItemCollection.RemoveItem(item);
+            dealerItemCollection.AddItem(item.Type);
+            DealerItemCollection.RemoveItem(ItemType.Hook);
         }
     }
 
