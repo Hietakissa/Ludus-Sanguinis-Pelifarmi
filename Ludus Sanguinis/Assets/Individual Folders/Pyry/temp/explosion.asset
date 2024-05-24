@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f112297c97da0d5499296296165ded31, type: 3}
-  m_Name: Bell Ring
+  m_Name: explosion
   m_EditorClassIdentifier: 
-  <Mode>k__BackingField: 2
+  <Mode>k__BackingField: 1
   <DefaultMixer>k__BackingField: {fileID: 24300002, guid: 59860f59bb225924d99c5b301ff100eb,
     type: 2}
   volumeRange: {x: 1, y: 1}
-  pitchRange: {x: 0.95, y: 1.3}
+  pitchRange: {x: 1, y: 1}
   sounds:
-  - _Name: Bell_Ring
+  - _Name: 35462__jobro__explosion-5
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
-    clip: {fileID: 8300000, guid: 51bba7e559187e7449910a39b6929df3, type: 3}
-    volumeRange: {x: 0.7, y: 0.8}
+    clip: {fileID: 8300000, guid: f75751f4b48e23940b2ef9439611c03f, type: 3}
+    volumeRange: {x: 1, y: 1}
     pitchRange: {x: 1, y: 1}
     spatialBlend: 0
     loop: 0

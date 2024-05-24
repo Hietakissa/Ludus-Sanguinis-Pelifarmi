@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using HietakissaUtils;
+using HietakissaUtils.QOL;
 
 public class Table : MonoBehaviour
 {
@@ -30,8 +32,17 @@ public class Table : MonoBehaviour
 
     [HideInInspector] public Item ItemToSteal;
 
+    [SerializeField] ParticleSystem explosion;
+    [SerializeField] SoundContainer explosionSound;
+
+    [SerializeField] TextMeshPro scaleText;
+
+    Player dealer;
+
     public void PlayCard(Player player, Card card)
     {
+        if (player.IsDealer) dealer = player;
+
         CardCollection cardCollection = GetCollectionForPlayer(player);
         cardCollection.PlaceCard(card);
         card.State = CardState.OnTable;
@@ -42,13 +53,24 @@ public class Table : MonoBehaviour
         if (!player.IsDealer) UpdatePlayerValueText();
     }
 
-    public IEnumerator PlayItem(Player player, Item item)
+    // Items implemented:
+    //DP Scale
+    //DP Mirror
+    //DP Uno
+    //__ Coupon
+    //D_ Hook
+    //DP Heart
+    public void PlayItem(Player player, Item item) => StartCoroutine(PlayItemCor(player, item));
+
+    public IEnumerator PlayItemCor(Player player, Item item)
     {
         if (!CanPlayerUseItem(player, item)) yield break;
 
-        yield return null;
+        explosion.Play();
+        SoundManager.Instance.PlaySoundAtPosition(explosionSound, transform.position);
 
         // Do item usage animation here
+
 
         if (player.IsDealer)
         {
@@ -59,9 +81,53 @@ public class Table : MonoBehaviour
         {
             PlayerPlayedItems.Add(item);
             PlayerItemCollection.RemoveItem(item);
+
+            // Animations that only happen for the player
+            switch (item.Type)
+            {
+                case ItemType.Mirror:
+                    for (int i = 0; i < dealer.CardCollection.CardPositions.Length; i++)
+                    {
+                        CardPosition cardPos = dealer.CardCollection.CardPositions[i];
+                        if (cardPos.HasCard)
+                        {
+                            cardPos.Card.Flip();
+                            cardPos.Card.SetRevealState(true);
+                            yield return QOL.GetWaitForSeconds(0.4f);
+                        }
+                    }
+
+                    yield return QOL.GetWaitForSeconds(5);
+
+                    for (int i = 0; i < dealer.CardCollection.CardPositions.Length; i++)
+                    {
+                        CardPosition cardPos = dealer.CardCollection.CardPositions[i];
+                        if (cardPos.HasCard)
+                        {
+                            cardPos.Card.Flip();
+                            cardPos.Card.SetRevealState(false);
+                            yield return QOL.GetWaitForSeconds(0.2f);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        // Animations that are the same for both players
+        switch (item.Type)
+        {
+            case ItemType.Scale:
+                // scale anim
+                if (player.IsDealer) scaleText.text = "?";
+                else scaleText.text = GameManager.Instance.Pot.FillAmount.ToString();
+                QOL.GetWaitForSeconds(3f);
+                scaleText.text = "";
+
+                break;
         }
 
         Debug.Log($"{(player.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
+        yield return null;
 
 
         bool CanPlayerUseItem(Player player, Item item)

@@ -59,11 +59,11 @@ public static class Dealer
             // Check to use reactive items
             //List<Item> availableReactiveItems = itemCollection.GetAvailableItems(reactiveItemTypes);
             List<Item> availableReactiveItems = GetReactiveItems();
-            if (stealItem)
-            {
-                yield return table.StealItem(player, stealItem);
-                availableReactiveItems.Add(stealItem);
-            }
+            //if (stealItem)
+            //{
+            //    yield return table.StealItem(player, stealItem);
+            //    availableReactiveItems.Add(stealItem);
+            //}
 
 
             if (availableReactiveItems.Count == 0)
@@ -84,8 +84,8 @@ public static class Dealer
                         {
                             // Player has an item, steal a random one
                             Item itemToSteal = playerItems.RandomElement();
-                            yield return table.StealItem(player, itemToSteal);
-                            yield return table.PlayItem(dealer, itemToSteal);
+                            //yield return table.StealItem(player, itemToSteal);
+                            //yield return table.PlayItemCor(dealer, itemToSteal);
                         }
                     }
                 }
@@ -97,7 +97,7 @@ public static class Dealer
                 // Stole a random non-reactive item to use
 
                 Item itemToPlay = availableReactiveItems.RandomElement();
-                table.PlayItem(dealer, itemToPlay);
+                yield return table.PlayItemCor(dealer, itemToPlay);
             }
 
 
@@ -240,7 +240,7 @@ public static class Dealer
         }
     }
 
-    static IEnumerator PlayItem(Item item) => table.PlayItem(dealer, item);
+    static IEnumerator PlayItem(Item item) => table.PlayItemCor(dealer, item);
 
     public static void GameEnded()
     {

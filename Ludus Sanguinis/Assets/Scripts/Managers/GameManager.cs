@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using HietakissaUtils.LootTable;
 using HietakissaUtils.QOL;
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform deckPos;
 
     public Player Player;
+    public Player DealerRef => dealer;
     [SerializeField] Player dealer;
     Player lastHighestPlayedPlayer;
     bool playerPlayedCards;
@@ -36,6 +38,9 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+
         Instance = this;
 
         table.PlayerItemCollection.Init();
@@ -100,6 +105,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
+        // ToDo: set pot capacity back to 50
+        //pot.SetCapacity(50);
         pot.SetCapacity(50);
         Player.Health = 3;
         dealer.Health = 3;
@@ -281,15 +288,27 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
+    [SerializeField] TextMeshPro debugHealthText;
     void DamagePlayer(Player player, int amount)
     {
         player.Health -= amount;
 
+        debugHealthText.text = $"Player: {player.Health}{(player.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(player.IsDealer ? $"(-{amount})" : "")}";
         if (player.Health <= 0)
         {
-            Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage. ({player.Health}/3)");
+            //Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage. ({player.Health}/3)");
+            StartCoroutine(TempDiedThingCor(player));
         }
-        else Debug.Log($"Dealt {amount} damage to {(player.IsDealer ? "Dealer" : "Player")}, Health: {player.Health}/3");
+        //else Debug.Log($"Dealt {amount} damage to {(player.IsDealer ? "Dealer" : "Player")}, Health: {player.Health}/3");
+
+
+
+        IEnumerator TempDiedThingCor(Player loser)
+        {
+            debugHealthText.text = loser.IsDealer ? "You won!" : "You lost :(";
+            yield return QOL.GetWaitForSeconds(5);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
     IEnumerator MoveCardsFromDeckToHands()
