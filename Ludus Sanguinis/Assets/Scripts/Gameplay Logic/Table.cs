@@ -122,7 +122,10 @@ public class Table : MonoBehaviour
                 else scaleText.text = GameManager.Instance.Pot.FillAmount.ToString();
                 QOL.GetWaitForSeconds(3f);
                 scaleText.text = "";
+                break;
 
+            case ItemType.Hook: 
+                StealItemCor(player.IsDealer ? GameManager.Instance.Player : dealer, ItemToSteal);
                 break;
         }
 
@@ -138,7 +141,7 @@ public class Table : MonoBehaviour
         }
     }
 
-    public IEnumerator StealItem(Player target, Item item)
+    public IEnumerator StealItemCor(Player target, Item item)
     {
         yield return null;
 

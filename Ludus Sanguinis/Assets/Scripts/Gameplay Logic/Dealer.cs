@@ -59,11 +59,11 @@ public static class Dealer
             // Check to use reactive items
             //List<Item> availableReactiveItems = itemCollection.GetAvailableItems(reactiveItemTypes);
             List<Item> availableReactiveItems = GetReactiveItems();
-            //if (stealItem)
-            //{
-            //    yield return table.StealItem(player, stealItem);
-            //    availableReactiveItems.Add(stealItem);
-            //}
+            if (stealItem)
+            {
+                yield return table.StealItemCor(player, stealItem);
+                availableReactiveItems.Add(stealItem);
+            }
 
 
             if (availableReactiveItems.Count == 0)
@@ -72,7 +72,7 @@ public static class Dealer
 
                 // Check to use heart
                 Item heartItem = itemCollection.GetItem(ItemType.Heart);
-                if (itemCollection.GetItemCountForItem(heartItem) > 0) yield return PlayItem(heartItem);
+                if (itemCollection.GetItemCountForItem(heartItem) > 0) yield return PlayItemCor(heartItem);
                 else
                 {
                     // No heart, can steal any item?
@@ -84,27 +84,33 @@ public static class Dealer
                         {
                             // Player has an item, steal a random one
                             Item itemToSteal = playerItems.RandomElement();
-                            //yield return table.StealItem(player, itemToSteal);
-                            //yield return table.PlayItemCor(dealer, itemToSteal);
+                            yield return table.StealItemCor(player, itemToSteal);
+                            yield return table.PlayItemCor(dealer, itemToSteal);
                         }
                     }
                 }
             }
-            else yield return PlayItem(availableReactiveItems.RandomElement());
+            else
+            {
+                Item randomItem = availableReactiveItems.RandomElement();
+                availableReactiveItems.Remove(randomItem);
+                yield return PlayItemCor(randomItem);
+            }
 
             if (availableReactiveItems.Count > 0)
             {
                 // Stole a random non-reactive item to use
 
                 Item itemToPlay = availableReactiveItems.RandomElement();
+                availableReactiveItems.Remove(itemToPlay);
                 yield return table.PlayItemCor(dealer, itemToPlay);
             }
 
 
             List<Card> finalCards = GetFinalCardsToPlay();
-            yield return PlayCards(finalCards);
+            yield return PlayCardsCor(finalCards);
         }
-        else yield return PlayCards(safeCards);
+        else yield return PlayCardsCor(safeCards);
 
         //currentVariation = Mathf.Min(currentVariation + 1, MAX_VARIATION);
     }
@@ -167,6 +173,7 @@ public static class Dealer
         if (table.DealerPlayedItems.Contains(scaleItem) || table.DealerPlayedItems.Contains(mirrorItem))
         {
             // Played scale or mirror, redo calculations
+            if (table.DealerPlayedItems.Contains(scaleItem)) variation = 0;
             TurnStartInitialCalculations();
 
             // Check again for safe cards with updated info
@@ -193,9 +200,6 @@ public static class Dealer
             cardsToPlay.Add(smallestCard);
         }
 
-        
-
-        
         return cardsToPlay;
     }
 
@@ -214,8 +218,8 @@ public static class Dealer
                 if (playerReactiveItems.Count > 0)
                 {
                     stealItem = playerReactiveItems.RandomElement();
-                    //table.ItemToSteal = playerReactiveItems.RandomElement();
-                    //table.PlayItem(dealer, hookItem);
+                    table.ItemToSteal = playerReactiveItems.RandomElement();
+                    table.PlayItem(dealer, hookItem);
                 }
             }
         }
@@ -230,7 +234,7 @@ public static class Dealer
         table.PlayCard(dealer, card);
     }
 
-    static IEnumerator PlayCards(List<Card> cards)
+    static IEnumerator PlayCardsCor(List<Card> cards)
     {
         for (int i = 0; i < cards.Count; i++)
         {
@@ -240,7 +244,7 @@ public static class Dealer
         }
     }
 
-    static IEnumerator PlayItem(Item item) => table.PlayItemCor(dealer, item);
+    static IEnumerator PlayItemCor(Item item) => table.PlayItemCor(dealer, item);
 
     public static void GameEnded()
     {
