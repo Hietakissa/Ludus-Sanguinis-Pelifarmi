@@ -27,7 +27,7 @@ public class HandController : MonoBehaviour
     Transform hoveredInteractable;
     RaycastHit hit;
 
-    const float CONST_PLAY_DISTANCE = 10f;
+    const float CONST_PLAY_DISTANCE = 20f;
 
     void Awake()
     {
@@ -92,6 +92,14 @@ public class HandController : MonoBehaviour
                 else if (Input.GetMouseButtonDown(0) && card)
                 {
                     hoveredPlayable?.EndHover();
+
+                    if (table.CouponActive)
+                    {
+                        table.CouponActive = false;
+                        table.RerollCard(card);
+                        return;
+                    }
+
                     grabbedCard = card;
 
                     if (grabbedCard.State == CardState.OnTable) table.FreeSpotForCard(player, card);
@@ -129,7 +137,7 @@ public class HandController : MonoBehaviour
             {
                 if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out IInteractable interactable))
                 {
-                    if (hit.transform.TryGetComponent(out PlayableItem playableItem) && playableItem.Owner == PlayerType.Dealer) return;
+                    if (hit.transform.TryGetComponent(out PlayableItem playableItem) && (playableItem.Owner == PlayerType.Dealer && !table.HookActive)) return;
 
                     hoveredInteractable = interactable.GetHoverCopyTransform();
                     if (Input.GetMouseButtonDown(0)) interactable.Interact();

@@ -36,8 +36,11 @@ public class Table : MonoBehaviour
     [SerializeField] SoundContainer explosionSound;
 
     [SerializeField] TextMeshPro scaleText;
+    [SerializeField] Transform deckPos;
 
     Player dealer;
+    public bool HookActive;
+    public bool CouponActive;
 
     public void PlayCard(Player player, Card card)
     {
@@ -70,7 +73,7 @@ public class Table : MonoBehaviour
         Debug.Log($"{(user.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
 
         explosion.Play();
-        SoundManager.Instance.PlaySoundAtPosition(explosionSound, transform.position);
+        //SoundManager.Instance.PlaySoundAtPosition(explosionSound, transform.position);
 
         // Do item usage animation here
 
@@ -79,6 +82,30 @@ public class Table : MonoBehaviour
         {
             DealerPlayedItems.Add(item);
             dealerItemCollection.RemoveItem(item);
+
+            // Animations that only happen for the dealer
+            switch (item.Type)
+            {
+                case ItemType.Hook:
+                    yield return StealItemCor(opponent, ItemToSteal);
+                    break;
+
+                case ItemType.Coupon:
+                    Card largestCard = null;
+                    int largestValue = -1;
+
+                    foreach (CardPosition cardPos in player2CardCollection.CardPositions)
+                    {
+                        if (cardPos.HasCard && cardPos.Card.Value > largestValue)
+                        {
+                            largestCard = cardPos.Card;
+                            largestValue = largestCard.Value;
+                        }
+                    }
+
+                    if (largestCard) yield return RerollCardCor(largestCard);
+                    break;
+            }
         }
         else
         {
@@ -113,6 +140,10 @@ public class Table : MonoBehaviour
                         }
                     }
                     break;
+
+                case ItemType.Hook:
+                    HookActive = true;
+                    break;
             }
         }
 
@@ -127,13 +158,13 @@ public class Table : MonoBehaviour
                 scaleText.text = "";
                 break;
 
-            case ItemType.Hook: 
-                yield return StealItemCor(opponent, ItemToSteal);
-                break;
-
             case ItemType.Heart:
                 if (Maf.RandomBool(50)) GameManager.Instance.DamagePlayer(user, 1);
                 else GameManager.Instance.DamagePlayer(opponent, 1);
+                break;
+
+            case ItemType.Coupon:
+                CouponActive = true;
                 break;
         }
 
@@ -146,6 +177,7 @@ public class Table : MonoBehaviour
         }
     }
 
+    public void StealItem(Player target, Item item) => StartCoroutine(StealItemCor(target, item));
     public IEnumerator StealItemCor(Player target, Item item)
     {
 
@@ -168,6 +200,24 @@ public class Table : MonoBehaviour
         yield return null;
     }
 
+    public void RerollCard(Card card) => StartCoroutine(RerollCardCor(card));
+    IEnumerator RerollCardCor(Card card)
+    {
+        CardCollection collection;
+        if (card.Owner == PlayerType.Player) collection = GameManager.Instance.Player.CardCollection;
+        else collection = GameManager.Instance.DealerRef.CardCollection;
+
+        Transform oldTarget = card.TargetTransform;
+        collection.TakeCard(card);
+        card.SetTargetTransform(deckPos);
+        yield return QOL.GetWaitForSeconds(2);
+
+        card.SetValue(Random.Range(0, 17));
+        //card.SetTargetTransform(oldTarget);
+        collection.PlaceCard(card);
+        yield return QOL.GetWaitForSeconds(2);
+    }
+
     public void ClearedTable()
     {
         UpdatePlayerValueText();
@@ -183,7 +233,7 @@ public class Table : MonoBehaviour
         if (!player.IsDealer) UpdatePlayerValueText();
     }
 
-    void UpdatePlayerValueText()
+    public void UpdatePlayerValueText()
     {
         int sum = player1CardCollection.GetSum();
         if (sum == 0) playerValueText.text = "";

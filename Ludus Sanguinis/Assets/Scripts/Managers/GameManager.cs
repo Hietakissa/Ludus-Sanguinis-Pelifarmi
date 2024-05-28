@@ -166,6 +166,8 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Waiting for the player's turn!");
         isPlayerTurn = true;
         while (!playerPlayedCards) yield return null;
+        table.HookActive = false;
+        table.CouponActive = false;
         isPlayerTurn = false;
         SetPlayerCardLock(true);
         playerPlayedCards = false;
@@ -255,9 +257,17 @@ public class GameManager : MonoBehaviour
 
     IEnumerator HandleItems()
     {
-        if (HasItem(in table.PlayerPlayedItems, ItemType.UnoCard)) yield return SwapCards(table.PlayerCards, table.DealerCards);
-        if (HasItem(in table.DealerPlayedItems, ItemType.UnoCard)) yield return SwapCards(table.PlayerCards, table.DealerCards);
+        int swapCount = 0;
+        if (HasItem(in table.PlayerPlayedItems, ItemType.UnoCard)) swapCount++;
+        if (HasItem(in table.DealerPlayedItems, ItemType.UnoCard)) swapCount++;
+
+        for (int i = 0; i < swapCount; i++)
+        {
+            yield return SwapCards(table.PlayerCards, table.DealerCards);
+            table.UpdatePlayerValueText();
+        }
     }
+
     IEnumerator SwapCards(CardCollection collection1, CardCollection collection2)
     {
         Card[] cards1 = collection1.GetCards();
@@ -389,7 +399,6 @@ public class GameManager : MonoBehaviour
                 values.Add(value);
             }
         }
-
 
         values.Sort();
         return values.ToArray();

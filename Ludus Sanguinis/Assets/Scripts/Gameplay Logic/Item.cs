@@ -9,7 +9,13 @@ public class Item : PlayableItem, IInteractable
     public Transform GetHoverCopyTransform() => hoverCopy;
     public void Interact()
     {
-        GameManager.Instance.Table.PlayItem(GameManager.Instance.Player, this);
+        Table table = GameManager.Instance.Table;
+        if (table.HookActive && Owner == PlayerType.Dealer)
+        {
+            table.HookActive = false;
+            table.StealItem(GameManager.Instance.DealerRef, this);
+        }
+        else GameManager.Instance.Table.PlayItem(GameManager.Instance.Player, this);
     }
 
     void Awake()

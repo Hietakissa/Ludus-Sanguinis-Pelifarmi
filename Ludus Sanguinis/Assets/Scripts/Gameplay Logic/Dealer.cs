@@ -114,7 +114,7 @@ public static class Dealer
         }
         else yield return PlayCardsCor(safeCards);
 
-        //currentVariation = Mathf.Min(currentVariation + 1, MAX_VARIATION);
+        currentVariation = Mathf.Min(currentVariation + 1, MAX_VARIATION);
     }
 
     static void TurnStartInitialCalculations()
@@ -146,8 +146,8 @@ public static class Dealer
     //DP Scale - Passive random, Reactive random - Use when pot is almost full and inaccuracy is high, also override use with the same conditions when there aren’t any safe cards to play
     //DP Mirror - Passive random, Reactive random - Use when no safe cards and inaccuracy is high, also randomly if inaccuracy is very high(>= 9 or 8)
     //DP Uno - Reactive, play-making
-    //__ Coupon - Reactive
-    //D_ Hook - Reactive
+    //DP Coupon - Reactive
+    //DP Hook - Reactive
     //DP Heart - Reactive, last resort
 
     static List<Card> GetSafeCardsToPlay()
