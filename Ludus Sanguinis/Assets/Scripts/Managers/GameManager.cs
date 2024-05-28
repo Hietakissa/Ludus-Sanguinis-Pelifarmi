@@ -257,9 +257,6 @@ public class GameManager : MonoBehaviour
     {
         if (HasItem(in table.PlayerPlayedItems, ItemType.UnoCard)) yield return SwapCards(table.PlayerCards, table.DealerCards);
         if (HasItem(in table.DealerPlayedItems, ItemType.UnoCard)) yield return SwapCards(table.PlayerCards, table.DealerCards);
-
-        if (HasItem(in table.PlayerPlayedItems, ItemType.Heart)) yield return UseHeart();
-        if (HasItem(in table.DealerPlayedItems, ItemType.Heart)) yield return UseHeart();
     }
     IEnumerator SwapCards(CardCollection collection1, CardCollection collection2)
     {
@@ -280,20 +277,15 @@ public class GameManager : MonoBehaviour
 
         yield return QOL.GetWaitForSeconds(1f);
     }
-    IEnumerator UseHeart()
-    {
-        bool damagePlayer = Maf.RandomBool(50);
-        if (damagePlayer) DamagePlayer(Player, 1);
-        else DamagePlayer(dealer, 1);
-        yield return null;
-    }
 
+    int totalDamage;
     [SerializeField] TextMeshPro debugHealthText;
-    void DamagePlayer(Player player, int amount)
+    public void DamagePlayer(Player player, int amount)
     {
+        totalDamage += amount;
         player.Health -= amount;
 
-        debugHealthText.text = $"Player: {player.Health}{(player.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(player.IsDealer ? $"(-{amount})" : "")}";
+        debugHealthText.text = $"Player: {Player.Health}{(player.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(player.IsDealer ? $"(-{amount})" : "")}";
         if (player.Health <= 0)
         {
             //Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage. ({player.Health}/3)");
@@ -338,8 +330,9 @@ public class GameManager : MonoBehaviour
                     EventManager.DealCard();
                 }
 
-                if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 7));
-                else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 7));
+                // ToDo: uncomment to enable giving items, disabled to force dealer to play hook more often
+                //if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 7));
+                //else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 7));
             }
         }
     }

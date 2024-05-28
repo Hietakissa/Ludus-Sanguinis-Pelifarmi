@@ -44,6 +44,8 @@ public class Card : PlayableItem
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.H)) Flip();
+
         if (debugText) debugText.text = $"Interactable: {IsInteractable}\nHoverable: {CanStartHover}\nTarget: {TargetTransform.name}";
 
 

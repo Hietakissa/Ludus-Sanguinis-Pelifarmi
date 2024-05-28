@@ -24,7 +24,7 @@ public static class Dealer
     static int potFillAmount;
     static int largestSafeValue;
 
-    static ItemType[] reactiveItemTypes = new ItemType[]{ ItemType.UnoCard, ItemType.Coupon, ItemType.Hook };
+    static ItemType[] reactiveItemTypes = new ItemType[]{ ItemType.UnoCard, ItemType.Coupon };
 
     static Item stealItem;
     static int variation;
@@ -61,8 +61,10 @@ public static class Dealer
             List<Item> availableReactiveItems = GetReactiveItems();
             if (stealItem)
             {
+                Debug.Log($"stealing item after getreactiveitems said so");
                 yield return table.StealItemCor(player, stealItem);
                 availableReactiveItems.Add(stealItem);
+                stealItem = null;
             }
 
 
@@ -84,8 +86,9 @@ public static class Dealer
                         {
                             // Player has an item, steal a random one
                             Item itemToSteal = playerItems.RandomElement();
+                            Debug.Log($"stealing and playing item after no safe cards to play and stole item");
                             yield return table.StealItemCor(player, itemToSteal);
-                            yield return table.PlayItemCor(dealer, itemToSteal);
+                            yield return PlayItemCor(itemToSteal);
                         }
                     }
                 }
@@ -103,7 +106,7 @@ public static class Dealer
 
                 Item itemToPlay = availableReactiveItems.RandomElement();
                 availableReactiveItems.Remove(itemToPlay);
-                yield return table.PlayItemCor(dealer, itemToPlay);
+                yield return PlayItemCor(itemToPlay);
             }
 
 
@@ -244,7 +247,10 @@ public static class Dealer
         }
     }
 
-    static IEnumerator PlayItemCor(Item item) => table.PlayItemCor(dealer, item);
+    static IEnumerator PlayItemCor(Item item)
+    {
+        yield return table.PlayItemCor(dealer, item);
+    }
 
     public static void GameEnded()
     {

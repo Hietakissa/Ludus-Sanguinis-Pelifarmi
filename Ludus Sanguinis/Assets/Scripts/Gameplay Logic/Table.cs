@@ -1,10 +1,10 @@
 using HietakissaUtils.CameraShake;
 using System.Collections.Generic;
+using HietakissaUtils.QOL;
 using System.Collections;
+using HietakissaUtils;
 using UnityEngine;
 using TMPro;
-using HietakissaUtils;
-using HietakissaUtils.QOL;
 
 public class Table : MonoBehaviour
 {
@@ -62,9 +62,12 @@ public class Table : MonoBehaviour
     //DP Heart
     public void PlayItem(Player player, Item item) => StartCoroutine(PlayItemCor(player, item));
 
-    public IEnumerator PlayItemCor(Player player, Item item)
+    public IEnumerator PlayItemCor(Player user, Item item)
     {
-        if (!CanPlayerUseItem(player, item)) yield break;
+        if (!CanPlayerUseItem(user, item)) yield break;
+
+        Player opponent = user.IsDealer ? GameManager.Instance.Player : dealer;
+        Debug.Log($"{(user.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
 
         explosion.Play();
         SoundManager.Instance.PlaySoundAtPosition(explosionSound, transform.position);
@@ -72,7 +75,7 @@ public class Table : MonoBehaviour
         // Do item usage animation here
 
 
-        if (player.IsDealer)
+        if (user.IsDealer)
         {
             DealerPlayedItems.Add(item);
             dealerItemCollection.RemoveItem(item);
@@ -118,19 +121,21 @@ public class Table : MonoBehaviour
         {
             case ItemType.Scale:
                 // scale anim
-                if (player.IsDealer) scaleText.text = "?";
+                if (user.IsDealer) scaleText.text = "?";
                 else scaleText.text = GameManager.Instance.Pot.FillAmount.ToString();
                 QOL.GetWaitForSeconds(3f);
                 scaleText.text = "";
                 break;
 
             case ItemType.Hook: 
-                StealItemCor(player.IsDealer ? GameManager.Instance.Player : dealer, ItemToSteal);
+                yield return StealItemCor(opponent, ItemToSteal);
+                break;
+
+            case ItemType.Heart:
+                if (Maf.RandomBool(50)) GameManager.Instance.DamagePlayer(user, 1);
+                else GameManager.Instance.DamagePlayer(opponent, 1);
                 break;
         }
-
-        Debug.Log($"{(player.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
-        yield return null;
 
 
         bool CanPlayerUseItem(Player player, Item item)
@@ -143,7 +148,6 @@ public class Table : MonoBehaviour
 
     public IEnumerator StealItemCor(Player target, Item item)
     {
-        yield return null;
 
         // ToDo: some item stealing animation here
 
@@ -161,6 +165,7 @@ public class Table : MonoBehaviour
             dealerItemCollection.AddItem(item.Type);
             DealerItemCollection.RemoveItem(ItemType.Hook);
         }
+        yield return null;
     }
 
     public void ClearedTable()

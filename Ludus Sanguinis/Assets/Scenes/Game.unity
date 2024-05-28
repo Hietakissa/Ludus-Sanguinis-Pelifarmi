@@ -3326,7 +3326,7 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 0
+  m_Antialiasing: 3
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -3340,12 +3340,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
+    quality: 1
     frameInfluence: 0.1
     jitterScale: 1
     mipBias: 0
     varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    contrastAdaptiveSharpening: 0.2
 --- !u!114 &330585548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4841,26 +4841,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c98191c232e453a4e94dc8388b8c66c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textures:
-  - {fileID: 2800000, guid: ba0e800f8acd3d044bc2eb44bdefddc2, type: 3}
-  - {fileID: 2800000, guid: 58768993810391f4ba958e18c9843de8, type: 3}
-  - {fileID: 2800000, guid: 9e016fa6572ff2341bbc1149cdf97f9b, type: 3}
-  - {fileID: 2800000, guid: bd52b65dd17a06c458e76916ebd1b6f9, type: 3}
-  - {fileID: 2800000, guid: adcbb727993d804429d2c906f16b0c3c, type: 3}
-  - {fileID: 2800000, guid: 5783a223a904a4a4bb9f7f1c2d93d940, type: 3}
-  - {fileID: 2800000, guid: 6b0295420f19b49459fb0210e5efb42d, type: 3}
-  - {fileID: 2800000, guid: 12985fa6a74ef5e44a34fdd1d634fa00, type: 3}
-  - {fileID: 2800000, guid: 004dd3a0b95222443963e3ac76aa4479, type: 3}
-  - {fileID: 2800000, guid: 97e0c41b8b56a9340952da1a14943e9c, type: 3}
-  - {fileID: 2800000, guid: 434a3d7bba9fc5248b9bff1718d0535e, type: 3}
-  - {fileID: 2800000, guid: 57358c8b0b01daf4ca53d80acd12a386, type: 3}
-  - {fileID: 2800000, guid: cd885e069ddb78f469256aaa38e5cb2e, type: 3}
-  - {fileID: 2800000, guid: f4d2773c0bafd8b428b4007c360c82c1, type: 3}
-  - {fileID: 2800000, guid: 7e832818b1ba33b4da6dad2fe72fd535, type: 3}
-  - {fileID: 2800000, guid: c9fd7f5182a7fba47ae4e8d6cbc40cb7, type: 3}
-  - {fileID: 2800000, guid: 5e280abea7821c348ba9b8d4c823c492, type: 3}
-  path: Assets/2D/Textures
-  filename: NormalCards
 --- !u!4 &505638085
 Transform:
   m_ObjectHideFlags: 0
@@ -12882,7 +12862,7 @@ MonoBehaviour:
       Count: 0
     - tablePos: {fileID: 501801039}
       Item: {fileID: 252796054}
-      Count: 1
+      Count: 3
     - tablePos: {fileID: 1334130548}
       Item: {fileID: 1365661599}
       Count: 0
@@ -12894,7 +12874,7 @@ MonoBehaviour:
       Count: 0
     - tablePos: {fileID: 667138402}
       Item: {fileID: 1984677692}
-      Count: 1
+      Count: 0
   dealerItemCollection:
     Slots:
     - tablePos: {fileID: 643310738}
@@ -12911,7 +12891,7 @@ MonoBehaviour:
       Count: 0
     - tablePos: {fileID: 920176914}
       Item: {fileID: 236372236}
-      Count: 0
+      Count: 1
     - tablePos: {fileID: 733311630}
       Item: {fileID: 883452861}
       Count: 0
@@ -13710,14 +13690,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c98191c232e453a4e94dc8388b8c66c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textures:
-  - {fileID: 2800000, guid: e7e419281f7624448bcb74068c532558, type: 3}
-  - {fileID: 2800000, guid: d3f9b095ef7cd7c49a5a635c395136fe, type: 3}
-  - {fileID: 2800000, guid: 3de6414617017634bbc4c3e97cb7c3cb, type: 3}
-  - {fileID: 2800000, guid: 61e0d8eee5c361546841dcca56f1b4af, type: 3}
-  - {fileID: 2800000, guid: 57a60e73eb8e65a4d87e0588db399cc4, type: 3}
-  path: Assets/2D/Textures
-  filename: BloodDecals
 --- !u!4 &1601475249
 Transform:
   m_ObjectHideFlags: 0
