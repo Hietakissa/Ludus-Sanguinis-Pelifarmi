@@ -278,20 +278,13 @@ public class GameManager : MonoBehaviour
         yield return QOL.GetWaitForSeconds(1f);
     }
 
-    int totalDamage;
     [SerializeField] TextMeshPro debugHealthText;
     public void DamagePlayer(Player player, int amount)
     {
-        totalDamage += amount;
         player.Health -= amount;
 
         debugHealthText.text = $"Player: {Player.Health}{(player.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(player.IsDealer ? $"(-{amount})" : "")}";
-        if (player.Health <= 0)
-        {
-            //Debug.Log($"Killed {(player.IsDealer ? "Dealer" : "Player")} by dealing {amount} damage. ({player.Health}/3)");
-            StartCoroutine(TempDiedThingCor(player));
-        }
-        //else Debug.Log($"Dealt {amount} damage to {(player.IsDealer ? "Dealer" : "Player")}, Health: {player.Health}/3");
+        if (player.Health <= 0) StartCoroutine(TempDiedThingCor(player));
 
 
 
@@ -330,9 +323,8 @@ public class GameManager : MonoBehaviour
                     EventManager.DealCard();
                 }
 
-                // ToDo: uncomment to enable giving items, disabled to force dealer to play hook more often
-                //if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 7));
-                //else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 7));
+                if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 6));
+                else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 6));
             }
         }
     }

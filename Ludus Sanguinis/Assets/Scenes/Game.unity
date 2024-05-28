@@ -12859,7 +12859,7 @@ MonoBehaviour:
     Slots:
     - tablePos: {fileID: 660302064}
       Item: {fileID: 1628931020}
-      Count: 0
+      Count: 1
     - tablePos: {fileID: 501801039}
       Item: {fileID: 252796054}
       Count: 3
@@ -18680,7 +18680,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.4
+      scalar: 0.05
       minScalar: 1
       maxCurve:
         serializedVersion: 2

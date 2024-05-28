@@ -57,7 +57,6 @@ public static class Dealer
         if (safeCards.Count == 0)
         {
             // Check to use reactive items
-            //List<Item> availableReactiveItems = itemCollection.GetAvailableItems(reactiveItemTypes);
             List<Item> availableReactiveItems = GetReactiveItems();
             if (stealItem)
             {
@@ -144,8 +143,8 @@ public static class Dealer
     //
     //
     // Item Types:
-    //D_ Scale - Passive random, Reactive random - Use when pot is almost full and inaccuracy is high, also override use with the same conditions when there aren’t any safe cards to play
-    //D_ Mirror - Passive random, Reactive random - Use when no safe cards and inaccuracy is high, also randomly if inaccuracy is very high(>= 9 or 8)
+    //DP Scale - Passive random, Reactive random - Use when pot is almost full and inaccuracy is high, also override use with the same conditions when there aren’t any safe cards to play
+    //DP Mirror - Passive random, Reactive random - Use when no safe cards and inaccuracy is high, also randomly if inaccuracy is very high(>= 9 or 8)
     //DP Uno - Reactive, play-making
     //__ Coupon - Reactive
     //D_ Hook - Reactive

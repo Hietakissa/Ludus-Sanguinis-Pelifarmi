@@ -123,7 +123,7 @@ public class Table : MonoBehaviour
                 // scale anim
                 if (user.IsDealer) scaleText.text = "?";
                 else scaleText.text = GameManager.Instance.Pot.FillAmount.ToString();
-                QOL.GetWaitForSeconds(3f);
+                yield return QOL.GetWaitForSeconds(3f);
                 scaleText.text = "";
                 break;
 
