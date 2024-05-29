@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class GameStarter : MonoBehaviour
 {
+    [SerializeField] bool startOnInput;
     [SerializeField] PlayableDirector director;
     bool gameRunning;
 
@@ -17,7 +18,7 @@ public class GameStarter : MonoBehaviour
 
     void Update()
     {
-        if (!gameRunning && Input.anyKeyDown)
+        if (startOnInput && !gameRunning && Input.anyKeyDown)
         {
             gameRunning = true;
             director.Play();
