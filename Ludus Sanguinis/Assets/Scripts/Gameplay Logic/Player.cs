@@ -20,4 +20,6 @@ public class Player
             card.SetTargetTransform(overrideTransform ?? cardCollection.CardPositions[i].Transform);
         }
     }
+
+    public PlayerType GetPlayerType() => IsDealer ? PlayerType.Dealer : PlayerType.Player;
 }

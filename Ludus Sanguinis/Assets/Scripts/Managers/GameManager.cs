@@ -73,8 +73,12 @@ public class GameManager : MonoBehaviour
     {
         SetPlayerCardLock(true);
 
-        //foreach (Card card in playerCardReferences) HandleCardReset(player.CardCollection.TakeCard(card, false));
-        //foreach (Card card in dealerCardReferences) HandleCardReset(dealer.CardCollection.TakeCard(card, false));
+        pot.SetCapacity(50);
+        Player.Health = 3;
+        dealer.Health = 3;
+
+        EventManager.PlayerDamaged(Player, Player.Health);
+        EventManager.PlayerDamaged(dealer, dealer.Health);
 
         TakeCardsFromCollection(Player.CardCollection);
         TakeCardsFromCollection(dealer.CardCollection);
@@ -105,12 +109,6 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
-        // ToDo: set pot capacity back to 50
-        //pot.SetCapacity(50);
-        pot.SetCapacity(50);
-        Player.Health = 3;
-        dealer.Health = 3;
-
         yield return QOL.GetWaitForSeconds(2f);
         yield return MoveCardsFromDeckToHands();
         yield return QOL.GetWaitForSeconds(1.5f);
@@ -289,12 +287,14 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField] TextMeshPro debugHealthText;
-    public void DamagePlayer(Player player, int amount)
+    public void DamagePlayer(Player damagedPlayer, int amount)
     {
-        player.Health -= amount;
+        damagedPlayer.Health -= amount;
+        EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
+        EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
 
-        debugHealthText.text = $"Player: {Player.Health}{(player.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(player.IsDealer ? $"(-{amount})" : "")}";
-        if (player.Health <= 0) StartCoroutine(TempDiedThingCor(player));
+        debugHealthText.text = $"Player: {Player.Health}{(damagedPlayer.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(damagedPlayer.IsDealer ? $"(-{amount})" : "")}";
+        if (damagedPlayer.Health <= 0) StartCoroutine(TempDiedThingCor(damagedPlayer));
 
 
 
@@ -449,5 +449,6 @@ public class GameManager : MonoBehaviour
 public enum PlayerType
 {
     Player,
-    Dealer
+    Dealer,
+    None
 }

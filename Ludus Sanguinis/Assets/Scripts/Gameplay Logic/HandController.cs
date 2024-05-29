@@ -29,6 +29,15 @@ public class HandController : MonoBehaviour
 
     const float CONST_PLAY_DISTANCE = 20f;
 
+    [SerializeField] [Range(0, 2)] int handType;
+    [SerializeField] [Range(0, 1)] int handState;
+    [SerializeField] Transform handTypeHolder;
+
+    [SerializeField] SpriteRenderer leftHandFrontSpriteRend;
+    [SerializeField] SpriteRenderer leftHandBackSpriteRend;
+    [SerializeField] Sprite[] leftHandFrontSprites;
+    [SerializeField] Sprite[] leftHandBackSprites;
+
     void Awake()
     {
         GameManager.Instance.Player = player;
@@ -65,6 +74,7 @@ public class HandController : MonoBehaviour
         if (grabbedCard) MoveTarget();
 
         MoveHand();
+        UpdateHandVisuals();
 
 
         void HandleCardGrabbingAndHovering()
@@ -72,6 +82,9 @@ public class HandController : MonoBehaviour
             if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out PlayableItem playable) && playable.Owner == PlayerType.Player && playable.IsInteractable)
             {
                 Card card = playable as Card;
+
+                if (card && card.State == CardState.OnTable) handState = 1;
+                else handState = 0;
 
                 if (Input.GetMouseButtonDown(1) && card)
                 {
@@ -130,6 +143,8 @@ public class HandController : MonoBehaviour
                     hoveredPlayable.EndHover();
                     hoveredPlayable = null;
                 }
+
+                handState = 0;
             }
 
             // Interacting
@@ -199,5 +214,43 @@ public class HandController : MonoBehaviour
             hand.position = Vector3.SmoothDamp(hand.position, targetPos, ref handVelocity, moveTime);
             hand.rotation = Quaternion.Slerp(hand.rotation, targetRot, handRotSpeed * Time.deltaTime);
         }
+
+        void UpdateHandVisuals()
+        {
+            for (int i = 0; i < handTypeHolder.childCount; i++)
+            {
+                GameObject child = handTypeHolder.GetChild(i).gameObject;
+                if (i == handType)
+                {
+                    child.SetActive(true);
+                    for (int j = 0; j < child.transform.childCount; j++)
+                    {
+                        child.transform.GetChild(j).gameObject.SetActive(j == handState);
+                    }
+                }
+                else child.SetActive(false);
+            }
+
+            leftHandFrontSpriteRend.sprite = leftHandFrontSprites[handType];
+            leftHandBackSpriteRend.sprite = leftHandBackSprites[handType];
+        }
+    }
+
+
+    void UpdateHandType(Player player, int health)
+    {
+        if (player == null || player.IsDealer) return;
+        handType = Mathf.Clamp(3 - health, 0, 2);
+    }
+
+
+    void OnEnable()
+    {
+        EventManager.OnPlayerDamaged += UpdateHandType;
+    }
+
+    void OnDisable()
+    {
+        EventManager.OnPlayerDamaged -= UpdateHandType;
     }
 }

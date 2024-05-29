@@ -5,6 +5,7 @@ public static class EventManager
     public static event Action OnBellRung;
     public static void RingBell() => OnBellRung?.Invoke();
 
+
     public static event Action OnHoverCard;
     public static void HoverCard() => OnHoverCard?.Invoke();
 
@@ -28,4 +29,7 @@ public static class EventManager
 
     public static event Action<int> OnPotOverflow;
     public static void PotOverflow(int times) => OnPotOverflow?.Invoke(times);
+
+    public static event Action<Player,int> OnPlayerDamaged;
+    public static void PlayerDamaged(Player player, int health) => OnPlayerDamaged?.Invoke(player, health);
 }

@@ -1,8 +1,11 @@
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class Texture2DArrayCreator : MonoBehaviour
 {
+#if UNITY_EDITOR
     [SerializeField] Texture2D[] textures;
 
     [SerializeField] string path;
@@ -37,4 +40,5 @@ public class Texture2DArrayCreator : MonoBehaviour
         AssetDatabase.Refresh();
         Debug.Log($"Successfully created asset '{uri}'");
     }
+#endif
 }
