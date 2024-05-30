@@ -32,10 +32,16 @@ public class UIManager : MonoBehaviour
         input.ActivateInputField();
     }
 
+    void EndEdit()
+    {
+        Debug.Log($"end edit");
+    }
+
     void OnEnable()
     {
         input.onFocusSelectAll = false;
         input.onDeselect.AddListener((x) => RefocusInput());
+        input.onEndEdit.AddListener((x) => EndEdit());
         input.ActivateInputField();
     }
 
