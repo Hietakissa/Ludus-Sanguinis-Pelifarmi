@@ -173,7 +173,7 @@ public class Table : MonoBehaviour
     public void StealItem(Player target, Item item) => StartCoroutine(StealItemCor(target, item));
     public IEnumerator StealItemCor(Player target, Item item)
     {
-
+        Debug.Log($"Stole '{item.Type}' from '{(target.IsDealer ? "Dealer" : "Player")}'");
         // ToDo: some item stealing animation here
 
         if (target.IsDealer)

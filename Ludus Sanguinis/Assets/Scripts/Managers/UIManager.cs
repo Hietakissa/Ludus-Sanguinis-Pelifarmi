@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using HietakissaUtils.QOL;
 using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
 using TMPro;
-using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour
 {
@@ -19,27 +19,24 @@ public class UIManager : MonoBehaviour
     Queue<TextCollectionSO> dialogueQueue = new Queue<TextCollectionSO>();
     bool dialogueDisplaying;
 
+    [SerializeField] TMP_InputField input;
 
-    [SerializeField] TextCollectionSO col;
 
     void Awake()
     {
         Instance = this;
     }
 
-    void Update()
+    void RefocusInput()
     {
-        //if (Input.GetKeyDown(KeyCode.J)) PlayDialogue(testDialogue);
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            Test(col);
-        }
+        input.ActivateInputField();
     }
 
-    void Test(TextCollectionSO col)
+    void OnEnable()
     {
-        if (col == null) return;
-        Debug.Log($"{col.name}");
+        input.onFocusSelectAll = false;
+        input.onDeselect.AddListener((x) => RefocusInput());
+        input.ActivateInputField();
     }
 
 
