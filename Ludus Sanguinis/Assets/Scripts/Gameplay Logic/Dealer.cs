@@ -41,6 +41,7 @@ public static class Dealer
         foreach (int cardValue in GameManager.Instance.lastPlayerPlayedValues) playerCardValues.Remove(cardValue);
 
         variation = Random.Range(-currentVariation, currentVariation + 1);
+        Debug.Log($"current variation: {currentVariation}, variation: {variation}");
         TurnStartInitialCalculations();
 
         dealerCardsList = dealer.CardCollection.GetCardsList();
@@ -87,7 +88,7 @@ public static class Dealer
                             Item itemToSteal = playerItems.RandomElement();
                             Debug.Log($"stealing and playing item after no safe cards to play and stole item");
                             yield return table.StealItemCor(player, itemToSteal);
-                            yield return PlayItemCor(itemToSteal);
+                            if (itemToSteal.Type != ItemType.Hook) yield return PlayItemCor(itemToSteal);
                         }
                     }
                 }
@@ -99,14 +100,14 @@ public static class Dealer
                 yield return PlayItemCor(randomItem);
             }
 
-            if (availableReactiveItems.Count > 0)
-            {
-                // Stole a random non-reactive item to use
-
-                Item itemToPlay = availableReactiveItems.RandomElement();
-                availableReactiveItems.Remove(itemToPlay);
-                yield return PlayItemCor(itemToPlay);
-            }
+            //if (availableReactiveItems.Count > 0)
+            //{
+            //    // Stole a random non-reactive item to use
+            //
+            //    Item itemToPlay = availableReactiveItems.RandomElement();
+            //    availableReactiveItems.Remove(itemToPlay);
+            //    yield return PlayItemCor(itemToPlay);
+            //}
 
 
             List<Card> finalCards = GetFinalCardsToPlay();

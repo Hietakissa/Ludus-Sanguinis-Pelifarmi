@@ -56,13 +56,6 @@ public class Table : MonoBehaviour
         if (!player.IsDealer) UpdatePlayerValueText();
     }
 
-    // Items implemented:
-    //DP Scale
-    //DP Mirror
-    //DP Uno
-    //__ Coupon
-    //D_ Hook
-    //DP Heart
     public void PlayItem(Player player, Item item) => StartCoroutine(PlayItemCor(player, item));
 
     public IEnumerator PlayItemCor(Player user, Item item)
@@ -172,7 +165,7 @@ public class Table : MonoBehaviour
         bool CanPlayerUseItem(Player player, Item item)
         {
             if (player.IsDealer && dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
-            else if (playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
+            else if (GameManager.Instance.IsPlayerTurn && playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
             else return false;
         }
     }

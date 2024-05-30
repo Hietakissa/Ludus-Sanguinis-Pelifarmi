@@ -47,6 +47,8 @@ public class SoundManager : MonoBehaviour
     void OnDealCard() => PlaySoundAtPosition(dealCardSound);
     void OnPlayerDamaged(Player player, int health)
     {
+        if (player == null) return;
+
         if (player.IsDealer) PlaySoundAtPosition(dealerLoseLifeSound);
         else PlaySoundAtPosition(playerLoseLifeSound);
     }

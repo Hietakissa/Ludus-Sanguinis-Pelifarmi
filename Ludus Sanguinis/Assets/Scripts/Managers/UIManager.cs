@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour
     bool dialogueDisplaying;
 
 
+    [SerializeField] TextCollectionSO col;
+
     void Awake()
     {
         Instance = this;
@@ -27,7 +29,17 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.J)) PlayDialogue(testDialogue);
+        //if (Input.GetKeyDown(KeyCode.J)) PlayDialogue(testDialogue);
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            Test(col);
+        }
+    }
+
+    void Test(TextCollectionSO col)
+    {
+        if (col == null) return;
+        Debug.Log($"{col.name}");
     }
 
 

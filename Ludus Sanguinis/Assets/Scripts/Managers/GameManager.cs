@@ -21,8 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Player dealer;
     Player lastHighestPlayedPlayer;
     bool playerPlayedCards;
-    bool playerStoleItem;
-    bool isPlayerTurn;
+    public bool IsPlayerTurn;
     public List<int> lastPlayerPlayedValues = new List<int>();
 
 
@@ -34,6 +33,8 @@ public class GameManager : MonoBehaviour
     
     Card[] dealerCardReferences;
     Card[] playerCardReferences;
+
+    [SerializeField] bool giveItems;
 
 
     void Awake()
@@ -145,7 +146,7 @@ public class GameManager : MonoBehaviour
 
     void TryEndTurn()
     {
-        bool canEndTurn = !table.PlayerCards.IsEmpty() && isPlayerTurn;
+        bool canEndTurn = !table.PlayerCards.IsEmpty() && IsPlayerTurn;
 
         if (canEndTurn)
         {
@@ -162,11 +163,11 @@ public class GameManager : MonoBehaviour
         SetPlayerCardLock(false);
 
         Debug.Log($"Waiting for the player's turn!");
-        isPlayerTurn = true;
+        IsPlayerTurn = true;
         while (!playerPlayedCards) yield return null;
         table.HookActive = false;
         table.CouponActive = false;
-        isPlayerTurn = false;
+        IsPlayerTurn = false;
         SetPlayerCardLock(true);
         playerPlayedCards = false;
         lastPlayerPlayedValues = table.PlayerCards.GetCardValues();
@@ -333,8 +334,12 @@ public class GameManager : MonoBehaviour
                     EventManager.DealCard();
                 }
 
-                if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 6));
-                else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 6));
+
+                if (giveItems)
+                {
+                    if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 6));
+                    else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 6));
+                }
             }
         }
     }
@@ -343,7 +348,6 @@ public class GameManager : MonoBehaviour
     {
         table.PlayerPlayedItems.Clear();
         table.DealerPlayedItems.Clear();
-        playerStoleItem = false;
     }
 
 

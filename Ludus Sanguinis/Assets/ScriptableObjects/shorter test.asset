@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: "onko se <color=#1818>pelaajan hahmo</color> pitk\xE4 vai lyhyt "
+  - text: "onko se <color=#1818>pelaajan hahmo</color> pitk\xE4 vai lyhyt"

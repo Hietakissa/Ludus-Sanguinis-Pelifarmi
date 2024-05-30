@@ -11101,6 +11101,89 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262669369}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1279252943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1279252946}
+  - component: {fileID: 1279252945}
+  - component: {fileID: 1279252944}
+  m_Layer: 0
+  m_Name: d
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!23 &1279252944
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279252943}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f15c3cbd2704c30498866eab810f9ab7, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1279252945
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279252943}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1279252946
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279252943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -3.181, y: 1.877, z: -8.197}
+  m_LocalScale: {x: 1.4887066, y: 1.6747949, z: 0.37217665}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &1292114601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13798,22 +13881,22 @@ MonoBehaviour:
     Slots:
     - tablePos: {fileID: 660302064}
       Item: {fileID: 1628931020}
-      Count: 1
+      Count: 0
     - tablePos: {fileID: 501801039}
       Item: {fileID: 252796054}
-      Count: 3
+      Count: 0
     - tablePos: {fileID: 1334130548}
       Item: {fileID: 1365661599}
-      Count: 1
+      Count: 0
     - tablePos: {fileID: 59785234}
       Item: {fileID: 1813353868}
-      Count: 1
+      Count: 0
     - tablePos: {fileID: 1744902438}
       Item: {fileID: 2072329172}
       Count: 2
     - tablePos: {fileID: 667138402}
       Item: {fileID: 1984677692}
-      Count: 1
+      Count: 0
   dealerItemCollection:
     Slots:
     - tablePos: {fileID: 643310738}
@@ -13827,13 +13910,13 @@ MonoBehaviour:
       Count: 0
     - tablePos: {fileID: 563848279}
       Item: {fileID: 519289334}
-      Count: 1
+      Count: 0
     - tablePos: {fileID: 920176914}
       Item: {fileID: 236372236}
-      Count: 1
+      Count: 2
     - tablePos: {fileID: 733311630}
       Item: {fileID: 883452861}
-      Count: 1
+      Count: 0
   PlayerPlayedItems: []
   DealerPlayedItems: []
   playCardShake: {fileID: 11400000, guid: c2890ef8584e8014f9f590f01b586d79, type: 2}
@@ -15712,6 +15795,7 @@ MonoBehaviour:
         Card: {fileID: 614385806}
       - <Transform>k__BackingField: {fileID: 3431080}
         Card: {fileID: 744802287}
+  IsPlayerTurn: 0
   lastPlayerPlayedValues: 
   normalCardValueTable:
     items:
@@ -15786,6 +15870,7 @@ MonoBehaviour:
     - item: 16
       weight: 5
   pot: {fileID: 1837949855}
+  giveItems: 0
   debugHealthText: {fileID: 2060046246}
 --- !u!1 &1718471206
 GameObject:
@@ -24999,3 +25084,4 @@ SceneRoots:
   - {fileID: 2090027054}
   - {fileID: 1777136024}
   - {fileID: 274331716}
+  - {fileID: 1279252946}
