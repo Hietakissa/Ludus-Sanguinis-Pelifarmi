@@ -13,6 +13,9 @@ public class SoundManager : MonoBehaviour
     [SerializeField] SoundContainer playCardSound;
     [SerializeField] SoundContainer dealCardSound;
 
+    [SerializeField] SoundContainer playerLoseLifeSound;
+    [SerializeField] SoundContainer dealerLoseLifeSound;
+
     void Awake()
     {
         Instance = this;
@@ -24,8 +27,10 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void PlaySoundAtPosition(SoundContainer sound, Vector3 position = new Vector3())
+    public void PlaySoundAtPosition(SoundContainer sound, Vector3 position = default)
     {
+        if (sound == null) return;
+
         AudioSource source = audioSources[sourceIndex];
         source.transform.position = position;
         sound.ApplyToAudioSource(source);
@@ -40,7 +45,11 @@ public class SoundManager : MonoBehaviour
     void OnHoverCard() => PlaySoundAtPosition(hoverCardSound);
     void OnPlayCard() => PlaySoundAtPosition(playCardSound);
     void OnDealCard() => PlaySoundAtPosition(dealCardSound);
-
+    void OnPlayerDamaged(Player player, int health)
+    {
+        if (player.IsDealer) PlaySoundAtPosition(dealerLoseLifeSound);
+        else PlaySoundAtPosition(playerLoseLifeSound);
+    }
 
 
     void OnEnable()
@@ -50,6 +59,8 @@ public class SoundManager : MonoBehaviour
         EventManager.OnHoverCard += OnHoverCard;
         EventManager.OnPlayCard += OnPlayCard;
         EventManager.OnDealCard += OnDealCard;
+
+        EventManager.OnPlayerDamaged += OnPlayerDamaged;
     }
 
     void OnDisable()
@@ -59,5 +70,7 @@ public class SoundManager : MonoBehaviour
         EventManager.OnHoverCard -= OnHoverCard;
         EventManager.OnPlayCard -= OnPlayCard;
         EventManager.OnDealCard -= OnDealCard;
+
+        EventManager.OnPlayerDamaged -= OnPlayerDamaged;
     }
 }
