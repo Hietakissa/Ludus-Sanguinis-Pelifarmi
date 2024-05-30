@@ -32,4 +32,8 @@ public static class EventManager
 
     public static event Action<Player,int> OnPlayerDamaged;
     public static void PlayerDamaged(Player player, int health) => OnPlayerDamaged?.Invoke(player, health);
+
+
+    public static event Action<string> OnSubmitPlayerName;
+    public static void SubmitPlayerName(string name) => OnSubmitPlayerName?.Invoke(name);
 }

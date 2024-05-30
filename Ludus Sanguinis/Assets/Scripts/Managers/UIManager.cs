@@ -4,6 +4,7 @@ using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class UIManager : MonoBehaviour
 {
@@ -20,7 +21,9 @@ public class UIManager : MonoBehaviour
     bool dialogueDisplaying;
 
     [SerializeField] TMP_InputField input;
+    bool givingName;
 
+    [SerializeField] TextCollectionSO tutorialText;
 
     void Awake()
     {
@@ -29,12 +32,12 @@ public class UIManager : MonoBehaviour
 
     void RefocusInput()
     {
-        input.ActivateInputField();
+        if (givingName) input.ActivateInputField();
     }
 
     void EndEdit()
     {
-        Debug.Log($"end edit");
+        if (input.text.Length > 0) givingName = false;
     }
 
     void OnEnable()
@@ -42,7 +45,22 @@ public class UIManager : MonoBehaviour
         input.onFocusSelectAll = false;
         input.onDeselect.AddListener((x) => RefocusInput());
         input.onEndEdit.AddListener((x) => EndEdit());
+    }
+
+    public IEnumerator GiveNameSequenceCor()
+    {
+        givingName = true;
         input.ActivateInputField();
+
+        while (givingName) yield return null;
+
+        EventManager.SubmitPlayerName(input.text);
+    }
+
+    public IEnumerator TutorialSequenceCor()
+    {
+        PlayDialogue(tutorialText);
+        while (dialogueDisplaying) yield return null;
     }
 
 
@@ -81,53 +99,70 @@ public class UIManager : MonoBehaviour
 
         IEnumerator TypeDialogueElement(DialogueElement dialogue)
         {
-            int length = dialogue.Text.Length;
+            string text = dialogue.Text.Replace("NAME", GameManager.Instance.PlayerName);
+            int length = text.Length;
             float progressedCharacters = 0f;
             int lastCharacters = 0;
             int characters = 0;
+            int soundIndex = 0;
 
             while (true)
             {
                 progressedCharacters += typeSpeed * Time.deltaTime;
-
                 characters = Mathf.Min(length, progressedCharacters.RoundDown());
-                if (characters != lastCharacters) SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
-
-
                 int newCharacters = characters - lastCharacters;
-                //Debug.Log($"last chars: {lastCharacters}, new chars: {newCharacters}");
-                int tagStartIndex = 0;
+
+                float wait = 0f;
                 bool inTag = false;
                 for (int i = 0; i < newCharacters; i++)
                 {
                     int currentIndex = lastCharacters + i;
+                    char currentChar = text[currentIndex];
 
-                    if (!inTag && dialogue.Text[currentIndex] == '<')
+                    // should make some dictionary of characters with their respective wait times instead, but this also works
+                    if (currentChar == ',') wait = 0.25f;
+                    else if (currentChar == '.') wait = 0.5f;
+                    else if (currentChar == '?') wait = 0.5f;
+                    else if (currentChar == '!') wait = 0.5f;
+                    else if (!inTag && currentChar == '<')
                     {
-                        tagStartIndex = i;
                         inTag = true;
 
                         int charactersLeft = length - currentIndex;
-                        Debug.Log($"starting tag end check, length: {length}, characters left: {charactersLeft}, currentindex: {currentIndex}, tagstartindex: {tagStartIndex}");
+                        //Debug.Log($"starting tag end check, length: {length}, characters left: {charactersLeft}, currentindex: {currentIndex}, tagstartindex: {tagStartIndex}");
                         for (int j = 0; j < charactersLeft; j++)
                         {
-                            Debug.Log($"checking {dialogue.Text[currentIndex + j]}");
-                            if (dialogue.Text[currentIndex + j] == '>')
+                            //Debug.Log($"checking {text[currentIndex + j]}");
+                            if (text[currentIndex + j] == '>')
                             {
                                 int index = currentIndex + j; 
-                                int tagLength = index - currentIndex + 1;
+                                int tagLength = index - currentIndex;
                                 progressedCharacters += tagLength;
                                 characters += tagLength;
                                 inTag = false;
-                                Debug.Log($"found end of tag at index {index} {tagLength} characters long");
+                                //Debug.Log($"found end of tag at index {index} {tagLength} characters long");
                                 break;
                             }
                         }
                     }
+                    else
+                    {
+                        soundIndex++;
+                        if (soundIndex >= 2)
+                        {
+                            SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
+                            soundIndex = 0;
+                        }
+                    }
                 } 
 
-
-                dialogueText.text = $"{dialogue.Text.Substring(0, characters)}";
+                dialogueText.text = $"{text.Substring(0, characters)}";
+                if (wait != 0f)
+                {
+                    // Play sound if we are waiting, i.e. hit a punctuation
+                    SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
+                    yield return QOL.GetWaitForSeconds(wait);
+                }
 
                 lastCharacters = characters;
                 if (characters >= length) break;

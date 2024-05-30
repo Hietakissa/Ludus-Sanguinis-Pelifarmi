@@ -6,6 +6,7 @@ using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
 using TMPro;
+using HietakissaUtils.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,6 +36,8 @@ public class GameManager : MonoBehaviour
     Card[] playerCardReferences;
 
     [SerializeField] bool giveItems;
+    public string PlayerName { get; private set; }
+    public bool PlayedTutorial = false;
 
 
     void Awake()
@@ -110,6 +113,14 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
+        if (!PlayedTutorial)
+        {
+            Debug.Log($"start tutorial");
+            yield return UIManager.Instance.GiveNameSequenceCor();
+            yield return UIManager.Instance.TutorialSequenceCor();
+            Debug.Log($"tutorial complete");
+        }
+
         yield return QOL.GetWaitForSeconds(2f);
         yield return MoveCardsFromDeckToHands();
         yield return QOL.GetWaitForSeconds(1.5f);
@@ -408,6 +419,8 @@ public class GameManager : MonoBehaviour
         return values.ToArray();
     }
 
+    void PlayerSubmitName(string name) => PlayerName = name;
+
 
     public static bool HasItem(in List<Item> items, ItemType type)
     {
@@ -428,6 +441,11 @@ public class GameManager : MonoBehaviour
     // hook > play immediately to steal item
     // heart > play immediately for %chance to dmg
 
+    void OnDestroy()
+    {
+        Serializer.Save(PlayedTutorial, "TUTORIAL_PLAYED");
+    }
+
 
     void OnEnable()
     {
@@ -437,6 +455,8 @@ public class GameManager : MonoBehaviour
         EventManager.OnEndGame += EndGame;
 
         EventManager.OnPotOverflow += OnPotOverflow;
+
+        EventManager.OnSubmitPlayerName += PlayerSubmitName;
     }
 
     void OnDisable()
@@ -447,6 +467,8 @@ public class GameManager : MonoBehaviour
         EventManager.OnEndGame -= EndGame;
 
         EventManager.OnPotOverflow -= OnPotOverflow;
+
+        EventManager.OnSubmitPlayerName -= PlayerSubmitName;
     }
 }
 

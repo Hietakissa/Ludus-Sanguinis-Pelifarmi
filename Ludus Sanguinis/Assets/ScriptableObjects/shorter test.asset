@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: "onko se <color=#1818>pelaajan hahmo</color> pitk\xE4 vai lyhyt"
+  - text: "moi <#cb0000>NAME</color>. onko se <color=#1818>pelaajan hahmo</color>
+      pitk\xE4 vai lyhyt?"
+  - text: tutoriaalin toinen teksti, laitan tahan vahan lisaa teksia, etta on pidempi
+      kuin eka. <#cb0000>under. your. skin.</color>
