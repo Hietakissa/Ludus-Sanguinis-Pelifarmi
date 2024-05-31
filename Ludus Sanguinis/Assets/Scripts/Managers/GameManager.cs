@@ -47,6 +47,12 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
+#if UNITY_EDITOR
+        PlayedTutorial = false;
+#else
+        PlayedTutorial = Serializer.Load(out PlayedTutorial, "TUTORIAL_PLAYED");
+#endif
+
         table.PlayerItemCollection.Init();
         table.DealerItemCollection.Init();
 
@@ -118,6 +124,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"start tutorial");
             yield return UIManager.Instance.TutorialSequenceCor();
             Debug.Log($"tutorial complete");
+            PlayedTutorial = true;
         }
 
         yield return QOL.GetWaitForSeconds(2f);
@@ -442,7 +449,11 @@ public class GameManager : MonoBehaviour
 
     void OnDestroy()
     {
+#if UNITY_EDITOR
+        
+#else
         Serializer.Save(PlayedTutorial, "TUTORIAL_PLAYED");
+#endif
     }
 
 

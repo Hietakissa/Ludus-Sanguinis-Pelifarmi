@@ -193,7 +193,7 @@ public static class Dealer
         }
         else
         {
-            // Didn't use uno, play the smallest card and pray we live due to inaccuracies
+            // Didn't use uno, play the smallest card and pray we live due to inaccuracies, or due to the player playing bad
             Card smallestCard = null;
             foreach (Card card in dealerCardsList)
             {
