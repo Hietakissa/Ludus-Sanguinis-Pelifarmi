@@ -117,7 +117,6 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log($"start tutorial");
             yield return UIManager.Instance.GiveNameSequenceCor();
-            yield return UIManager.Instance.TutorialSequenceCor();
             Debug.Log($"tutorial complete");
         }
 

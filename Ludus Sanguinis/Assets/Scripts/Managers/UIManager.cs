@@ -4,7 +4,6 @@ using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
 using TMPro;
-using System;
 
 public class UIManager : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] float typeSpeed;
 
     [SerializeField] SoundContainer typeCharacterSound;
-    [SerializeField] TextCollectionSO testDialogue;
 
     Queue<TextCollectionSO> dialogueQueue = new Queue<TextCollectionSO>();
     bool dialogueDisplaying;
@@ -23,7 +21,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_InputField input;
     bool givingName;
 
-    [SerializeField] TextCollectionSO tutorialText;
+    [SerializeField] TextCollectionSO preContractTutorialText;
+    [SerializeField] TextCollectionSO postContractTutorialText;
+
+    [SerializeField] Animator contractPaperAnimator;
 
     void Awake()
     {
@@ -32,12 +33,22 @@ public class UIManager : MonoBehaviour
 
     void RefocusInput()
     {
-        if (givingName) input.ActivateInputField();
+        if (givingName)
+        {
+            contractPaperAnimator.Play("ContractEnter");
+            input.ActivateInputField();
+        }
     }
 
     void EndEdit()
     {
-        if (input.text.Length > 0) givingName = false;
+        if (input.text.Length > 0)
+        {
+            givingName = false;
+            contractPaperAnimator.Play("ContractExit");
+
+            EventManager.SubmitPlayerName(input.text);
+        }
     }
 
     void OnEnable()
@@ -53,13 +64,17 @@ public class UIManager : MonoBehaviour
         input.ActivateInputField();
 
         while (givingName) yield return null;
-
-        EventManager.SubmitPlayerName(input.text);
     }
 
     public IEnumerator TutorialSequenceCor()
     {
-        PlayDialogue(tutorialText);
+        PlayDialogue(preContractTutorialText);
+        while (dialogueDisplaying) yield return null;
+
+        // Move contract, ask for name, continue
+        yield return GiveNameSequenceCor();
+
+        PlayDialogue(postContractTutorialText);
         while (dialogueDisplaying) yield return null;
     }
 
@@ -148,7 +163,7 @@ public class UIManager : MonoBehaviour
                     else
                     {
                         soundIndex++;
-                        if (soundIndex >= 2)
+                        if (soundIndex >= 2) // Every other character play a sound
                         {
                             SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
                             soundIndex = 0;
@@ -160,6 +175,7 @@ public class UIManager : MonoBehaviour
                 if (wait != 0f)
                 {
                     // Play sound if we are waiting, i.e. hit a punctuation
+                    soundIndex = 0;
                     SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
                     yield return QOL.GetWaitForSeconds(wait);
                 }
