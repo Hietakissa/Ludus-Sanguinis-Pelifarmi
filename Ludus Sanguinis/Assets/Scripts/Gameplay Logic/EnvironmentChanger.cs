@@ -1,3 +1,4 @@
+using UnityEngine.Events;
 using UnityEngine;
 
 public class EnvironmentChanger : MonoBehaviour
@@ -24,17 +25,31 @@ class Environment
     [SerializeField] MatchType matchType;
     [SerializeField, HideInInspector] PlayerType playerType = PlayerType.None;
     [SerializeField] GameObject[] environmentObjects;
+    [SerializeField] UnityEvent OnActivate;
+    [SerializeField] UnityEvent OnDeactivate;
 
 
-    public void UpdateState(Player player, int health)
+    public void UpdateState(Player player, int newHealth)
     {
         if ((player != null && player.GetPlayerType() != playerType) || (player == null && playerType != PlayerType.None)) return;
 
+        bool match = IsMatch();
         for (int i = 0; i < environmentObjects.Length; i++)
         {
-            if (matchType == MatchType.Equals) environmentObjects[i].SetActive(this.health == health);
-            else if (matchType == MatchType.GreaterThan) environmentObjects[i].SetActive(this.health < health);
-            else if (matchType == MatchType.LessThan) environmentObjects[i].SetActive(this.health > health);
+            environmentObjects[i].SetActive(match);
+        }
+
+        if (match) OnActivate?.Invoke();
+        else OnDeactivate?.Invoke();
+
+
+
+        bool IsMatch()
+        {
+            if (matchType == MatchType.Equals) return newHealth == health;
+            else if (matchType == MatchType.GreaterThan) return newHealth > health;
+            else if (matchType == MatchType.LessThan) return newHealth < health;
+            else return false;
         }
     }
 }

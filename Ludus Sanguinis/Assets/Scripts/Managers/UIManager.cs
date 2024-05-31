@@ -35,14 +35,13 @@ public class UIManager : MonoBehaviour
     {
         if (givingName)
         {
-            contractPaperAnimator.Play("ContractEnter");
             input.ActivateInputField();
         }
     }
 
     void EndEdit()
     {
-        if (input.text.Length > 0)
+        if (givingName && input.text.Length > 0)
         {
             givingName = false;
             contractPaperAnimator.Play("ContractExit");
@@ -51,17 +50,31 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    void NameInputChanged()
+    {
+        SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
+    }
+
     void OnEnable()
     {
         input.onFocusSelectAll = false;
         input.onDeselect.AddListener((x) => RefocusInput());
-        input.onEndEdit.AddListener((x) => EndEdit());
+        input.onValueChanged.AddListener((x) => NameInputChanged());
+        //input.onEndEdit.AddListener((x) => EndEdit());
+
+        EventManager.OnBellRung += EndEdit;
+    }
+
+    void OnDisable()
+    {
+        EventManager.OnBellRung -= EndEdit;
     }
 
     public IEnumerator GiveNameSequenceCor()
     {
         givingName = true;
         input.ActivateInputField();
+        contractPaperAnimator.Play("ContractEnter");
 
         while (givingName) yield return null;
     }

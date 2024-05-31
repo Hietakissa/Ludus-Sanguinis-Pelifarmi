@@ -116,6 +116,7 @@ public class Table : MonoBehaviour
                         {
                             cardPos.Card.Flip();
                             cardPos.Card.SetRevealState(true);
+                            EventManager.DealCard();
                             yield return QOL.GetWaitForSeconds(0.4f);
                         }
                     }
@@ -129,6 +130,7 @@ public class Table : MonoBehaviour
                         {
                             cardPos.Card.Flip();
                             cardPos.Card.SetRevealState(false);
+                            EventManager.DealCard();
                             yield return QOL.GetWaitForSeconds(0.2f);
                         }
                     }

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: kirjotit contractin kiltisti
-  - text: lkjasdfkl... L. U. D. U. S.
+  - text: kirjotit contractin kiltisti NAME.
+  - text: nyt pelataan... L. U. D. U. S.
