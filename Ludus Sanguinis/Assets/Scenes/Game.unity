@@ -9581,7 +9581,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 32
+  m_fontStyle: 16
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -9611,7 +9611,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -150, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -17294,6 +17294,7 @@ MonoBehaviour:
       weight: 5
   pot: {fileID: 1837949855}
   giveItems: 1
+  skipTutorial: 0
   PlayedTutorial: 0
   debugHealthText: {fileID: 2060046246}
 --- !u!1 &1718471206
@@ -18869,6 +18870,7 @@ MonoBehaviour:
   hoverCardSound: {fileID: 11400000, guid: 8179a22afe8c4564db6818734060b611, type: 2}
   playCardSound: {fileID: 11400000, guid: a2eeb65a9600fc749aa7f1b1daebbe06, type: 2}
   dealCardSound: {fileID: 11400000, guid: 6c911c13bc8244f48a58efe79716d9bb, type: 2}
+  hoverItemSound: {fileID: 11400000, guid: ccd6417919022c44b8a9a51917b20c1f, type: 2}
   playerLoseLifeSound: {fileID: 0}
   dealerLoseLifeSound: {fileID: 0}
 --- !u!1 &1859296571

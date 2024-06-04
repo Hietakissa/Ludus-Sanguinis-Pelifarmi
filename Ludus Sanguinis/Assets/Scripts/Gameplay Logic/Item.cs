@@ -34,4 +34,11 @@ public class Item : PlayableItem, IInteractable
 
         transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVel, scaleSmoothTime);
     }
+
+
+    public override void StartHover()
+    {
+        base.StartHover();
+        EventManager.HoverItem();
+    }
 }

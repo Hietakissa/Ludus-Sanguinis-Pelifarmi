@@ -31,12 +31,33 @@ public class UIManager : MonoBehaviour
         Instance = this;
     }
 
+#if UNITY_EDITOR
+    bool skipDialogue;
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow) && dialogueDisplaying) skipDialogue = true;
+    }
+#endif
+
+    void OnEnable()
+    {
+        input.onFocusSelectAll = false;
+        input.onDeselect.AddListener((x) => RefocusInput());
+        input.onValueChanged.AddListener((x) => NameInputChanged());
+        //input.onEndEdit.AddListener((x) => EndEdit());
+
+        EventManager.OnBellRung += EndEdit;
+    }
+
+    void OnDisable()
+    {
+        EventManager.OnBellRung -= EndEdit;
+    }
+
+
     void RefocusInput()
     {
-        if (givingName)
-        {
-            input.ActivateInputField();
-        }
+        if (givingName) input.ActivateInputField();
     }
 
     void EndEdit()
@@ -53,21 +74,6 @@ public class UIManager : MonoBehaviour
     void NameInputChanged()
     {
         SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
-    }
-
-    void OnEnable()
-    {
-        input.onFocusSelectAll = false;
-        input.onDeselect.AddListener((x) => RefocusInput());
-        input.onValueChanged.AddListener((x) => NameInputChanged());
-        //input.onEndEdit.AddListener((x) => EndEdit());
-
-        EventManager.OnBellRung += EndEdit;
-    }
-
-    void OnDisable()
-    {
-        EventManager.OnBellRung -= EndEdit;
     }
 
     public IEnumerator GiveNameSequenceCor()
@@ -131,13 +137,12 @@ public class UIManager : MonoBehaviour
             int length = text.Length;
             float progressedCharacters = 0f;
             int lastCharacters = 0;
-            int characters = 0;
             int soundIndex = 0;
 
             while (true)
             {
                 progressedCharacters += typeSpeed * Time.deltaTime;
-                characters = Mathf.Min(length, progressedCharacters.RoundDown());
+                int characters = Mathf.Min(length, progressedCharacters.RoundDown());
                 int newCharacters = characters - lastCharacters;
 
                 float wait = 0f;
@@ -150,8 +155,8 @@ public class UIManager : MonoBehaviour
                     // should make some dictionary of characters with their respective wait times instead, but this also works
                     if (currentChar == ',') wait = 0.25f;
                     else if (currentChar == '.') wait = 0.5f;
-                    else if (currentChar == '?') wait = 0.5f;
-                    else if (currentChar == '!') wait = 0.5f;
+                    else if (currentChar == '?') wait = 0.7f;
+                    else if (currentChar == '!') wait = 0.7f;
                     else if (!inTag && currentChar == '<')
                     {
                         inTag = true;
@@ -182,7 +187,16 @@ public class UIManager : MonoBehaviour
                             soundIndex = 0;
                         }
                     }
-                } 
+                }
+
+#if UNITY_EDITOR
+                if (skipDialogue)
+                {
+                    dialogueText.text = text;
+                    skipDialogue = false;
+                    yield break;
+                }
+#endif
 
                 dialogueText.text = $"{text.Substring(0, characters)}";
                 if (wait != 0f)

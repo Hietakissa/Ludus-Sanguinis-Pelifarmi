@@ -13,6 +13,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] SoundContainer playCardSound;
     [SerializeField] SoundContainer dealCardSound;
 
+    [SerializeField] SoundContainer hoverItemSound;
+
     [SerializeField] SoundContainer playerLoseLifeSound;
     [SerializeField] SoundContainer dealerLoseLifeSound;
 
@@ -45,6 +47,9 @@ public class SoundManager : MonoBehaviour
     void OnHoverCard() => PlaySoundAtPosition(hoverCardSound);
     void OnPlayCard() => PlaySoundAtPosition(playCardSound);
     void OnDealCard() => PlaySoundAtPosition(dealCardSound);
+
+    void HoverItem() => PlaySoundAtPosition(hoverItemSound);
+
     void OnPlayerDamaged(Player player, int health)
     {
         if (player == null) return;
@@ -62,6 +67,8 @@ public class SoundManager : MonoBehaviour
         EventManager.OnPlayCard += OnPlayCard;
         EventManager.OnDealCard += OnDealCard;
 
+        EventManager.OnHoverItem += HoverItem;
+
         EventManager.OnPlayerDamaged += OnPlayerDamaged;
     }
 
@@ -72,6 +79,8 @@ public class SoundManager : MonoBehaviour
         EventManager.OnHoverCard -= OnHoverCard;
         EventManager.OnPlayCard -= OnPlayCard;
         EventManager.OnDealCard -= OnDealCard;
+        
+        EventManager.OnHoverItem -= HoverItem;
 
         EventManager.OnPlayerDamaged -= OnPlayerDamaged;
     }

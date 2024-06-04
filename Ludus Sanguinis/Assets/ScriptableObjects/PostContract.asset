@@ -16,7 +16,7 @@ MonoBehaviour:
   dialogue:
   - text: NAME, is it? Well then, let's hope Lady Luck is on your side tonight, NAME.
       Let's get on to the rules of Ludus Sanguinis.
-  - text: The game begins with both of us being dealt a hand of five cards. These
+  - text: The game begins with each of us being dealt a hand of five cards. These
       cards are made specifically for Ludus Sanguinis, and range from 0 to 16.
   - text: We take turns placing down as many cards as we want. When you run out of
       cards to play, a new hand is dealt, and you will be given an item with a special
