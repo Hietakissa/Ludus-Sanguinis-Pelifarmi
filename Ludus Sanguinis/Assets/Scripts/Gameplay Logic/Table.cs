@@ -32,11 +32,17 @@ public class Table : MonoBehaviour
 
     [HideInInspector] public Item ItemToSteal;
 
-    [SerializeField] ParticleSystem explosion;
-    [SerializeField] SoundContainer explosionSound;
-
     [SerializeField] TextMeshPro scaleText;
     [SerializeField] Transform deckPos;
+
+    [Header("Animation Refs")]
+    [SerializeField] Animator itemAnimator;
+    [SerializeField] Transform scaleAnimTarget;
+    [SerializeField] Transform mirrorAnimTarget;
+    [SerializeField] Transform unoAnimTarget;
+    [SerializeField] Transform couponAnimTarget;
+    [SerializeField] Transform hookAnimTarget;
+    [SerializeField] Transform heartAnimTarget;
 
     Player dealer;
     public bool HookActive;
@@ -63,10 +69,8 @@ public class Table : MonoBehaviour
         if (!CanPlayerUseItem(user, item)) yield break;
 
         Player opponent = user.IsDealer ? GameManager.Instance.Player : dealer;
-        Debug.Log($"{(user.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
+        QOL.Log($"{(user.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
 
-        explosion.Play();
-        //SoundManager.Instance.PlaySoundAtPosition(explosionSound, transform.position);
 
         // Do item usage animation here
 
@@ -109,11 +113,13 @@ public class Table : MonoBehaviour
             switch (item.Type)
             {
                 case ItemType.Mirror:
+                    bool flipped = false;
                     for (int i = 0; i < dealer.CardCollection.CardPositions.Length; i++)
                     {
                         CardPosition cardPos = dealer.CardCollection.CardPositions[i];
                         if (cardPos.HasCard)
                         {
+                            flipped = true;
                             cardPos.Card.Flip();
                             cardPos.Card.SetRevealState(true);
                             EventManager.DealCard();
@@ -121,6 +127,7 @@ public class Table : MonoBehaviour
                         }
                     }
 
+                    if (!flipped) break;
                     yield return QOL.GetWaitForSeconds(5);
 
                     for (int i = 0; i < dealer.CardCollection.CardPositions.Length; i++)
@@ -146,31 +153,112 @@ public class Table : MonoBehaviour
         switch (item.Type)
         {
             case ItemType.Scale:
-                // scale anim
+
+                yield return AnimateScaleItemCor(user);
+
                 if (user.IsDealer) scaleText.text = "?";
                 else scaleText.text = GameManager.Instance.Pot.FillAmount.ToString();
                 yield return QOL.GetWaitForSeconds(3f);
                 scaleText.text = "";
                 break;
 
-            case ItemType.Heart:
-                if (Maf.RandomBool(50)) GameManager.Instance.DamagePlayer(user, 1);
-                else GameManager.Instance.DamagePlayer(opponent, 1);
+            case ItemType.Mirror:
+                yield return AnimateMirrorItemCor(user);
                 break;
 
             case ItemType.Coupon:
+
+                yield return AnimateCouponItemCor(user);
+
                 CouponActive = true;
+                break;
+
+            case ItemType.Hook:
+                yield return AnimateHookItemCor(user);
+                break;
+
+            case ItemType.Heart:
+
+                yield return AnimateHeartItemCor(user);
+
+                if (Maf.RandomBool(50)) GameManager.Instance.DamagePlayer(user, 1);
+                else GameManager.Instance.DamagePlayer(opponent, 1);
                 break;
         }
 
 
         bool CanPlayerUseItem(Player player, Item item)
         {
-            if (player.IsDealer && dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
-            else if (GameManager.Instance.IsPlayerTurn && playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
-            else return false;
+            if (player.IsDealer)
+            {
+                if (dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
+            }
+            else if (GameManager.Instance.IsPlayerTurn)
+            {
+                if (playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
+            }
+
+            return false;
+            //if (player.IsDealer && dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
+            //else if (GameManager.Instance.IsPlayerTurn && playerItemCollection.GetItemCountForItem(item) > 0 && !PlayerPlayedItems.Contains(item)) return true;
+            //else return false;
         }
     }
+
+
+    const float CONST_ANIMATION_LENGTH = 3f;
+    IEnumerator AnimateScaleItemCor(Player user)
+    {
+        yield return AnimateItemCor(user, ItemType.Scale);
+    }
+    IEnumerator AnimateMirrorItemCor(Player user)
+    {
+        yield return AnimateItemCor(user, ItemType.Mirror);
+    }
+    public IEnumerator AnimateUnoItemCor(Player user)
+    {
+        yield return AnimateItemCor(user, ItemType.UnoCard);
+    }
+    IEnumerator AnimateCouponItemCor(Player user)
+    {
+        yield return AnimateItemCor(user, ItemType.Coupon);
+    }
+    IEnumerator AnimateHookItemCor(Player user)
+    {
+        yield return AnimateItemCor(user, ItemType.Hook);
+    }
+    IEnumerator AnimateHeartItemCor(Player user)
+    {
+        yield return AnimateItemCor(user, ItemType.Heart);
+    }
+
+    IEnumerator AnimateItemCor(Player user, ItemType itemType)
+    {
+        Item item = user.IsDealer ? dealerItemCollection.GetItem(itemType) : playerItemCollection.GetItem(itemType);
+        Transform targetBefore = item.TargetTransform;
+
+        item.SetTargetTransform(GetAnimTargetForItem(itemType));
+        itemAnimator.Play($"{itemType}_Use_Anim");
+        yield return QOL.GetWaitForSeconds(CONST_ANIMATION_LENGTH);
+
+        item.SetTargetTransform(targetBefore);
+
+
+        Transform GetAnimTargetForItem(ItemType itemType)
+        {
+            return itemType switch
+            {
+                ItemType.Scale => scaleAnimTarget,
+                ItemType.Mirror => mirrorAnimTarget,
+                ItemType.UnoCard => unoAnimTarget,
+                ItemType.Coupon => couponAnimTarget,
+                ItemType.Hook => hookAnimTarget,
+                ItemType.Heart => heartAnimTarget,
+                _ => transform
+            };
+        }
+    }
+
 
     public void StealItem(Player target, Item item) => StartCoroutine(StealItemCor(target, item));
     public IEnumerator StealItemCor(Player target, Item item)

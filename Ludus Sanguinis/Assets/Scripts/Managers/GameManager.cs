@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] bool giveItems;
     [SerializeField] bool skipTutorial;
     public string PlayerName { get; private set; }
-    public bool PlayedTutorial = false;
+    [HideInInspector] public bool PlayedTutorial = false;
 
 
     void Awake()
@@ -278,11 +278,32 @@ public class GameManager : MonoBehaviour
     IEnumerator HandleItems()
     {
         int swapCount = 0;
-        if (HasItem(in table.PlayerPlayedItems, ItemType.UnoCard)) swapCount++;
-        if (HasItem(in table.DealerPlayedItems, ItemType.UnoCard)) swapCount++;
+        bool playerHas = false;
+        bool dealerHas = false;
+        if (HasItem(in table.PlayerPlayedItems, ItemType.UnoCard))
+        {
+            playerHas = true;
+            swapCount++;
+        }
+        if (HasItem(in table.DealerPlayedItems, ItemType.UnoCard))
+        {
+            dealerHas = true;
+            swapCount++;
+        }
 
         for (int i = 0; i < swapCount; i++)
         {
+            if (playerHas)
+            {
+                yield return table.AnimateUnoItemCor(Player);
+                playerHas = false;
+            }
+            else if (dealerHas)
+            {
+                yield return table.AnimateUnoItemCor(DealerRef);
+                dealerHas = false;
+            }
+
             yield return SwapCards(table.PlayerCards, table.DealerCards);
             table.UpdatePlayerValueText();
         }

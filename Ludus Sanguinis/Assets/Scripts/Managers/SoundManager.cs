@@ -13,10 +13,16 @@ public class SoundManager : MonoBehaviour
     [SerializeField] SoundContainer playCardSound;
     [SerializeField] SoundContainer dealCardSound;
 
-    [SerializeField] SoundContainer hoverItemSound;
+    [SerializeField] SoundContainer scaleHoverSound;
+    [SerializeField] SoundContainer mirrorHoverSound;
+    [SerializeField] SoundContainer unoHoverSound;
+    [SerializeField] SoundContainer couponHoverSound;
+    [SerializeField] SoundContainer hookHoverSound;
+    [SerializeField] SoundContainer heartHoverSound;
 
     [SerializeField] SoundContainer playerLoseLifeSound;
     [SerializeField] SoundContainer dealerLoseLifeSound;
+
 
     void Awake()
     {
@@ -48,7 +54,18 @@ public class SoundManager : MonoBehaviour
     void OnPlayCard() => PlaySoundAtPosition(playCardSound);
     void OnDealCard() => PlaySoundAtPosition(dealCardSound);
 
-    void HoverItem() => PlaySoundAtPosition(hoverItemSound);
+    void HoverItem(Item item)
+    {
+        switch (item.Type)
+        {
+            case ItemType.Scale: PlaySoundAtPosition(scaleHoverSound); break;
+            case ItemType.Mirror: PlaySoundAtPosition(mirrorHoverSound); break;
+            case ItemType.UnoCard: PlaySoundAtPosition(unoHoverSound); break;
+            case ItemType.Coupon: PlaySoundAtPosition(couponHoverSound); break;
+            case ItemType.Hook: PlaySoundAtPosition(hookHoverSound); break;
+            case ItemType.Heart: PlaySoundAtPosition(heartHoverSound); break;
+        }
+    }
 
     void OnPlayerDamaged(Player player, int health)
     {

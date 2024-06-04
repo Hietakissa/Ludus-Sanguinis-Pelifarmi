@@ -39,6 +39,6 @@ public class Item : PlayableItem, IInteractable
     public override void StartHover()
     {
         base.StartHover();
-        EventManager.HoverItem();
+        EventManager.HoverItem(this);
     }
 }
