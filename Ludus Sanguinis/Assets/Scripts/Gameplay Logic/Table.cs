@@ -68,17 +68,20 @@ public class Table : MonoBehaviour
     {
         if (!CanPlayerUseItem(user, item)) yield break;
 
+        ItemCollection collection = user.IsDealer ? dealerItemCollection : playerItemCollection;
         Player opponent = user.IsDealer ? GameManager.Instance.Player : dealer;
         QOL.Log($"{(user.IsDealer ? "Dealer" : "Player")} used item of type: '{item.Type}'");
 
 
         // Do item usage animation here
 
+        if (item.Type == ItemType.Mirror) yield return AnimateMirrorItemCor(user);
+        else if (item.Type == ItemType.Coupon) yield return AnimateCouponItemCor(user);
 
         if (user.IsDealer)
         {
             DealerPlayedItems.Add(item);
-            dealerItemCollection.RemoveItem(item);
+            //dealerItemCollection.RemoveItem(item);
 
             // Animations that only happen for the dealer
             switch (item.Type)
@@ -107,7 +110,7 @@ public class Table : MonoBehaviour
         else
         {
             PlayerPlayedItems.Add(item);
-            PlayerItemCollection.RemoveItem(item);
+            //PlayerItemCollection.RemoveItem(item);
 
             // Animations that only happen for the player
             switch (item.Type)
@@ -146,6 +149,10 @@ public class Table : MonoBehaviour
                 case ItemType.Hook:
                     HookActive = true;
                     break;
+
+                case ItemType.Coupon:
+                    CouponActive = true;
+                    break;
             }
         }
 
@@ -162,17 +169,6 @@ public class Table : MonoBehaviour
                 scaleText.text = "";
                 break;
 
-            case ItemType.Mirror:
-                yield return AnimateMirrorItemCor(user);
-                break;
-
-            case ItemType.Coupon:
-
-                yield return AnimateCouponItemCor(user);
-
-                CouponActive = true;
-                break;
-
             case ItemType.Hook:
                 yield return AnimateHookItemCor(user);
                 break;
@@ -185,6 +181,7 @@ public class Table : MonoBehaviour
                 else GameManager.Instance.DamagePlayer(opponent, 1);
                 break;
         }
+        collection.RemoveItem(item);
 
 
         bool CanPlayerUseItem(Player player, Item item)

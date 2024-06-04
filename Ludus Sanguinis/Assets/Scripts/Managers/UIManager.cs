@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] Animator contractPaperAnimator;
 
+    [SerializeField] GameStarter gameStarter;
+    [SerializeField] GameObject mainMenuUI;
+
     void Awake()
     {
         Instance = this;
@@ -47,11 +50,13 @@ public class UIManager : MonoBehaviour
         //input.onEndEdit.AddListener((x) => EndEdit());
 
         EventManager.OnBellRung += EndEdit;
+        EventManager.OnEndGame += OnGameEnd;
     }
 
     void OnDisable()
     {
         EventManager.OnBellRung -= EndEdit;
+        EventManager.OnEndGame -= OnGameEnd;
     }
 
 
@@ -212,5 +217,16 @@ public class UIManager : MonoBehaviour
                 yield return null;
             }
         }
+    }
+
+
+    void OnGameEnd()
+    {
+        mainMenuUI.SetActive(true);
+    }
+    public void PlayButtonPress()
+    {
+        mainMenuUI.SetActive(false);
+        gameStarter.StartIntroAnim();
     }
 }

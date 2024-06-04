@@ -20,12 +20,17 @@ public class GameStarter : MonoBehaviour
     {
         if (startOnInput && !gameRunning && Input.anyKeyDown)
         {
-            gameRunning = true;
-            director.Play();
-            blinkText.SetActive(false);
+            StartIntroAnim();
         }
 
-        if (Input.GetKeyDown(KeyCode.G)) EventManager.EndGame();
+        //if (Input.GetKeyDown(KeyCode.G)) EventManager.EndGame();
+    }
+
+    public void StartIntroAnim()
+    {
+        gameRunning = true;
+        director.Play();
+        blinkText.SetActive(false);
     }
 
     public void StartGame()
