@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     Card[] playerCardReferences;
 
     [SerializeField] bool giveItems;
+    [SerializeField] bool skipTutorial;
     public string PlayerName { get; private set; }
     public bool PlayedTutorial = false;
 
@@ -119,11 +120,14 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
-        if (!PlayedTutorial)
+#if UNITY_EDITOR
+#else
+        skipTutorial = false;
+#endif
+
+        if (!PlayedTutorial && !skipTutorial)
         {
-            Debug.Log($"start tutorial");
             yield return UIManager.Instance.TutorialSequenceCor();
-            Debug.Log($"tutorial complete");
             PlayedTutorial = true;
         }
 

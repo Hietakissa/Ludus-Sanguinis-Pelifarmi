@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: moi joku pelaaja anna sun nimi
-  - text: kirjota se paperiin ja soita kelloa kun oot valmis. hihii ihan AAA dialogia
+  - text: I know your situation is dire, but I can assure you, a single game is all
+      it takes to change your fate, my dearest friend.
+  - text: All I need is your signature here.

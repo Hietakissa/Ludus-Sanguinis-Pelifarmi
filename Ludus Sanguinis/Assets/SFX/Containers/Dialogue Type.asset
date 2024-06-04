@@ -22,7 +22,7 @@ MonoBehaviour:
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 3f439e56b5203204b9c4f51261ae6cc3, type: 3}
-    volumeRange: {x: 0.6, y: 0.8}
+    volumeRange: {x: 0.4, y: 0.5}
     pitchRange: {x: 0.9, y: 1.1}
     spatialBlend: 0
     loop: 0
