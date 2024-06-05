@@ -334,7 +334,9 @@ public class GameManager : MonoBehaviour
         EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
         EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
 
+#if UNITY_EDITOR
         debugHealthText.text = $"Player: {Player.Health}{(damagedPlayer.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(damagedPlayer.IsDealer ? $"(-{amount})" : "")}";
+#endif
         if (damagedPlayer.Health <= 0) StartCoroutine(TempDiedThingCor(damagedPlayer));
 
 

@@ -47,6 +47,8 @@ public class Table : MonoBehaviour
     Player dealer;
     public bool HookActive;
     public bool CouponActive;
+    public bool InAnimation => animations > 0;
+    int animations = 0;
 
     public void PlayCard(Player player, Card card)
     {
@@ -66,7 +68,9 @@ public class Table : MonoBehaviour
 
     public IEnumerator PlayItemCor(Player user, Item item)
     {
-        if (!CanPlayerUseItem(user, item)) yield break;
+        if (InAnimation || !CanPlayerUseItem(user, item)) yield break;
+
+        animations++;
 
         ItemCollection collection = user.IsDealer ? dealerItemCollection : playerItemCollection;
         Player opponent = user.IsDealer ? GameManager.Instance.Player : dealer;
@@ -182,6 +186,7 @@ public class Table : MonoBehaviour
                 break;
         }
         collection.RemoveItem(item);
+        animations--;
 
 
         bool CanPlayerUseItem(Player player, Item item)
@@ -283,6 +288,7 @@ public class Table : MonoBehaviour
     public void RerollCard(Card card) => StartCoroutine(RerollCardCor(card));
     IEnumerator RerollCardCor(Card card)
     {
+        animations++;
         CardCollection collection;
         if (card.Owner == PlayerType.Player) collection = GameManager.Instance.Player.CardCollection;
         else collection = GameManager.Instance.DealerRef.CardCollection;
@@ -296,6 +302,7 @@ public class Table : MonoBehaviour
         //card.SetTargetTransform(oldTarget);
         collection.PlaceCard(card);
         yield return QOL.GetWaitForSeconds(2);
+        animations--;
     }
 
     public void ClearedTable()

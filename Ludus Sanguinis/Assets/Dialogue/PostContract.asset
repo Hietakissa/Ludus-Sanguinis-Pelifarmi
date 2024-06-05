@@ -31,4 +31,6 @@ MonoBehaviour:
       value in the pot when it gets filled will be transferred over to the next round."
   - text: "We will both start off with 3 \u201Clives\u201D, so to speak. Whomever
       loses all their lives first, naturally loses the game."
+  - text: I hear one can press 'TAB' to pause the game. I'm not quite sure what that
+      means, but I assure you the game cannot be stopped.
   - text: Are the rules clear? Now, let's begin.
