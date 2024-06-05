@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using HietakissaUtils.QOL;
 using System.Collections;
+using UnityEngine.Audio;
 using HietakissaUtils;
+using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Rendering;
 
 public class UIManager : MonoBehaviour
 {
@@ -28,10 +31,18 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] GameStarter gameStarter;
     [SerializeField] GameObject mainMenuUI;
+    [SerializeField] GameObject settingsPanel;
+    [SerializeField] GameObject creditsPanel;
+    [SerializeField] Slider slider;
+
+    [SerializeField] AudioMixer mixer;
 
     void Awake()
     {
         Instance = this;
+
+        mixer.GetFloat("MasterVolume", out float volume);
+        slider.SetValueWithoutNotify(Maf.ReMap(-60, 10, 0, 1, volume));
     }
 
 #if UNITY_EDITOR
@@ -224,9 +235,20 @@ public class UIManager : MonoBehaviour
     {
         mainMenuUI.SetActive(true);
     }
+
     public void PlayButtonPress()
     {
+        settingsPanel.SetActive(false);
+        creditsPanel.SetActive(false);
         mainMenuUI.SetActive(false);
+
         gameStarter.StartIntroAnim();
+    }
+
+    public void Quit() => QOL.Quit();
+
+    public void SetVolume(float volume)
+    {
+        mixer.SetFloat("MasterVolume", Maf.ReMap(0, 1, -60, 10, volume));
     }
 }

@@ -35,6 +35,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    public void PlaySound(SoundContainer sound) => PlaySoundAtPosition(sound);
     public void PlaySoundAtPosition(SoundContainer sound, Vector3 position = default)
     {
         if (sound == null) return;
