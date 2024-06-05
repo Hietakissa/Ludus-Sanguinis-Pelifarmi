@@ -47,11 +47,32 @@ public class UIManager : MonoBehaviour
 
 #if UNITY_EDITOR
     bool skipDialogue;
+#endif
     void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.UpArrow) && dialogueDisplaying) skipDialogue = true;
-    }
 #endif
+        if (Input.GetKeyDown(KeyCode.Tab) && GameStarter.Instance.IsGameRunning)
+        {
+            if (GameManager.Instance.IsPaused)
+            {
+                GameManager.Instance.IsPaused = false;
+                Time.timeScale = 1f;
+                mainMenuUI.SetActive(false);
+                Cursor.visible = false;
+            }
+            else 
+            {
+                GameManager.Instance.IsPaused = true;
+                Time.timeScale = float.Epsilon;
+                mainMenuUI.SetActive(true);
+                Cursor.visible = true;
+            }
+
+        }
+    }
+
 
     void OnEnable()
     {
@@ -241,8 +262,11 @@ public class UIManager : MonoBehaviour
         settingsPanel.SetActive(false);
         creditsPanel.SetActive(false);
         mainMenuUI.SetActive(false);
+        GameManager.Instance.IsPaused = false;
+        Cursor.visible = false;
+        Time.timeScale = 1f;
 
-        gameStarter.StartIntroAnim();
+        if (!GameStarter.Instance.IsGameRunning) gameStarter.StartIntroAnim();
     }
 
     public void Quit() => QOL.Quit();

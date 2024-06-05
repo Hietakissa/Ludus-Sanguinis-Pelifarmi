@@ -3,22 +3,26 @@ using UnityEngine;
 
 public class GameStarter : MonoBehaviour
 {
+    public static GameStarter Instance;
+
     [SerializeField] bool startOnInput;
     [SerializeField] PlayableDirector director;
-    bool gameRunning;
+    public bool IsGameRunning { get; private set; }
 
     [SerializeField] GameObject blinkText;
 
 
     void Awake()
     {
+        Instance = this;
+
         director.time = 0;
         director.Evaluate();
     }
 
     void Update()
     {
-        if (startOnInput && !gameRunning && Input.anyKeyDown)
+        if (startOnInput && !IsGameRunning && Input.anyKeyDown)
         {
             StartIntroAnim();
         }
@@ -28,7 +32,7 @@ public class GameStarter : MonoBehaviour
 
     public void StartIntroAnim()
     {
-        gameRunning = true;
+        IsGameRunning = true;
         director.Play();
         blinkText.SetActive(false);
     }
@@ -42,7 +46,7 @@ public class GameStarter : MonoBehaviour
     {
         director.time = 0;
         director.Evaluate();
-        gameRunning = false;
+        IsGameRunning = false;
         blinkText.SetActive(true);
     }
 

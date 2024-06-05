@@ -32,7 +32,8 @@ public class Item : PlayableItem, IInteractable
         Quaternion target = Quaternion.LookRotation(TargetTransform.forward, TargetTransform.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, target, rotateSmoothing * Time.deltaTime);
 
-        transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVel, scaleSmoothTime);
+        Vector3 scaledTargetScale = Vector3.Scale(TargetTransform.localScale, targetScale);
+        transform.localScale = Vector3.SmoothDamp(transform.localScale, scaledTargetScale, ref scaleVel, scaleSmoothTime);
     }
 
 

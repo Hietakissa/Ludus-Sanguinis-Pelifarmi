@@ -40,10 +40,12 @@ public class GameManager : MonoBehaviour
     public string PlayerName { get; private set; }
     [HideInInspector] public bool PlayedTutorial = false;
 
+    public bool IsPaused;
+
 
     void Awake()
     {
-        Cursor.visible = false;
+        Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
         Instance = this;
@@ -139,30 +141,26 @@ public class GameManager : MonoBehaviour
     }
 
 
-#if UNITY_EDITOR
-    bool visibleState = false;
-#endif
-    void Update()
-    {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            visibleState = !visibleState;
-        }
-
-        bool state = visibleState;
-
-
-        Vector3 mousePos = Input.mousePosition;
-        if (mousePos.x < 0 || mousePos.x > Screen.width || mousePos.y < 0 || mousePos.y > Screen.height)
-        {
-            state = true;
-        }
-
-
-        Cursor.visible = state;
-#endif
-    }
+//#if UNITY_EDITOR
+//    bool visibleState = false;
+//#endif
+//    void Update()
+//    {
+//#if UNITY_EDITOR
+//        if (Input.GetKeyDown(KeyCode.T))
+//        {
+//            visibleState = !visibleState;
+//        }
+//
+//        Vector3 mousePos = Input.mousePosition;
+//        if (mousePos.x < 0 || mousePos.x > Screen.width || mousePos.y < 0 || mousePos.y > Screen.height)
+//        {
+//            visibleState = true;
+//        }
+//
+//        Cursor.visible = visibleState;
+//#endif
+//    }
 
 
     void TryEndTurn()
