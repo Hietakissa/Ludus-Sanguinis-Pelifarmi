@@ -34,7 +34,7 @@ public class GameStarter : MonoBehaviour
     {
         IsGameRunning = true;
         director.Play();
-        blinkText.SetActive(false);
+        //blinkText.SetActive(false);
     }
 
     public void StartGame()
@@ -47,7 +47,7 @@ public class GameStarter : MonoBehaviour
         director.time = 0;
         director.Evaluate();
         IsGameRunning = false;
-        blinkText.SetActive(true);
+        //blinkText.SetActive(true);
     }
 
 

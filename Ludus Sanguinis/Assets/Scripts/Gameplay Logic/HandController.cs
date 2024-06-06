@@ -27,7 +27,7 @@ public class HandController : MonoBehaviour
     Transform hoveredInteractable;
     RaycastHit hit;
 
-    const float CONST_PLAY_DISTANCE = 20f;
+    const float CONST_PLAY_DISTANCE = 5f;
 
     [SerializeField] [Range(0, 2)] int handType;
     [SerializeField] [Range(0, 1)] int handState;

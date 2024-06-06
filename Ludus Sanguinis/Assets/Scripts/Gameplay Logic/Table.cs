@@ -192,6 +192,8 @@ public class Table : MonoBehaviour
 
         bool CanPlayerUseItem(Player player, Item item)
         {
+            if (CouponActive || HookActive) return false;
+
             if (player.IsDealer)
             {
                 if (dealerItemCollection.GetItemCountForItem(item) > 0 && !DealerPlayedItems.Contains(item)) return true;
@@ -295,6 +297,7 @@ public class Table : MonoBehaviour
         else collection = GameManager.Instance.DealerRef.CardCollection;
 
         Transform oldTarget = card.TargetTransform;
+        card.IsInteractable = false;
         collection.TakeCard(card);
         card.SetTargetTransform(deckPos);
         yield return QOL.GetWaitForSeconds(2);
@@ -303,6 +306,7 @@ public class Table : MonoBehaviour
         //card.SetTargetTransform(oldTarget);
         collection.PlaceCard(card);
         yield return QOL.GetWaitForSeconds(2);
+        card.IsInteractable = true;
         animations--;
     }
 

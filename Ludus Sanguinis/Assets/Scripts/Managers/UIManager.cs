@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] TextCollectionSO dealerWinDialogue;
     [SerializeField] TextCollectionSO dealerLoseDialogue;
+    [SerializeField] TextCollectionSO introDealerDialogue;
 
     [SerializeField] Animator contractPaperAnimator;
 
@@ -172,6 +173,19 @@ public class UIManager : MonoBehaviour
         yield return FadeToNoneCor();
     }
 
+    public IEnumerator FadeToBlackFastCor()
+    {
+        float time = 0f;
+        while (true)
+        {
+            // 0.5 seconds to 1
+            time += 2f * Time.deltaTime;
+            fadeToBlackPanel.alpha = time;
+            if (time >= 1f) break;
+            else yield return null;
+        }
+    }
+
     IEnumerator FadeToBlackCor()
     {
         float time = 0f;
@@ -185,12 +199,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    IEnumerator FadeToNoneCor()
+    public IEnumerator FadeToNoneCor()
     {
         float time = 1f;
         while (true)
         {
-            // 2 seconds to 1
+            // 2 seconds to 0
             time -= 0.5f * Time.deltaTime;
             fadeToBlackPanel.alpha = time;
             if (time <= 0f) break;
@@ -334,6 +348,8 @@ public class UIManager : MonoBehaviour
     }
 
     public void Quit() => QOL.Quit();
+
+    public void PlayIntroDialogue() => PlayDialogue(introDealerDialogue);
 
     public void SetVolume(float volume)
     {

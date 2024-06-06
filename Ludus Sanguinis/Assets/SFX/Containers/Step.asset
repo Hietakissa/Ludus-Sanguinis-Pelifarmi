@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f112297c97da0d5499296296165ded31, type: 3}
+  m_Name: Step
+  m_EditorClassIdentifier: 
+  <Mode>k__BackingField: 1
+  <DefaultMixer>k__BackingField: {fileID: 0}
+  volumeRange: {x: 0.8, y: 1}
+  pitchRange: {x: 0.85, y: 1.1}
+  sounds:
+  - _Name: Step1
+    _HasBeenManuallySet: 1
+    overrideMixer: {fileID: 0}
+    clip: {fileID: 8300000, guid: 71d4ee087d631ea45a3e64b654c9538f, type: 3}
+    volumeRange: {x: 1, y: 1}
+    pitchRange: {x: 1, y: 1}
+    spatialBlend: 0
+    loop: 0
+    next: []
+  - _Name: Step2
+    _HasBeenManuallySet: 1
+    overrideMixer: {fileID: 0}
+    clip: {fileID: 8300000, guid: 6ff70510c74dbfd4ab88e2e93d0778e1, type: 3}
+    volumeRange: {x: 1, y: 1}
+    pitchRange: {x: 1, y: 1}
+    spatialBlend: 0
+    loop: 0
+    next: []
+  - _Name: Step3
+    _HasBeenManuallySet: 1
+    overrideMixer: {fileID: 0}
+    clip: {fileID: 8300000, guid: b83da8c46398fd140a8251b314b0ba01, type: 3}
+    volumeRange: {x: 1, y: 1}
+    pitchRange: {x: 1, y: 1}
+    spatialBlend: 0
+    loop: 0
+    next: []
+  _previewButton: 0
+  _stopPreviewButton: 0
+  _previewIndexButton: 0
+  _selectedClip: 0

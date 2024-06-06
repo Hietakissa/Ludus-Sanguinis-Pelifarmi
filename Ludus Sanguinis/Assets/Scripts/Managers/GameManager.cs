@@ -249,12 +249,14 @@ public class GameManager : MonoBehaviour
                 {
                     Card card = table.PlayerCards.TakeCard(playerCardPos.Card);
                     card.SetTargetTransform(deckPos);
+                    card.IsInteractable = false;
                 }
                 if (dealerCardPos.HasCard)
                 {
                     Card card = table.DealerCards.TakeCard(dealerCardPos.Card);
                     card.SetTargetTransform(deckPos);
                     card.SetRevealState(false);
+                    card.IsInteractable = false;
 
                     if (card.IsFlipped) card.Flip();
                 }
@@ -332,14 +334,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshPro debugHealthText;
     public void DamagePlayer(Player damagedPlayer, int amount)
     {
-        damagedPlayer.Health -= amount;
-        EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
-        EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
+        StartCoroutine(DamagePlayerCor());
+
+
+        IEnumerator DamagePlayerCor()
+        {
+            damagedPlayer.Health -= amount;
+            yield return UIManager.Instance.FadeToBlackFastCor();
+            EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
+            EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
+            yield return UIManager.Instance.FadeToNoneCor();
 
 #if UNITY_EDITOR
-        debugHealthText.text = $"Player: {Player.Health}{(damagedPlayer.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(damagedPlayer.IsDealer ? $"(-{amount})" : "")}";
+            debugHealthText.text = $"Player: {Player.Health}{(damagedPlayer.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(damagedPlayer.IsDealer ? $"(-{amount})" : "")}";
 #endif
-        if (damagedPlayer.Health <= 0) StartCoroutine(LoseGameCor(damagedPlayer));
+            if (damagedPlayer.Health <= 0) StartCoroutine(LoseGameCor(damagedPlayer));
+        }
     }
 
     IEnumerator MoveCardsFromDeckToHands()
@@ -364,6 +374,7 @@ public class GameManager : MonoBehaviour
                     Card card = cards[i];
                     card.SetValue(cardValues[i]);
                     card.State = CardState.InHand;
+                    card.IsInteractable = true;
 
                     collection.PlaceCard(card);
                     EventManager.DealCard();

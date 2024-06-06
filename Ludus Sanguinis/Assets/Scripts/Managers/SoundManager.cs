@@ -24,6 +24,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] SoundContainer itemUseSound;
 
     [Header("Player Sounds")]
+    [SerializeField] SoundContainer stepSound;
     [SerializeField] SoundContainer playerLoseLifeSound;
     [SerializeField] SoundContainer dealerLoseLifeSound;
 
@@ -80,6 +81,8 @@ public class SoundManager : MonoBehaviour
         }
     }
     void UseItem(Item item) => PlaySound(itemUseSound);
+
+    public void Footstep() => PlaySound(stepSound);
 
     void OnPlayerDamaged(Player player, int health)
     {
