@@ -130,7 +130,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4508622857732375388}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0, z: -0.062073693, w: 0.9980716}
+  m_LocalRotation: {x: 0, y: 0, z: -0.062076356, w: 0.99807143}
   m_LocalPosition: {x: 11.99, y: 2.38, z: 1.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -139,7 +139,7 @@ Transform:
   - {fileID: 4640752249116561234}
   - {fileID: 4220399548265726618}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -2}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -7.118}
 --- !u!320 &1695420617466227486
 PlayableDirector:
   m_ObjectHideFlags: 0
@@ -159,6 +159,10 @@ PlayableDirector:
     value: {fileID: 7266093123645265381}
   - key: {fileID: 8403041302461735471, guid: f86f9d4dd5e9f184ca4d8baed6cf07e3, type: 2}
     value: {fileID: 9088924155713005276}
+  - key: {fileID: -5688277394713304190, guid: f86f9d4dd5e9f184ca4d8baed6cf07e3, type: 2}
+    value: {fileID: 4318304931934408456}
+  - key: {fileID: 3680525515217952291, guid: f86f9d4dd5e9f184ca4d8baed6cf07e3, type: 2}
+    value: {fileID: 4039487085399186309}
   m_ExposedReferences:
     m_References: []
 --- !u!95 &7266093123645265381
@@ -197,12 +201,42 @@ MonoBehaviour:
   m_Events:
     m_Signals:
     - {fileID: 11400000, guid: c8f4c84b023c9104b9c5f9504b985085, type: 2}
+    - {fileID: 11400000, guid: a9bbb7add184f3949a084e934a7fb595, type: 2}
+    - {fileID: 11400000, guid: a899fb7ab45ba5a46b7eda9ca4d40e07, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 2122454709045752038}
           m_TargetAssemblyTypeName: GameStarter, Assembly-CSharp
           m_MethodName: StartGame
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+          m_MethodName: Footstep
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+          m_MethodName: PlayIntroDialogue
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -224,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5724ee311fc4cf4c9096a10e5af0bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startOnInput: 1
+  startOnInput: 0
   director: {fileID: 1695420617466227486}
   blinkText: {fileID: 9195257837107232867}
 --- !u!1 &5184184807975075005
@@ -236,6 +270,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4640752249116561234}
+  - component: {fileID: 4039487085399186309}
   m_Layer: 0
   m_Name: Shake Transform
   m_TagString: Untagged
@@ -259,6 +294,27 @@ Transform:
   - {fileID: 8982218272235184479}
   m_Father: {fileID: 5319215379986385252}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &4039487085399186309
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5184184807975075005}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7208751294153449472
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,6 +481,7 @@ GameObject:
   - component: {fileID: 6832617872086632295}
   - component: {fileID: 8303697213494518550}
   - component: {fileID: 2345767465911382749}
+  - component: {fileID: 4318304931934408456}
   m_Layer: 0
   m_Name: Intro Dealer
   m_TagString: Untagged
@@ -440,13 +497,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7722799500464749492}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.04472194, y: 0.6780788, z: -0.04344863, w: -0.7323397}
+  m_LocalRotation: {x: -0.044721935, y: 0.6780788, z: -0.043448627, w: -0.7323396}
   m_LocalPosition: {x: -9.573476, y: -2.0220437, z: -10.427986}
   m_LocalScale: {x: 1.8499997, y: 1.9900001, z: 0.37217999}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5319215379986385252}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 5, y: 359, z: 7}
 --- !u!33 &8303697213494518550
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -497,6 +554,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!95 &4318304931934408456
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7722799500464749492}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &9195257837107232867
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,7 +593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7594954706841320576
 RectTransform:
   m_ObjectHideFlags: 0
