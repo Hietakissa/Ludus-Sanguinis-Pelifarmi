@@ -29,6 +29,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TextCollectionSO dealerWinDialogue;
     [SerializeField] TextCollectionSO dealerLoseDialogue;
     [SerializeField] TextCollectionSO introDealerDialogue;
+    [SerializeField] TextCollectionSO introDealerDialogue2;
 
     [SerializeField] Animator contractPaperAnimator;
 
@@ -151,8 +152,10 @@ public class UIManager : MonoBehaviour
 
         //player lose sound
         SoundManager.Instance.PlaySound(playerLoseSound);
+        yield return QOL.GetWaitForSeconds(2f);
 
         //fade back in menu
+        EventManager.EndGame();
         yield return FadeToNoneCor();
     }
 
@@ -170,6 +173,7 @@ public class UIManager : MonoBehaviour
 
         //fade back in menu
         EventManager.EndGame();
+        yield return QOL.GetWaitForSeconds(2f);
         yield return FadeToNoneCor();
     }
 
@@ -350,6 +354,7 @@ public class UIManager : MonoBehaviour
     public void Quit() => QOL.Quit();
 
     public void PlayIntroDialogue() => PlayDialogue(introDealerDialogue);
+    public void PlayIntroDialogue2() => PlayDialogue(introDealerDialogue2);
 
     public void SetVolume(float volume)
     {

@@ -18,8 +18,8 @@ public static class EventManager
 
     public static event Action<Item> OnStealItem;
     public static void StealItem(Item item) => OnStealItem?.Invoke(item);
-    public static event Action<Item> OnUseItem;
-    public static void UseItem(Item item) => OnUseItem?.Invoke(item);
+    public static event Action<ItemType> OnUseItem;
+    public static void UseItem(ItemType itemType) => OnUseItem?.Invoke(itemType);
 
     public static event Action<Item> OnHoverItem;
     public static void HoverItem(Item item) => OnHoverItem?.Invoke(item);

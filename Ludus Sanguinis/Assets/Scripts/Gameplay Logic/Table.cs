@@ -70,7 +70,7 @@ public class Table : MonoBehaviour
     {
         if (InAnimation || !CanPlayerUseItem(user, item)) yield break;
 
-        EventManager.UseItem(item);
+        if (!user.IsDealer || item.Type != ItemType.UnoCard) EventManager.UseItem(item.Type);
         animations++;
 
         ItemCollection collection = user.IsDealer ? dealerItemCollection : playerItemCollection;
@@ -186,7 +186,8 @@ public class Table : MonoBehaviour
                 else GameManager.Instance.DamagePlayer(opponent, 1);
                 break;
         }
-        collection.RemoveItem(item);
+        
+        if (item.Type != ItemType.Hook) collection.RemoveItem(item);
         animations--;
 
 

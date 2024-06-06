@@ -7,6 +7,7 @@ using HietakissaUtils;
 using UnityEngine;
 using TMPro;
 using HietakissaUtils.Serialization;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameManager : MonoBehaviour
 {
@@ -105,6 +106,10 @@ public class GameManager : MonoBehaviour
         //table.DealerItemCollection.RemoveItems();
         //table.PlayerItemCollection.RemoveItems();
 
+#if UNITY_EDITOR
+        debugHealthText.text = "";
+#endif
+
 
         void TakeCardsFromCollection(CardCollection collection)
         {
@@ -196,12 +201,16 @@ public class GameManager : MonoBehaviour
 
         yield return HandleItems();
         yield return PlayAnimations();
-        yield return GiveCardsAndItems();
+
+        if (isGameRunning)
+        {
+            yield return GiveCardsAndItems();
+            StartCoroutine(PlayTurn());
+        }
 
         EndOfRoundCleanup();
 
         QOL.Log("Turn done");
-        if (isGameRunning) StartCoroutine(PlayTurn());
 
 
 
@@ -340,10 +349,15 @@ public class GameManager : MonoBehaviour
         IEnumerator DamagePlayerCor()
         {
             damagedPlayer.Health -= amount;
-            yield return UIManager.Instance.FadeToBlackFastCor();
-            EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
-            EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
-            yield return UIManager.Instance.FadeToNoneCor();
+
+            if (damagedPlayer.Health > 0)
+            {
+                yield return UIManager.Instance.FadeToBlackFastCor();
+                EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
+                EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
+                yield return QOL.GetWaitForSeconds(0.5f);
+                yield return UIManager.Instance.FadeToNoneCor();
+            }
 
 #if UNITY_EDITOR
             debugHealthText.text = $"Player: {Player.Health}{(damagedPlayer.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(damagedPlayer.IsDealer ? $"(-{amount})" : "")}";
@@ -386,28 +400,30 @@ public class GameManager : MonoBehaviour
                     ItemType itemType = (ItemType)Random.Range(0, 6);
                     if (player.IsDealer)
                     {
-                        if (table.DealerItemCollection.GetItemCountForItem(itemType) == 0)
-                        {
+                        //if (table.DealerItemCollection.GetItemCountForItem(itemType) == 0)
+                        //{
                             Item item = table.DealerItemCollection.GetItem(itemType);
                             Transform pos = item.TargetTransform;
                             item.SetTargetTransform(deckPos);
                             item.InstaMoveToTarget();
                             item.SetTargetTransform(pos);
+                        EventManager.UseItem(itemType);
                             yield return QOL.GetWaitForSeconds(1f);
-                        }
+                        //}
                         table.DealerItemCollection.AddItem(itemType);
                     }
                     else
                     {
-                        if (table.PlayerItemCollection.GetItemCountForItem(itemType) == 0)
-                        {
+                        //if (table.PlayerItemCollection.GetItemCountForItem(itemType) == 0)
+                        //{
                             Item item = table.PlayerItemCollection.GetItem(itemType);
                             Transform pos = item.TargetTransform;
                             item.SetTargetTransform(deckPos);
                             item.InstaMoveToTarget();
                             item.SetTargetTransform(pos);
+                        EventManager.UseItem(itemType);
                             yield return QOL.GetWaitForSeconds(1f);
-                        }
+                        //}
                         table.PlayerItemCollection.AddItem(itemType);
                     }
                 }

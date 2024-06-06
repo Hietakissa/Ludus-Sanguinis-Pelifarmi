@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd0f7fe9c38536b4cad7c1659b6a8b7d, type: 3}
-  m_Name: Intro
+  m_Name: Intro2
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: There you are, friend. Come now.
+  - text: "Sit down and make yourself comfortable. Why don\u2019t we play a game
+      together?"

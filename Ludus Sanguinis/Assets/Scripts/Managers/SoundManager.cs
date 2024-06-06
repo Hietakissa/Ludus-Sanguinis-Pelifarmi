@@ -80,7 +80,7 @@ public class SoundManager : MonoBehaviour
             case ItemType.Heart: PlaySoundAtPosition(heartHoverSound); break;
         }
     }
-    void UseItem(Item item) => PlaySound(itemUseSound);
+    void UseItem(ItemType itemType) => PlaySound(itemUseSound);
 
     public void Footstep() => PlaySound(stepSound);
 
