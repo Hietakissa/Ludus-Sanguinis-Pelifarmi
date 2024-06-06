@@ -20680,6 +20680,37 @@ Transform:
   - {fileID: 9023185}
   m_Father: {fileID: 127321202}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 10}
+--- !u!1 &1559822385
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1559822386}
+  m_Layer: 0
+  m_Name: Throw Pos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1559822386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559822385}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.245, y: 1.2088, z: 0.786}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1837949854}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1574066793
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24382,6 +24413,7 @@ Transform:
   m_Children:
   - {fileID: 1323898044}
   - {fileID: 104886184}
+  - {fileID: 1559822386}
   m_Father: {fileID: 1507664804}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1837949855
@@ -24400,6 +24432,7 @@ MonoBehaviour:
   chipPrefab: {fileID: 2499413162538376345, guid: efc6408470a6f2845bfd9c757e166cb9,
     type: 3}
   potDingDingSound: {fileID: 11400000, guid: 28a82221b614f7d428cb9845a3fec0e9, type: 2}
+  chipThrowPos: {fileID: 1559822386}
 --- !u!1 &1840758411
 GameObject:
   m_ObjectHideFlags: 0
