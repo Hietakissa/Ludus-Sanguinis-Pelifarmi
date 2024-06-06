@@ -8,18 +8,22 @@ public class SoundManager : MonoBehaviour
     AudioSource[] audioSources = new AudioSource[20];
     int sourceIndex = 0;
 
+    [Header("Card Sounds")]
     [SerializeField] SoundContainer bellRingSound;
     [SerializeField] SoundContainer hoverCardSound;
     [SerializeField] SoundContainer playCardSound;
     [SerializeField] SoundContainer dealCardSound;
 
+    [Header("Item Sounds")]
     [SerializeField] SoundContainer scaleHoverSound;
     [SerializeField] SoundContainer mirrorHoverSound;
     [SerializeField] SoundContainer unoHoverSound;
     [SerializeField] SoundContainer couponHoverSound;
     [SerializeField] SoundContainer hookHoverSound;
     [SerializeField] SoundContainer heartHoverSound;
+    [SerializeField] SoundContainer itemUseSound;
 
+    [Header("Player Sounds")]
     [SerializeField] SoundContainer playerLoseLifeSound;
     [SerializeField] SoundContainer dealerLoseLifeSound;
 
@@ -42,11 +46,19 @@ public class SoundManager : MonoBehaviour
 
         AudioSource source = audioSources[sourceIndex];
         source.transform.position = position;
-        sound.ApplyToAudioSource(source);
+        SoundClip clip = sound.Sounds[sound.GetSoundIndex()];
+        sound.ApplyClipToAudioSource(source, clip);
         source.Play();
+
+        //foreach (SoundContainer nextSound in clip.Next)
+        //{
+        //    PlaySound(nextSound);
+        //    Debug.Log($"playing next sound");
+        //}
 
         sourceIndex++;
         sourceIndex %= audioSources.Length;
+
     }
 
 
@@ -67,6 +79,7 @@ public class SoundManager : MonoBehaviour
             case ItemType.Heart: PlaySoundAtPosition(heartHoverSound); break;
         }
     }
+    void UseItem(Item item) => PlaySound(itemUseSound);
 
     void OnPlayerDamaged(Player player, int health)
     {
@@ -86,6 +99,7 @@ public class SoundManager : MonoBehaviour
         EventManager.OnDealCard += OnDealCard;
 
         EventManager.OnHoverItem += HoverItem;
+        EventManager.OnUseItem += UseItem;
 
         EventManager.OnPlayerDamaged += OnPlayerDamaged;
     }
@@ -99,6 +113,7 @@ public class SoundManager : MonoBehaviour
         EventManager.OnDealCard -= OnDealCard;
         
         EventManager.OnHoverItem -= HoverItem;
+        EventManager.OnUseItem -= UseItem;
 
         EventManager.OnPlayerDamaged -= OnPlayerDamaged;
     }

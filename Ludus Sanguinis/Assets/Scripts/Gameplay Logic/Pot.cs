@@ -7,6 +7,9 @@ public class Pot : MonoBehaviour
 {
     [SerializeField] Transform visualSpawnPos;
     [SerializeField] GameObject chipPrefab;
+    [SerializeField] SoundContainer potDingDingSound;
+
+    public bool IsThrowing { get; private set; }
 
     public int Capacity { get; private set; }
     public int FillAmount { get; private set; }
@@ -48,11 +51,19 @@ public class Pot : MonoBehaviour
     }
 
 
-    void OnDrawGizmosSelected()
+    public void ThrowChips()
     {
-        if (!visualSpawnPos) return;
+        SoundManager.Instance.PlaySound(potDingDingSound);
+        StartCoroutine(ThrowChipsCor());
 
-        Gizmos.DrawWireSphere(visualSpawnPos.position, 0.1f);
+
+        IEnumerator ThrowChipsCor()
+        {
+            IsThrowing = true;
+            // ToDo: actually throw chips accumulated over the course of the game
+            yield return null;
+            IsThrowing = false;
+        }
     }
 
 
@@ -70,5 +81,12 @@ public class Pot : MonoBehaviour
     void OnDisable()
     {
         EventManager.OnEndGame -= ResetPot;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (!visualSpawnPos) return;
+
+        Gizmos.DrawWireSphere(visualSpawnPos.position, 0.1f);
     }
 }

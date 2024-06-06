@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f112297c97da0d5499296296165ded31, type: 3}
-  m_Name: Heart Hover Sound
+  m_Name: Item Use
   m_EditorClassIdentifier: 
   <Mode>k__BackingField: 2
   <DefaultMixer>k__BackingField: {fileID: 24300002, guid: 59860f59bb225924d99c5b301ff100eb,
@@ -18,12 +18,12 @@ MonoBehaviour:
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 1, y: 1}
   sounds:
-  - _Name: Heartbeat_1
+  - _Name: Item_use
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
-    clip: {fileID: 8300000, guid: 656de57c04e963a42a1cae67be59a5af, type: 3}
-    volumeRange: {x: 0.7, y: 0.8}
-    pitchRange: {x: 0.85, y: 1.15}
+    clip: {fileID: 8300000, guid: 64f958f020d3e55499ca326ba3561bc5, type: 3}
+    volumeRange: {x: 0.35, y: 0.5}
+    pitchRange: {x: 0.9, y: 1.1}
     spatialBlend: 0
     loop: 0
     next: []

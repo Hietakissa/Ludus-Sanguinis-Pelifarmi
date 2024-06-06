@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f112297c97da0d5499296296165ded31, type: 3}
-  m_Name: Heart Hover Sound
+  m_Name: Heart Hover Sound 2
   m_EditorClassIdentifier: 
   <Mode>k__BackingField: 2
   <DefaultMixer>k__BackingField: {fileID: 24300002, guid: 59860f59bb225924d99c5b301ff100eb,

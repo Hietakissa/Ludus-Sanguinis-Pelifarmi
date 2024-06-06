@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool PlayedTutorial = false;
 
     public bool IsPaused;
+    bool isGameRunning;
 
 
     void Awake()
@@ -137,6 +138,7 @@ public class GameManager : MonoBehaviour
         yield return MoveCardsFromDeckToHands();
         yield return QOL.GetWaitForSeconds(1.5f);
 
+        isGameRunning = true;
         StartCoroutine(PlayTurn());
     }
 
@@ -181,7 +183,7 @@ public class GameManager : MonoBehaviour
         yield return Dealer.PlayTurn(table, dealer);
         SetPlayerCardLock(false);
 
-        Debug.Log($"Waiting for the player's turn!");
+        QOL.Log($"Waiting for the player's turn!");
         IsPlayerTurn = true;
         while (!playerPlayedCards) yield return null;
         table.HookActive = false;
@@ -198,8 +200,8 @@ public class GameManager : MonoBehaviour
 
         EndOfRoundCleanup();
 
-        Debug.Log("Turn done");
-        StartCoroutine(PlayTurn());
+        QOL.Log("Turn done");
+        if (isGameRunning) StartCoroutine(PlayTurn());
 
 
 
@@ -337,16 +339,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         debugHealthText.text = $"Player: {Player.Health}{(damagedPlayer.IsDealer ? "" : $"(-{amount})")}\n Dealer: {dealer.Health}{(damagedPlayer.IsDealer ? $"(-{amount})" : "")}";
 #endif
-        if (damagedPlayer.Health <= 0) StartCoroutine(TempDiedThingCor(damagedPlayer));
-
-
-
-        IEnumerator TempDiedThingCor(Player loser)
-        {
-            debugHealthText.text = loser.IsDealer ? "You won!" : "You lost :(";
-            yield return QOL.GetWaitForSeconds(5);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
+        if (damagedPlayer.Health <= 0) StartCoroutine(LoseGameCor(damagedPlayer));
     }
 
     IEnumerator MoveCardsFromDeckToHands()
@@ -379,11 +372,55 @@ public class GameManager : MonoBehaviour
 
                 if (giveItems)
                 {
-                    if (player.IsDealer) table.DealerItemCollection.AddItem((ItemType)Random.Range(0, 6));
-                    else table.PlayerItemCollection.AddItem((ItemType)Random.Range(0, 6));
+                    ItemType itemType = (ItemType)Random.Range(0, 6);
+                    if (player.IsDealer)
+                    {
+                        if (table.DealerItemCollection.GetItemCountForItem(itemType) == 0)
+                        {
+                            Item item = table.DealerItemCollection.GetItem(itemType);
+                            Transform pos = item.TargetTransform;
+                            item.SetTargetTransform(deckPos);
+                            item.InstaMoveToTarget();
+                            item.SetTargetTransform(pos);
+                            yield return QOL.GetWaitForSeconds(1f);
+                        }
+                        table.DealerItemCollection.AddItem(itemType);
+                    }
+                    else
+                    {
+                        if (table.PlayerItemCollection.GetItemCountForItem(itemType) == 0)
+                        {
+                            Item item = table.PlayerItemCollection.GetItem(itemType);
+                            Transform pos = item.TargetTransform;
+                            item.SetTargetTransform(deckPos);
+                            item.InstaMoveToTarget();
+                            item.SetTargetTransform(pos);
+                            yield return QOL.GetWaitForSeconds(1f);
+                        }
+                        table.PlayerItemCollection.AddItem(itemType);
+                    }
                 }
             }
         }
+    }
+
+    IEnumerator LoseGameCor(Player loser)
+    {
+        isGameRunning = false;
+
+#if UNITY_EDITOR
+        debugHealthText.text = loser.IsDealer ? "You won!" : "You lost :(";
+#endif
+        if (loser.IsDealer)
+        {
+            yield return UIManager.Instance.PlayerWinSequenceCor();
+        }
+        else yield return UIManager.Instance.DealerWinSequenceCor();
+
+        //yield return QOL.GetWaitForSeconds(5);
+
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //EventManager.EndGame();
     }
 
     void EndOfRoundCleanup()

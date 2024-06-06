@@ -6,7 +6,6 @@ using HietakissaUtils;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
-using UnityEngine.Rendering;
 
 public class UIManager : MonoBehaviour
 {
@@ -27,6 +26,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] TextCollectionSO preContractTutorialText;
     [SerializeField] TextCollectionSO postContractTutorialText;
 
+    [SerializeField] TextCollectionSO dealerWinDialogue;
+    [SerializeField] TextCollectionSO dealerLoseDialogue;
+
     [SerializeField] Animator contractPaperAnimator;
 
     [SerializeField] GameStarter gameStarter;
@@ -34,6 +36,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject settingsPanel;
     [SerializeField] GameObject creditsPanel;
     [SerializeField] Slider slider;
+
+    [SerializeField] SoundContainer playerLoseSound;
+
+    [SerializeField] CanvasGroup fadeToBlackPanel;
 
     [SerializeField] AudioMixer mixer;
 
@@ -69,7 +75,6 @@ public class UIManager : MonoBehaviour
                 mainMenuUI.SetActive(true);
                 Cursor.visible = true;
             }
-
         }
     }
 
@@ -132,6 +137,65 @@ public class UIManager : MonoBehaviour
 
         PlayDialogue(postContractTutorialText);
         while (dialogueDisplaying) yield return null;
+    }
+
+    public IEnumerator DealerWinSequenceCor()
+    {
+        //dealer win dialogue
+        PlayDialogue(dealerWinDialogue);
+        while (dialogueDisplaying) yield return null;
+
+        //fade to black
+        yield return FadeToBlackCor();
+
+        //player lose sound
+        SoundManager.Instance.PlaySound(playerLoseSound);
+
+        //fade back in menu
+        yield return FadeToNoneCor();
+    }
+
+    public IEnumerator PlayerWinSequenceCor()
+    {
+        //dealer lose dialogue
+        //> (simultaenously)pot ding sound
+        //> (simultaenously)throw chips
+        GameManager.Instance.Pot.ThrowChips();
+        PlayDialogue(dealerLoseDialogue);
+        while (dialogueDisplaying || GameManager.Instance.Pot.IsThrowing) yield return null;
+
+        //fade to black
+        yield return FadeToBlackCor();
+
+        //fade back in menu
+        EventManager.EndGame();
+        yield return FadeToNoneCor();
+    }
+
+    IEnumerator FadeToBlackCor()
+    {
+        float time = 0f;
+        while (true)
+        {
+            // 2 seconds to 1
+            time += 0.5f * Time.deltaTime;
+            fadeToBlackPanel.alpha = time;
+            if (time >= 1f) break;
+            else yield return null;
+        }
+    }
+
+    IEnumerator FadeToNoneCor()
+    {
+        float time = 1f;
+        while (true)
+        {
+            // 2 seconds to 1
+            time -= 0.5f * Time.deltaTime;
+            fadeToBlackPanel.alpha = time;
+            if (time <= 0f) break;
+            else yield return null;
+        }
     }
 
 

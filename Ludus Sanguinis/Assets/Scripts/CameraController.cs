@@ -32,7 +32,7 @@ public class CameraController : MonoBehaviour
         Quaternion rot = startRot * Quaternion.Euler(Vector3.up * horizontal * rotationAmount * zoomMultiplier);
         rot *= Quaternion.Euler(Vector3.left * vertical * rotationAmount * zoomMultiplier);
         
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotationSpeed * Time.deltaTime);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, rot, rotationSpeed * Time.deltaTime);
 
 
         targetFOV = zooming ? zoomFOV : baseFOV;

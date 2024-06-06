@@ -70,6 +70,7 @@ public class Table : MonoBehaviour
     {
         if (InAnimation || !CanPlayerUseItem(user, item)) yield break;
 
+        EventManager.UseItem(item);
         animations++;
 
         ItemCollection collection = user.IsDealer ? dealerItemCollection : playerItemCollection;
