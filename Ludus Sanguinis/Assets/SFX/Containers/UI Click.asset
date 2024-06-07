@@ -27,6 +27,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.7, y: 0.8}
+    actualPitchRange: {x: 1, y: 1.1}
+  shuffleIndexList: 00000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0

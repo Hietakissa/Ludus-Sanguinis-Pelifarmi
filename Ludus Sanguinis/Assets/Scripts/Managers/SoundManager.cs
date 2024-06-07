@@ -5,7 +5,8 @@ public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance;
 
-    AudioSource[] audioSources = new AudioSource[20];
+    const int CONST_AUDIOSOURCE_COUNT = 20;
+    AudioSource[] audioSources = new AudioSource[CONST_AUDIOSOURCE_COUNT];
     int sourceIndex = 0;
 
     [Header("Card Sounds")]
@@ -28,27 +29,40 @@ public class SoundManager : MonoBehaviour
     [SerializeField] SoundContainer playerLoseLifeSound;
     [SerializeField] SoundContainer dealerLoseLifeSound;
 
+    [SerializeField] AudioClip clip;
+
 
     void Awake()
     {
         Instance = this;
 
-        for (int i = 0; i < audioSources.Length; i++)
+        for (int i = 0; i < CONST_AUDIOSOURCE_COUNT; i++)
         {
             audioSources[i] = new GameObject($"Pooled Audio Source [{i}]", typeof(AudioSource)).GetComponent<AudioSource>();
             audioSources[i].transform.parent = transform;
         }
     }
 
+
     public void PlaySound(SoundContainer sound) => PlaySoundAtPosition(sound);
     public void PlaySoundAtPosition(SoundContainer sound, Vector3 position = default)
     {
-        if (sound == null) return;
+        if (sound == null)
+        {
+            Debug.Log($"play null sound");
+            return;
+        }
+        Debug.Log($"play sound");
 
         AudioSource source = audioSources[sourceIndex];
         source.transform.position = position;
-        SoundClip clip = sound.Sounds[sound.GetSoundIndex()];
+        Debug.Log($"getting index");
+        int index = sound.GetSoundIndex();
+        Debug.Log($"getting clip");
+        SoundClip clip = sound.Sounds[index];
+        Debug.Log($"applying to source");
         sound.ApplyClipToAudioSource(source, clip);
+        Debug.Log($"playing with volume {source.volume}");
         source.Play();
 
         //foreach (SoundContainer nextSound in clip.Next)
@@ -59,7 +73,6 @@ public class SoundManager : MonoBehaviour
 
         sourceIndex++;
         sourceIndex %= audioSources.Length;
-
     }
 
 

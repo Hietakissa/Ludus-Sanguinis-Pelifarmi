@@ -46,6 +46,16 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] AudioMixer mixer;
 
+    [SerializeField] GameObject descriptionPanel;
+    [SerializeField] TextMeshProUGUI descriptionText;
+    [SerializeField] ItemInfoSO scaleDescription;
+    [SerializeField] ItemInfoSO mirrorDescription;
+    [SerializeField] ItemInfoSO unoDescription;
+    [SerializeField] ItemInfoSO couponDescription;
+    [SerializeField] ItemInfoSO hookDescription;
+    [SerializeField] ItemInfoSO heartDescription;
+    [SerializeField] ItemInfoSO invalidDescription;
+
     void Awake()
     {
         Instance = this;
@@ -361,5 +371,35 @@ public class UIManager : MonoBehaviour
     public void SetVolume(float volume)
     {
         mixer.SetFloat("MasterVolume", Maf.ReMap(0, 1, -60, 10, volume));
+    }
+
+    public void StartItemHover(Item item)
+    {
+        descriptionPanel.SetActive(true);
+
+        ItemCollection collection = item.Owner == PlayerType.Player ? GameManager.Instance.Table.PlayerItemCollection : GameManager.Instance.Table.DealerItemCollection;
+        int itemCount = collection.GetItemCountForItem(item);
+        ItemInfoSO itemInfo = GetItemInfoForItem(item);
+
+        descriptionText.text = $"<color=#3671fb>{itemInfo.Name}</color><color=#ffa724> ({itemCount})</color>\n {itemInfo.Description}";
+    }
+
+    public void EndItemHover()
+    {
+        descriptionPanel.SetActive(false);
+    }
+
+    ItemInfoSO GetItemInfoForItem(Item item)
+    {
+        return item.Type switch
+        {
+            ItemType.Scale => scaleDescription,
+            ItemType.Mirror => mirrorDescription,
+            ItemType.UnoCard => unoDescription,
+            ItemType.Coupon => couponDescription,
+            ItemType.Hook => hookDescription,
+            ItemType.Heart => heartDescription,
+            _ => invalidDescription
+        };
     }
 }

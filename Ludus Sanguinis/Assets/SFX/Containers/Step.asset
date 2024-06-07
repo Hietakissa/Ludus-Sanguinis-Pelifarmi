@@ -27,6 +27,7 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.8, y: 1}
   - _Name: Step2
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
@@ -36,6 +37,7 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.8, y: 1}
   - _Name: Step3
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
@@ -45,6 +47,8 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.8, y: 1}
+  shuffleIndexList: 010000000200000000000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0

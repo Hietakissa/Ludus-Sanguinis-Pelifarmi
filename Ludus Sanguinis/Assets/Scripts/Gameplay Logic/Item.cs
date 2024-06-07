@@ -41,5 +41,14 @@ public class Item : PlayableItem, IInteractable
     {
         base.StartHover();
         EventManager.HoverItem(this);
+
+        UIManager.Instance.StartItemHover(this);
+    }
+
+    public override void EndHover()
+    {
+        base.EndHover();
+
+        UIManager.Instance.EndItemHover();
     }
 }

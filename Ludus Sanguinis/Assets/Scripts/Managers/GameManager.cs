@@ -1,4 +1,4 @@
-using UnityEngine.SceneManagement;
+using HietakissaUtils.Serialization;
 using System.Collections.Generic;
 using HietakissaUtils.LootTable;
 using HietakissaUtils.QOL;
@@ -6,8 +6,6 @@ using System.Collections;
 using HietakissaUtils;
 using UnityEngine;
 using TMPro;
-using HietakissaUtils.Serialization;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameManager : MonoBehaviour
 {
@@ -53,10 +51,11 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
+        PlayedTutorial = false;
 #if UNITY_EDITOR
         PlayedTutorial = false;
 #else
-        PlayedTutorial = Serializer.Load(out PlayedTutorial, "TUTORIAL_PLAYED");
+        //PlayedTutorial = Serializer.Load(out PlayedTutorial, "TUTORIAL_PLAYED");
 #endif
 
         table.PlayerItemCollection.Init();
@@ -89,7 +88,7 @@ public class GameManager : MonoBehaviour
     {
         SetPlayerCardLock(true);
 
-        pot.SetCapacity(10);
+        pot.SetCapacity(50);
         Player.Health = 3;
         dealer.Health = 3;
 
