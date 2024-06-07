@@ -84,9 +84,9 @@ public class SoundManager : MonoBehaviour
 
     public void Footstep() => PlaySound(stepSound);
 
-    void OnPlayerDamaged(Player player, int health)
+    void OnPlayerDamaged(Player player, int health, bool initializing)
     {
-        if (player == null) return;
+        if (player == null || initializing) return;
 
         if (player.IsDealer) PlaySoundAtPosition(dealerLoseLifeSound);
         else PlaySoundAtPosition(playerLoseLifeSound);

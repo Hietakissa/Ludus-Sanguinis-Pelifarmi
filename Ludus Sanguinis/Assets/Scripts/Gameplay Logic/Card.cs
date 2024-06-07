@@ -92,7 +92,12 @@ public class Card : PlayableItem
 
         frontMat.SetFloat("_CardIndex", Value);
 
-        int bloodIndex = Random.Range(0, GameManager.MAX_BLOOD_INDEX);
+        const int CONST_MAX_TOTAL_HP = 6;
+        float bloodChance = (CONST_MAX_TOTAL_HP - GameManager.Instance.TotalHealth) / (float)CONST_MAX_TOTAL_HP;
+        int bloodIndex;
+        if (Maf.RandomBool(bloodChance)) bloodIndex = Random.Range(1, GameManager.CONST_BLOOD_DECAL_COUNT + 1);
+        else bloodIndex = 0;
+
         frontMat.SetFloat("_BloodIndex", bloodIndex);
         backMat.SetFloat("_BloodIndex", bloodIndex);
     }

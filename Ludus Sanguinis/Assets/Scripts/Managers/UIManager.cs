@@ -37,6 +37,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject mainMenuUI;
     [SerializeField] GameObject settingsPanel;
     [SerializeField] GameObject creditsPanel;
+    [SerializeField] GameObject tutorialPanel;
     [SerializeField] Slider slider;
 
     [SerializeField] SoundContainer playerLoseSound;
@@ -342,6 +343,7 @@ public class UIManager : MonoBehaviour
     public void PlayButtonPress()
     {
         settingsPanel.SetActive(false);
+        tutorialPanel.SetActive(false);
         creditsPanel.SetActive(false);
         mainMenuUI.SetActive(false);
         GameManager.Instance.IsPaused = false;

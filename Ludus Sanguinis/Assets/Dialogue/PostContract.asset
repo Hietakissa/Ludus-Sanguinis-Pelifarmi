@@ -15,22 +15,24 @@ MonoBehaviour:
   mode: 1
   dialogue:
   - text: NAME, is it? Well then, let's hope Lady Luck is on your side tonight, NAME.
-      Let's get on to the rules of Ludus Sanguinis.
+      Let's get on to the rules of <color=#f0290e>Ludus Sanguinis</color>.
   - text: The game begins with each of us being dealt a hand of five cards. These
-      cards are made specifically for Ludus Sanguinis, and range from 0 to 16.
-  - text: We take turns placing down as many cards as we want. When you run out of
-      cards to play, a new hand is dealt, and you will be given an item with a special
-      property related to the game.
+      cards are made specifically for Ludus Sanguinis, and range from <color=#f0290e>0
+      to 16</color>.
+  - text: We take turns placing down <color=#f0290e>as many cards as we want</color>.
+      When you run out of cards to play, a new hand is dealt, and you will be given
+      an <color=#0e52f0>item</color> with a special property related to the game.
   - text: The played cards will be counted, yours versus mine. The difference of
-      the values will be added to the pot. If the pot exceeds the maximum capacity,
-      the player who played the larger sum will lose a life.
+      the values will be added to the <color=#f0290e>pot</color>. If the pot exceeds
+      the maximum capacity, the player who played the larger sum will lose a <color=#f0290e>life</color>.
   - text: Now, what makes this game fun is the fact that you will not be told the
       current sum in the pot, unless you are able to inspect it with one of the aforementioned
-      items. In general, you must keep track of it yourself.
+      items. In general, you must keep track of it <color=#f0290e>yourself</color>.
   - text: "Additionally, it is important to keep in mind that any \u201Cleft over\u201D
-      value in the pot when it gets filled will be transferred over to the next round."
+      value in the pot when it gets filled will be <color=#f0290e>carried over</color>
+      to the next round."
   - text: "We will both start off with 3 \u201Clives\u201D, so to speak. Whomever
       loses all their lives first, naturally loses the game."
-  - text: I hear one can press 'TAB' to pause the game. I'm not quite sure what that
-      means, but I assure you the game cannot be stopped.
+  - text: I hear one can press <color=#f0290e>'TAB'</color> to pause the game. I'm
+      not quite sure what that means, but I assure you the game cannot be stopped.
   - text: Are the rules clear? Now, let's begin.

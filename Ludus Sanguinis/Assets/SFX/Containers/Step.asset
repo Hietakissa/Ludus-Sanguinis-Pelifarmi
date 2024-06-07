@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Step
   m_EditorClassIdentifier: 
   <Mode>k__BackingField: 1
-  <DefaultMixer>k__BackingField: {fileID: 0}
+  <DefaultMixer>k__BackingField: {fileID: 24300002, guid: 59860f59bb225924d99c5b301ff100eb,
+    type: 2}
   volumeRange: {x: 0.8, y: 1}
   pitchRange: {x: 0.85, y: 1.1}
   sounds:

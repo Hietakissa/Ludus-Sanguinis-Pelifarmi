@@ -74,7 +74,7 @@ public class Pot : MonoBehaviour
                 Vector3 randomForce = new Vector3(Random.Range(-1f, 1f), Random.Range(0.2f, 0.6f), Random.Range(-1f, 1f)) * throwForce;
                 chip.GetComponent<Rigidbody>().AddForce(randomForce, ForceMode.Impulse);
                 Destroy(chip, 10f);
-                QOL.GetWaitForSeconds(0.1f);
+                yield return QOL.GetWaitForSeconds(0.1f);
             }
             yield return null;
             IsThrowing = false;

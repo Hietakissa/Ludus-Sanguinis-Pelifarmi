@@ -35,8 +35,8 @@ public static class EventManager
     public static event Action<int> OnPotOverflow;
     public static void PotOverflow(int times) => OnPotOverflow?.Invoke(times);
 
-    public static event Action<Player,int> OnPlayerDamaged;
-    public static void PlayerDamaged(Player player, int health) => OnPlayerDamaged?.Invoke(player, health);
+    public static event Action<Player,int,bool> OnPlayerDamaged;
+    public static void PlayerDamaged(Player player, int health, bool initializing = false) => OnPlayerDamaged?.Invoke(player, health, initializing);
 
 
     public static event Action<string> OnSubmitPlayerName;

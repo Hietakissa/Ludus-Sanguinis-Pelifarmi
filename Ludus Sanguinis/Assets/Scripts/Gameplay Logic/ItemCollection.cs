@@ -43,7 +43,11 @@ public class ItemCollection
     public void RemoveItem(Item item) => RemoveItem(item.Type);
     public void RemoveItems()
     {
-        foreach (ItemSlot slot in Slots) slot.Count = 0;
+        foreach (ItemSlot slot in Slots)
+        {
+            slot.Count = 0;
+            slot.Item.gameObject.SetActive(false);
+        }
     }
 
     public Item GetItem(ItemType itemType)

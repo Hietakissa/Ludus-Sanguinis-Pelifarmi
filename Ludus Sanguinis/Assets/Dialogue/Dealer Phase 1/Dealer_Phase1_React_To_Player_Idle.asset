@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd0f7fe9c38536b4cad7c1659b6a8b7d, type: 3}
-  m_Name: PreContract
+  m_Name: Dealer_Phase1_React_To_Player_Idle
   m_EditorClassIdentifier: 
-  mode: 1
+  mode: 0
   dialogue:
-  - text: I know your situation is dire, but I can assure you, a single game is all
-      it takes to change your fate, my dearest friend.
-  - text: All I need is your signature here. <color=#0e52f0>Ring</color> the bell
-      once you're ready to continue.
+  - text: Taking time to consider your next move? I applaud you.
+  - text: I have never been an impatient person, but you are taking quite long.
+  - text: "What\u2019s wrong NAME? Are you getting cold feet?"
+  - text: Go on, play your hand. There is no point in delaying the inevitable.

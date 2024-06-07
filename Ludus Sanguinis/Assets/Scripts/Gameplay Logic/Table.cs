@@ -99,7 +99,7 @@ public class Table : MonoBehaviour
                     Card largestCard = null;
                     int largestValue = -1;
 
-                    foreach (CardPosition cardPos in player2CardCollection.CardPositions)
+                    foreach (CardPosition cardPos in GameManager.Instance.DealerRef.CardCollection.CardPositions)
                     {
                         if (cardPos.HasCard && cardPos.Card.Value > largestValue)
                         {
@@ -297,14 +297,12 @@ public class Table : MonoBehaviour
         if (card.Owner == PlayerType.Player) collection = GameManager.Instance.Player.CardCollection;
         else collection = GameManager.Instance.DealerRef.CardCollection;
 
-        Transform oldTarget = card.TargetTransform;
         card.IsInteractable = false;
         collection.TakeCard(card);
         card.SetTargetTransform(deckPos);
         yield return QOL.GetWaitForSeconds(2);
 
-        card.SetValue(Random.Range(0, 17));
-        //card.SetTargetTransform(oldTarget);
+        card.SetValue(GameManager.Instance.LowCardValueTable.Get());
         collection.PlaceCard(card);
         yield return QOL.GetWaitForSeconds(2);
         card.IsInteractable = true;

@@ -237,7 +237,7 @@ public class HandController : MonoBehaviour
     }
 
 
-    void UpdateHandType(Player player, int health)
+    void UpdateHandType(Player player, int health, bool initializing)
     {
         if (player == null || player.IsDealer) return;
         handType = Mathf.Clamp(3 - health, 0, 2);

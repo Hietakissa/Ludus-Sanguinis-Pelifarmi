@@ -5,7 +5,7 @@ public class EnvironmentChanger : MonoBehaviour
 {
     [SerializeField] Environment[] environments;
 
-    void OnPlayerDamaged(Player player, int health)
+    void OnPlayerDamaged(Player player, int health, bool initializing)
     {
         for (int i = 0; i < environments.Length; i++)
         {

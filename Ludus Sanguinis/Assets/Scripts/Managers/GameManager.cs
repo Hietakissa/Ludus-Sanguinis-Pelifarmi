@@ -12,7 +12,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public const int MAX_BLOOD_INDEX = 4;
+    public const int CONST_BLOOD_DECAL_COUNT = 4;
 
     public Table Table => table;
     [SerializeField] Table table;
@@ -26,9 +26,10 @@ public class GameManager : MonoBehaviour
     public bool IsPlayerTurn;
     public List<int> lastPlayerPlayedValues = new List<int>();
 
-
     [SerializeField] LootTable<int> normalCardValueTable;
     [SerializeField] LootTable<int> lowCardValueTable;
+    public LootTable<int> LowCardValueTable => lowCardValueTable;
+
 
     public Pot Pot => pot;
     [SerializeField] Pot pot;
@@ -42,8 +43,8 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool PlayedTutorial = false;
 
     public bool IsPaused;
+    public int TotalHealth { get; private set; }
     bool isGameRunning;
-
 
     void Awake()
     {
@@ -88,12 +89,12 @@ public class GameManager : MonoBehaviour
     {
         SetPlayerCardLock(true);
 
-        pot.SetCapacity(50);
+        pot.SetCapacity(10);
         Player.Health = 3;
         dealer.Health = 3;
 
-        EventManager.PlayerDamaged(Player, Player.Health);
-        EventManager.PlayerDamaged(dealer, dealer.Health);
+        EventManager.PlayerDamaged(Player, Player.Health, true);
+        EventManager.PlayerDamaged(dealer, dealer.Health, true);
 
         TakeCardsFromCollection(Player.CardCollection);
         TakeCardsFromCollection(dealer.CardCollection);
@@ -354,7 +355,8 @@ public class GameManager : MonoBehaviour
             {
                 yield return UIManager.Instance.FadeToBlackFastCor();
                 EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
-                EventManager.PlayerDamaged(null, damagedPlayer.Health + dealer.Health);
+                TotalHealth = Player.Health + dealer.Health;
+                EventManager.PlayerDamaged(null, TotalHealth);
                 yield return QOL.GetWaitForSeconds(0.5f);
                 yield return UIManager.Instance.FadeToNoneCor();
             }
