@@ -17,8 +17,8 @@ MonoBehaviour:
     type: 2}
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 1, y: 1}
-  sounds:
-  - _Name: Token_Pot_1
+  clips:
+  - _Name: Win_sound_ding_ding
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: e3055f02893db3d43954bec5bf9998ad, type: 3}
@@ -27,6 +27,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.7, y: 0.7}
+    actualPitchRange: {x: 1, y: 1}
+  shuffleIndexList: 00000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0

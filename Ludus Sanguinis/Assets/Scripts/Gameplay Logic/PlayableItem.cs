@@ -14,6 +14,8 @@ public abstract class PlayableItem : MonoBehaviour
     protected Vector3 startScale;
     protected Vector3 targetScale;
     protected Vector3 scaleVel;
+    
+    public virtual Transform VisualTransform => transform;
 
     public void SetTargetTransform(Transform target) => TargetTransform = target;
     public void InstaMoveToTarget()

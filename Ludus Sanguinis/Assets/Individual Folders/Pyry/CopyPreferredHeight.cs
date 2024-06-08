@@ -7,6 +7,8 @@ public class CopyPreferredHeight : MonoBehaviour
     [SerializeField] RectTransform transformToCopy;
     [SerializeField] TextMeshProUGUI text;
     [SerializeField] bool update;
+    [SerializeField] Vector2 offset;
+    [SerializeField] bool overrideWidth = true;
 
     RectTransform rectTransform;
     float startWidth;
@@ -25,7 +27,15 @@ public class CopyPreferredHeight : MonoBehaviour
 
     void SetSize()
     {
-        Vector2 preferredSize = new Vector2(Mathf.Min(startWidth, text.preferredWidth), text.preferredHeight);
-        rectTransform.sizeDelta = preferredSize;
+        if (overrideWidth)
+        {
+            rectTransform.sizeDelta = text.rectTransform.sizeDelta;
+            rectTransform.anchoredPosition = text.rectTransform.anchoredPosition + offset * rectTransform.sizeDelta;
+        }
+        else
+        {
+            Vector2 preferredSize = new Vector2(Mathf.Min(startWidth, text.preferredWidth), text.preferredHeight);
+            rectTransform.sizeDelta = preferredSize;
+        }
     }
 }

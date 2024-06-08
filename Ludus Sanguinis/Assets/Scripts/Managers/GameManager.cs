@@ -138,10 +138,10 @@ public class GameManager : MonoBehaviour
             yield return UIManager.Instance.TutorialSequenceCor();
             PlayedTutorial = true;
         }
-
-        yield return QOL.GetWaitForSeconds(2f);
+        
+        yield return QOL.WaitForSeconds.Get(2f);
         yield return MoveCardsFromDeckToHands();
-        yield return QOL.GetWaitForSeconds(1.5f);
+        yield return QOL.WaitForSeconds.Get(1.5f);
 
         isGameRunning = true;
         StartCoroutine(PlayTurn());
@@ -224,14 +224,14 @@ public class GameManager : MonoBehaviour
             {
                 if (cardPos.HasCard)
                 {
-                    yield return QOL.GetWaitForSeconds(0.2f);
+                    yield return QOL.WaitForSeconds.Get(0.2f);
                     cardPos.Card.SetRevealState(true);
                     cardPos.Card.Flip();
 
                     EventManager.DealCard();
                 }
             }
-            yield return QOL.GetWaitForSeconds(2f);
+            yield return QOL.WaitForSeconds.Get(2f);
 
             int playerSum = table.PlayerCards.GetSum();
             int dealerSum = table.DealerCards.GetSum();
@@ -248,7 +248,7 @@ public class GameManager : MonoBehaviour
             int maxCardCount = Mathf.Max(table.PlayerCards.GetCards().Length, table.DealerCards.GetCards().Length);
             for (int i = maxCardCount - 1; i >= 0; i--)
             {
-                yield return QOL.GetWaitForSeconds(0.3f);
+                yield return QOL.WaitForSeconds.Get(0.3f);
 
                 CardPosition playerCardPos = table.PlayerCards.CardPositions[i];
                 CardPosition dealerCardPos = table.DealerCards.CardPositions[i];
@@ -280,7 +280,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Giving cards and items");
             if (Player.CardCollection.IsEmpty() || dealer.CardCollection.IsEmpty())
             {
-                yield return QOL.GetWaitForSeconds(1.5f);
+                yield return QOL.WaitForSeconds.Get(1.5f);
                 yield return MoveCardsFromDeckToHands();
             }
         }
@@ -331,13 +331,13 @@ public class GameManager : MonoBehaviour
         int maxLength = Mathf.Max(cards1.Length, cards2.Length);
         for (int i = 0; i < maxLength; i++)
         {
-            yield return QOL.GetWaitForSeconds(0.5f);
+            yield return QOL.WaitForSeconds.Get(0.5f);
             if (i < cards1.Length) collection2.PlaceCard(cards1[i]);
             if (i < cards2.Length) collection1.PlaceCard(cards2[i]);
             EventManager.DealCard();
         }
 
-        yield return QOL.GetWaitForSeconds(1f);
+        yield return QOL.WaitForSeconds.Get(1f);
     }
 
     [SerializeField] TextMeshPro debugHealthText;
@@ -356,7 +356,7 @@ public class GameManager : MonoBehaviour
                 EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
                 TotalHealth = Player.Health + dealer.Health;
                 EventManager.PlayerDamaged(null, TotalHealth);
-                yield return QOL.GetWaitForSeconds(0.5f);
+                yield return QOL.WaitForSeconds.Get(0.5f);
                 yield return UIManager.Instance.FadeToNoneCor();
             }
 
@@ -384,7 +384,7 @@ public class GameManager : MonoBehaviour
 
                 for (int i = 0; i < cards.Length; i++)
                 {
-                    yield return QOL.GetWaitForSeconds(0.1f);
+                    yield return QOL.WaitForSeconds.Get(0.1f);
 
                     Card card = cards[i];
                     card.SetValue(cardValues[i]);
@@ -409,7 +409,7 @@ public class GameManager : MonoBehaviour
                             item.InstaMoveToTarget();
                             item.SetTargetTransform(pos);
                         EventManager.UseItem(itemType);
-                            yield return QOL.GetWaitForSeconds(1f);
+                            yield return QOL.WaitForSeconds.Get(1f);
                         //}
                         table.DealerItemCollection.AddItem(itemType);
                     }
@@ -423,7 +423,7 @@ public class GameManager : MonoBehaviour
                             item.InstaMoveToTarget();
                             item.SetTargetTransform(pos);
                         EventManager.UseItem(itemType);
-                            yield return QOL.GetWaitForSeconds(1f);
+                            yield return QOL.WaitForSeconds.Get(1f);
                         //}
                         table.PlayerItemCollection.AddItem(itemType);
                     }
@@ -445,7 +445,7 @@ public class GameManager : MonoBehaviour
         }
         else yield return UIManager.Instance.DealerWinSequenceCor();
 
-        //yield return QOL.GetWaitForSeconds(5);
+        //yield return QOL.WaitForSeconds.Get(5);
 
         //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         //EventManager.EndGame();

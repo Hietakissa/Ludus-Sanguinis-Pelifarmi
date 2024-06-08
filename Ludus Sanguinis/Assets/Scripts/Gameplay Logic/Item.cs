@@ -3,8 +3,11 @@ using UnityEngine;
 public class Item : PlayableItem, IInteractable
 {
     [SerializeField] Transform hoverCopy;
+    [SerializeField] Transform itemVisual;
     public ItemType Type;
     public CardState State = CardState.InHand;
+
+    Vector3 itemVisualPosVel;
 
     public Transform GetHoverCopyTransform() => hoverCopy;
     public void Interact()
@@ -27,7 +30,9 @@ public class Item : PlayableItem, IInteractable
     void Update()
     {
         Vector3 targetPos = TargetTransform.position + posOffset;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref posVel, posSmoothTime);
+        //transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref posVel, posSmoothTime);
+        transform.position = Vector3.SmoothDamp(transform.position, TargetTransform.position, ref posVel, posSmoothTime);
+        itemVisual.localPosition = Vector3.SmoothDamp(itemVisual.localPosition, itemVisual.InverseTransformDirection(posOffset), ref itemVisualPosVel, posSmoothTime);
 
         Quaternion target = Quaternion.LookRotation(TargetTransform.forward, TargetTransform.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, target, rotateSmoothing * Time.deltaTime);
@@ -39,7 +44,8 @@ public class Item : PlayableItem, IInteractable
 
     public override void StartHover()
     {
-        base.StartHover();
+        targetScale = startScale * 1.1f;
+        posOffset = itemVisual.up * 0.04f;
         EventManager.HoverItem(this);
 
         UIManager.Instance.StartItemHover(this);
@@ -50,5 +56,15 @@ public class Item : PlayableItem, IInteractable
         base.EndHover();
 
         UIManager.Instance.EndItemHover();
+    }
+
+    public void StartInteractHover()
+    {
+
+    }
+
+    public void EndInteractHover()
+    {
+
     }
 }

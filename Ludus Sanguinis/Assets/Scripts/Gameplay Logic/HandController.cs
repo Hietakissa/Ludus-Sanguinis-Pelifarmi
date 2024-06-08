@@ -24,6 +24,7 @@ public class HandController : MonoBehaviour
     //Card hoveredCard;
     Card grabbedCard;
 
+    IInteractable actualHoveredInteractable;
     Transform hoveredInteractable;
     RaycastHit hit;
 
@@ -45,9 +46,9 @@ public class HandController : MonoBehaviour
 
     void Update()
     {
-        float xOffset = Mathf.Cos(Time.time * 0.15f) * 3f;
-        float yOffset = Mathf.Sin(Time.time * 0.25f) * 15f;
-        Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x + xOffset, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y + yOffset, 0f, Screen.height), 0f);
+        //float xOffset = Mathf.Cos(Time.time * 0.15f) * 3f;
+        //float yOffset = Mathf.Sin(Time.time * 0.25f) * 15f;
+        Vector3 clampedMousePos = new Vector3(Mathf.Clamp(Input.mousePosition.x/* + xOffset*/, 0f, Screen.width), Mathf.Clamp(Input.mousePosition.y/* + yOffset*/, 0f, Screen.height), 0f);
         Ray mouseRay = cam.ScreenPointToRay(clampedMousePos);
 
 
@@ -79,7 +80,7 @@ public class HandController : MonoBehaviour
 
         void HandleCardGrabbingAndHovering()
         {
-            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out PlayableItem playable) && playable.Owner == PlayerType.Player && playable.IsInteractable)
+            if (Physics.Raycast(mouseRay, out hit, CONST_PLAY_DISTANCE, interactMask) && hit.transform.TryGetComponent(out PlayableItem playable) && CanHoverPlayable(playable))
             {
                 Card card = playable as Card;
 
@@ -154,12 +155,35 @@ public class HandController : MonoBehaviour
                 {
                     if (hit.transform.TryGetComponent(out PlayableItem playableItem) && (playableItem.Owner == PlayerType.Dealer && !table.HookActive)) return;
 
+                    if (hoveredInteractable != interactable.GetHoverCopyTransform())
+                    {
+                        actualHoveredInteractable?.EndInteractHover();
+                        interactable.StartInteractHover();
+                    }
+                    actualHoveredInteractable = interactable;
                     hoveredInteractable = interactable.GetHoverCopyTransform();
                     if (Input.GetMouseButtonDown(0)) interactable.Interact();
                 }
-                else hoveredInteractable = null;
+                else
+                {
+                    actualHoveredInteractable?.EndInteractHover();
+                    hoveredInteractable = null;
+                }
             }
-            else hoveredInteractable = null;
+            else
+            {
+                actualHoveredInteractable?.EndInteractHover();
+                hoveredInteractable = null;
+            }
+
+
+            bool CanHoverPlayable(PlayableItem playable)
+            {
+                Item item = playable as Item;
+                if (playable.Owner == PlayerType.Player && playable.IsInteractable) return true;
+                else if (playable.Owner == PlayerType.Dealer && item && table.HookActive) return true;
+                else return false;
+            }
         }
 
         void MoveTarget()
@@ -193,7 +217,7 @@ public class HandController : MonoBehaviour
 
             Transform targetTransform;
             if (hoveredPlayable is Item) targetTransform = /*grabbedCard?.transform ?? */hoveredInteractable;
-            else targetTransform = grabbedCard?.transform ?? hoveredPlayable?.transform ?? hoveredInteractable;
+            else targetTransform = grabbedCard?.VisualTransform ?? hoveredPlayable?.VisualTransform ?? hoveredInteractable;
 
             //Debug.Log($"target transform: {(targetTransform == null ? "null" : targetTransform.name + (targetTransform.parent == null ? "" : $", parent: {targetTransform.parent.name}"))}");
             //Debug.Log($"hovered is item: {hoveredPlayable is Item}");

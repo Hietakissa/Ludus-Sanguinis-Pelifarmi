@@ -47,22 +47,11 @@ public class SoundManager : MonoBehaviour
     public void PlaySound(SoundContainer sound) => PlaySoundAtPosition(sound);
     public void PlaySoundAtPosition(SoundContainer sound, Vector3 position = default)
     {
-        if (sound == null)
-        {
-            Debug.Log($"play null sound");
-            return;
-        }
-        Debug.Log($"play sound");
+        if (sound == null) return;
 
         AudioSource source = audioSources[sourceIndex];
         source.transform.position = position;
-        Debug.Log($"getting index");
-        int index = sound.GetSoundIndex();
-        Debug.Log($"getting clip");
-        SoundClip clip = sound.Sounds[index];
-        Debug.Log($"applying to source");
-        sound.ApplyClipToAudioSource(source, clip);
-        Debug.Log($"playing with volume {source.volume}");
+        sound.ApplyToAudioSource(source);
         source.Play();
 
         //foreach (SoundContainer nextSound in clip.Next)
