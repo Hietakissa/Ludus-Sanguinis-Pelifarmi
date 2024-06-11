@@ -24342,7 +24342,7 @@ MonoBehaviour:
       weight: 5
   pot: {fileID: 1837949855}
   giveItems: 1
-  skipTutorial: 1
+  skipTutorial: 0
   PlayedTutorial: 0
   IsPaused: 0
   phase1DealerPlaceCard: {fileID: 11400000, guid: 17f4ca7b48614104d80e8b40eea6c95b,

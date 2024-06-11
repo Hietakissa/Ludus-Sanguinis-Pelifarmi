@@ -94,6 +94,8 @@ public class GameManager : MonoBehaviour
     void StartGame() => StartCoroutine(StartGameCor());
     void EndGame()
     {
+        EventManager.PlayerDamaged(null, 6);
+
         Dealer.GameEnded();
         InitializeGameState();
     }
@@ -488,9 +490,6 @@ public class GameManager : MonoBehaviour
             yield return UIManager.Instance.PlayerWinSequenceCor();
         }
         else yield return UIManager.Instance.DealerWinSequenceCor();
-
-        TotalHealth = Player.Health + dealer.Health;
-        EventManager.PlayerDamaged(null, TotalHealth);
     }
 
     void EndOfRoundCleanup()

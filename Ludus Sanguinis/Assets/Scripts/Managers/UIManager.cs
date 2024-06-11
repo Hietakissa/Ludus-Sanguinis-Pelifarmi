@@ -155,6 +155,7 @@ public class UIManager : MonoBehaviour
     public IEnumerator DealerWinSequenceCor()
     {
         //dealer win dialogue
+        dialogueQueue.Clear();
         PlayDialogue(dealerWinDialogue);
         while (dialogueDisplaying) yield return null;
 
@@ -176,6 +177,7 @@ public class UIManager : MonoBehaviour
         //> (simultaenously)pot ding sound
         //> (simultaenously)throw chips
         GameManager.Instance.Pot.ThrowChips();
+        dialogueQueue.Clear();
         PlayDialogue(dealerLoseDialogue);
         while (dialogueDisplaying || GameManager.Instance.Pot.IsThrowing) yield return null;
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd0f7fe9c38536b4cad7c1659b6a8b7d, type: 3}
   m_Name: DealerWin
   m_EditorClassIdentifier: 
-  mode: 1
+  mode: 0
   dialogue:
   - text: 'This outcome was inevitable. Now then, shall we proceed with the terms
       set by the contract? '
