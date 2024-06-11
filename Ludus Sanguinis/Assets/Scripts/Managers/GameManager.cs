@@ -149,8 +149,8 @@ public class GameManager : MonoBehaviour
         }
         
         yield return QOL.WaitForSeconds.Get(2f);
-        SetPlayerCardLock(true);
         yield return MoveCardsFromDeckToHands();
+        SetPlayerCardLock(true);
         yield return QOL.WaitForSeconds.Get(1.5f);
 
         isGameRunning = true;
@@ -564,7 +564,6 @@ public class GameManager : MonoBehaviour
     }
 
     public void SetTutorialSkip(bool skip) => skipTutorial = skip;
-
 
     public static bool HasItem(in List<Item> items, ItemType type)
     {

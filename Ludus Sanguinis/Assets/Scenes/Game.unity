@@ -30178,6 +30178,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 420620396523628258, guid: 40620704bd20658468c9bac9e3ab6a14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1634970010843325395, guid: 40620704bd20658468c9bac9e3ab6a14,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -30198,6 +30203,26 @@ PrefabInstance:
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1699213261}
+    - target: {fileID: 2859341105240653916, guid: 40620704bd20658468c9bac9e3ab6a14,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 831.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 2859341105240653916, guid: 40620704bd20658468c9bac9e3ab6a14,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 588.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 2859341105240653916, guid: 40620704bd20658468c9bac9e3ab6a14,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -456
+      objectReference: {fileID: 0}
+    - target: {fileID: 2859341105240653916, guid: 40620704bd20658468c9bac9e3ab6a14,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -59
+      objectReference: {fileID: 0}
     - target: {fileID: 2961409242890430142, guid: 40620704bd20658468c9bac9e3ab6a14,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
@@ -30428,6 +30453,25 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 1857704856}
+    - target: {fileID: 8448350445457243635, guid: 40620704bd20658468c9bac9e3ab6a14,
+        type: 3}
+      propertyPath: m_text
+      value: 'Programming: Pyry
+
+        3D Modeling: Lenni, Pyry
+
+        UV & Textures:
+        Lenni
+
+        2D Art: Tiina, Eemi, Lenni, Taru
+
+        Sound Design: Pyry,
+        Tiina
+
+        Dialogue: Taru
+
+        Game Concept: Pyry'
+      objectReference: {fileID: 0}
     - target: {fileID: 8899246054154897750, guid: 40620704bd20658468c9bac9e3ab6a14,
         type: 3}
       propertyPath: m_AnchorMax.y

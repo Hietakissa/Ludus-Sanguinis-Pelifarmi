@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Hook Info
   m_EditorClassIdentifier: 
   name: Hook
-  description: Allows you to steal any item from your opponent. Click an item after
-    activating to use.
+  description: Allows you to steal any item from your opponent. Click an item <color=#f0290e>after
+    activating</color> to use.

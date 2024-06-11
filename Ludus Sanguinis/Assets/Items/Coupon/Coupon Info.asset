@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Coupon Info
   m_EditorClassIdentifier: 
   name: Coupon
-  description: Allows you to reroll any card from your hand. Click a card after activating
-    to use.
+  description: Allows you to reroll any card from your hand. Click a card <color=#f0290e>after
+    activating</color> to use.

@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Heart Info
   m_EditorClassIdentifier: 
   name: Heart
-  description: Causes one of the players to suffer a heart attack. Deals 1 damage.
+  description: Causes one of the players to suffer a <color=#f0290e>heart attack</color>.
+    Deals <color=#f0290e>1 life</color> worth of damage.
