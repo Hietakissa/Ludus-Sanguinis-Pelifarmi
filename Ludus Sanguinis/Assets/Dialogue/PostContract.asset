@@ -29,10 +29,9 @@ MonoBehaviour:
       current sum in the pot, unless you are able to inspect it with one of the aforementioned
       items. In general, you must keep track of it <color=#f0290e>yourself</color>.
   - text: "Additionally, it is important to keep in mind that any \u201Cleft over\u201D
-      value in the pot when it gets filled will be <color=#f0290e>carried over</color>
-      to the next round."
+      value in the pot when it gets filled will be <color=#f0290e>carried over</color>."
   - text: "We will both start off with 3 \u201Clives\u201D, so to speak. Whomever
       loses all their lives first, naturally loses the game."
   - text: I hear one can press <color=#f0290e>'TAB'</color> to pause the game. I'm
-      not quite sure what that means, but I assure you the game cannot be stopped.
+      not quite sure what that means, but I assure you, the game cannot be stopped.
   - text: Are the rules clear? Now, let's begin.

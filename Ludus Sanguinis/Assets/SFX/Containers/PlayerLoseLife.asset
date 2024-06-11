@@ -17,8 +17,8 @@ MonoBehaviour:
     type: 2}
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 1, y: 1}
-  sounds:
-  - _Name: Player_Lose_1
+  clips:
+  - _Name: Player_lose_life
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 7b62bf8a13218d743bcc9a1c227e5c21, type: 3}
@@ -27,6 +27,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.5, y: 0.6}
+    actualPitchRange: {x: 0.9, y: 1.1}
+  shuffleIndexList: 00000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0

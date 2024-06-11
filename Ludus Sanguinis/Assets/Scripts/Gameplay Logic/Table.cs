@@ -131,12 +131,12 @@ public class Table : MonoBehaviour
                             cardPos.Card.Flip();
                             cardPos.Card.SetRevealState(true);
                             EventManager.DealCard();
-                            yield return QOL.GetWaitForSeconds(0.4f);
+                            yield return QOL.WaitForSeconds.Get(0.4f);
                         }
                     }
 
                     if (!flipped) break;
-                    yield return QOL.GetWaitForSeconds(5);
+                    yield return QOL.WaitForSeconds.Get(5);
 
                     for (int i = 0; i < dealer.CardCollection.CardPositions.Length; i++)
                     {
@@ -146,7 +146,7 @@ public class Table : MonoBehaviour
                             cardPos.Card.Flip();
                             cardPos.Card.SetRevealState(false);
                             EventManager.DealCard();
-                            yield return QOL.GetWaitForSeconds(0.2f);
+                            yield return QOL.WaitForSeconds.Get(0.2f);
                         }
                     }
                     break;
@@ -170,7 +170,7 @@ public class Table : MonoBehaviour
 
                 if (user.IsDealer) scaleText.text = "?";
                 else scaleText.text = GameManager.Instance.Pot.FillAmount.ToString();
-                yield return QOL.GetWaitForSeconds(3f);
+                yield return QOL.WaitForSeconds.Get(3f);
                 scaleText.text = "";
                 break;
 
@@ -187,7 +187,7 @@ public class Table : MonoBehaviour
                 break;
         }
         
-        if (item.Type != ItemType.Hook) collection.RemoveItem(item);
+        if (item.Type != ItemType.Hook && item.Type != ItemType.UnoCard) collection.RemoveItem(item);
         animations--;
 
 
@@ -224,6 +224,7 @@ public class Table : MonoBehaviour
     public IEnumerator AnimateUnoItemCor(Player user)
     {
         yield return AnimateItemCor(user, ItemType.UnoCard);
+        (user.IsDealer ? dealerItemCollection : playerItemCollection).RemoveItem(ItemType.UnoCard);
     }
     IEnumerator AnimateCouponItemCor(Player user)
     {
@@ -245,7 +246,7 @@ public class Table : MonoBehaviour
 
         item.SetTargetTransform(GetAnimTargetForItem(itemType));
         itemAnimator.Play($"{itemType}_Use_Anim");
-        yield return QOL.GetWaitForSeconds(CONST_ANIMATION_LENGTH);
+        yield return QOL.WaitForSeconds.Get(CONST_ANIMATION_LENGTH);
 
         item.SetTargetTransform(targetBefore);
 
@@ -300,11 +301,11 @@ public class Table : MonoBehaviour
         card.IsInteractable = false;
         collection.TakeCard(card);
         card.SetTargetTransform(deckPos);
-        yield return QOL.GetWaitForSeconds(2);
+        yield return QOL.WaitForSeconds.Get(1.5f);
 
         card.SetValue(GameManager.Instance.LowCardValueTable.Get());
         collection.PlaceCard(card);
-        yield return QOL.GetWaitForSeconds(2);
+        yield return QOL.WaitForSeconds.Get(0.7f);
         card.IsInteractable = true;
         animations--;
     }

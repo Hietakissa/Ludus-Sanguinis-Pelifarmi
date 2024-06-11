@@ -163,7 +163,7 @@ public class UIManager : MonoBehaviour
 
         //player lose sound
         SoundManager.Instance.PlaySound(playerLoseSound);
-        yield return QOL.GetWaitForSeconds(2f);
+        yield return QOL.WaitForSeconds.Get(2f);
 
         //fade back in menu
         EventManager.EndGame();
@@ -184,7 +184,7 @@ public class UIManager : MonoBehaviour
 
         //fade back in menu
         EventManager.EndGame();
-        yield return QOL.GetWaitForSeconds(2f);
+        yield return QOL.WaitForSeconds.Get(2f);
         yield return FadeToNoneCor();
     }
 
@@ -250,7 +250,7 @@ public class UIManager : MonoBehaviour
                     for (int i = 0; i < dialogue.Dialogue.Length; i++)
                     {
                         yield return TypeDialogueElement(dialogue.Dialogue[i]);
-                        yield return QOL.GetWaitForSeconds(3);
+                        yield return QOL.WaitForSeconds.Get(3);
                     }
                 }
                 else yield return TypeDialogueElement(dialogue.Dialogue.RandomElement());
@@ -334,7 +334,7 @@ public class UIManager : MonoBehaviour
                     // Play sound if we are waiting, i.e. hit a punctuation
                     soundIndex = 0;
                     SoundManager.Instance.PlaySoundAtPosition(typeCharacterSound);
-                    yield return QOL.GetWaitForSeconds(wait);
+                    yield return QOL.WaitForSeconds.Get(wait);
                 }
 
                 lastCharacters = characters;

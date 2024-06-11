@@ -17,7 +17,7 @@ MonoBehaviour:
     type: 2}
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 0.9, y: 1.1}
-  sounds:
+  clips:
   - _Name: Card_Hover_1
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
@@ -27,7 +27,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
-  - _Name: Card_Hover_2
+    actualVolumeRange: {x: 1, y: 1}
+    actualPitchRange: {x: 0.9, y: 1.1}
+  - _Name: Card_Hover_1
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 98bbae56ec5240844a902e4f53016067, type: 3}
@@ -36,7 +38,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
-  - _Name: Card_Hover_3
+    actualVolumeRange: {x: 1, y: 1}
+    actualPitchRange: {x: 0.9, y: 1.1}
+  - _Name: Card_Hover_1
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 2dc9e7e154e9bc54d95af533a0325a00, type: 3}
@@ -45,6 +49,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 1, y: 1}
+    actualPitchRange: {x: 0.9, y: 1.1}
+  shuffleIndexList: 020000000100000000000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0

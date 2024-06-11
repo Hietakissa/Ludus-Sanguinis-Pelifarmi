@@ -41,7 +41,7 @@ public class Pot : MonoBehaviour
                 overflowTimes++;
             }
 
-            yield return QOL.GetWaitForSeconds(0.12f);
+            yield return QOL.WaitForSeconds.Get(0.12f);
             Transform chip = Instantiate(chipPrefab, visualSpawnPos.position + Random.insideUnitSphere * 0.1f, Maf.GetRandomRotation()).transform;
             chip.parent = visualSpawnPos;
         }
@@ -58,6 +58,7 @@ public class Pot : MonoBehaviour
     }
 
 
+    [ContextMenu("Throw Chips")]
     public void ThrowChips()
     {
         SoundManager.Instance.PlaySound(potDingDingSound);
@@ -66,15 +67,15 @@ public class Pot : MonoBehaviour
 
         IEnumerator ThrowChipsCor()
         {
+            totalAddedChips = 50;
             IsThrowing = true;
-            // ToDo: actually throw chips accumulated over the course of the game
             for (int i = 0; i < totalAddedChips; i++)
             {
                 GameObject chip = Instantiate(chipPrefab, chipThrowPos.position, Maf.GetRandomRotation());
-                Vector3 randomForce = new Vector3(Random.Range(-1f, 1f), Random.Range(0.2f, 0.6f), Random.Range(-1f, 1f)) * throwForce;
+                Vector3 randomForce = new Vector3(Random.Range(-1f, 1f), Random.Range(1.3f, 2.5f), Random.Range(-1f, 1f)) * throwForce;
                 chip.GetComponent<Rigidbody>().AddForce(randomForce, ForceMode.Impulse);
                 Destroy(chip, 10f);
-                yield return QOL.GetWaitForSeconds(0.1f);
+                yield return QOL.WaitForSeconds.Get(0.1f);
             }
             yield return null;
             IsThrowing = false;

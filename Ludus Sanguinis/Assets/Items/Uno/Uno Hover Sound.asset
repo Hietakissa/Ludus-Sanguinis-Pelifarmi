@@ -17,8 +17,8 @@ MonoBehaviour:
     type: 2}
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 1, y: 1}
-  sounds:
-  - _Name: Item_Hover_1
+  clips:
+  - _Name: Uno_Hover
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 53b925d30745b6348a262704d799a111, type: 3}
@@ -27,6 +27,9 @@ MonoBehaviour:
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.5, y: 0.6}
+    actualPitchRange: {x: 0.85, y: 1.15}
+  shuffleIndexList: 00000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0

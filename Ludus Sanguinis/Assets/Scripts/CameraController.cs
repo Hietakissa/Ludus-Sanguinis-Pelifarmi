@@ -21,10 +21,10 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        float xOffset = Mathf.Cos(Time.time * 0.25f) * 20f;
-        float yOffset = Mathf.Sin(Time.time * 0.4f) * 65f;
-        float vertical = (Mathf.Clamp(Input.mousePosition.y + yOffset, 0f, Screen.height) / Screen.height * 2) - 1f; 
-        float horizontal = (Mathf.Clamp(Input.mousePosition.x + xOffset, 0f, Screen.width) / Screen.width * 2) - 1f;
+        //float xOffset = Mathf.Cos(Time.time * 0.25f) * 20f;
+        //float yOffset = Mathf.Sin(Time.time * 0.4f) * 65f;
+        float vertical = (Mathf.Clamp(Input.mousePosition.y/* + yOffset*/, 0f, Screen.height) / Screen.height * 2) - 1f; 
+        float horizontal = (Mathf.Clamp(Input.mousePosition.x/* + xOffset*/, 0f, Screen.width) / Screen.width * 2) - 1f;
 
         bool zooming = Input.GetKey(KeyCode.F) && !string.IsNullOrEmpty(GameManager.Instance.PlayerName);
         float zoomMultiplier = zooming ? 3f : 1f;

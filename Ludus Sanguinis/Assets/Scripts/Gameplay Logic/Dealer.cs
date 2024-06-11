@@ -51,7 +51,7 @@ public static class Dealer
 
 
         Debug.Log($"Start of dealer turn. Largest safe value: {largestSafeValue}. Pot: {potInaccurateFillAmount}({potFillAmount})/{potCapacity})");
-        yield return QOL.GetWaitForSeconds(0.5f);
+        yield return QOL.WaitForSeconds.Get(0.5f);
 
 
         List<Card> safeCards = GetSafeCardsToPlay();
@@ -241,7 +241,7 @@ public static class Dealer
     {
         for (int i = 0; i < cards.Count; i++)
         {
-            yield return QOL.GetWaitForSeconds(0.3f);
+            yield return QOL.WaitForSeconds.Get(0.3f);
             Card card = cards[i];
             PlayCard(card);
         }

@@ -17,16 +17,19 @@ MonoBehaviour:
     type: 2}
   volumeRange: {x: 1, y: 1}
   pitchRange: {x: 1, y: 1}
-  sounds:
-  - _Name: Item_Hover_1
+  clips:
+  - _Name: Hook_Hover
     _HasBeenManuallySet: 1
     overrideMixer: {fileID: 0}
     clip: {fileID: 8300000, guid: 26f1c08c84eb8dc4f92ce6987300d18d, type: 3}
-    volumeRange: {x: 0.5, y: 0.6}
+    volumeRange: {x: 0.4, y: 0.5}
     pitchRange: {x: 0.85, y: 1.15}
     spatialBlend: 0
     loop: 0
     next: []
+    actualVolumeRange: {x: 0.4, y: 0.5}
+    actualPitchRange: {x: 0.85, y: 1.15}
+  shuffleIndexList: 00000000
   _previewButton: 0
   _stopPreviewButton: 0
   _previewIndexButton: 0
