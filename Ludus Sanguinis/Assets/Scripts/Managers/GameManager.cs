@@ -37,7 +37,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] bool giveItems;
     [SerializeField] bool skipTutorial;
-    public string PlayerName { get; private set; }
+    public string PlayerName => playerName;
+    string playerName;
     [HideInInspector] public bool PlayedTutorial = false;
 
     public bool IsPaused;
@@ -50,6 +51,8 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         Instance = this;
+
+        Serializer.Load(out playerName, "PLAYER_NAME");
 
         PlayedTutorial = false;
 #if UNITY_EDITOR
@@ -103,8 +106,8 @@ public class GameManager : MonoBehaviour
         table.DealerPlayedItems.Clear();
 
         // ToDo: uncomment the below lines before release, stops the items from resetting upon starting a game, disabled to allow for cheating in items
-        //table.DealerItemCollection.RemoveItems();
-        //table.PlayerItemCollection.RemoveItems();
+        table.DealerItemCollection.RemoveItems();
+        table.PlayerItemCollection.RemoveItems();
 
 #if UNITY_EDITOR
         debugHealthText.text = "";
@@ -128,12 +131,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StartGameCor()
     {
-#if UNITY_EDITOR
-#else
-        skipTutorial = false;
-#endif
-
-        if (!PlayedTutorial && !skipTutorial)
+        if (string.IsNullOrEmpty(playerName) || !skipTutorial)
         {
             yield return UIManager.Instance.TutorialSequenceCor();
             PlayedTutorial = true;
@@ -515,7 +513,13 @@ public class GameManager : MonoBehaviour
         return values.ToArray();
     }
 
-    void PlayerSubmitName(string name) => PlayerName = name;
+    void PlayerSubmitName(string name)
+    {
+        playerName = name;
+        Serializer.Save(playerName, "PLAYER_NAME");
+    }
+
+    public void SetTutorialSkip(bool skip) => skipTutorial = skip;
 
 
     public static bool HasItem(in List<Item> items, ItemType type)
@@ -536,15 +540,6 @@ public class GameManager : MonoBehaviour
     // coupon > use immediately to reroll a card
     // hook > play immediately to steal item
     // heart > play immediately for %chance to dmg
-
-    void OnDestroy()
-    {
-#if UNITY_EDITOR
-        
-#else
-        Serializer.Save(PlayedTutorial, "TUTORIAL_PLAYED");
-#endif
-    }
 
 
     void OnEnable()
