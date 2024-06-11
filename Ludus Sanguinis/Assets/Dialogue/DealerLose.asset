@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: you won.
-  - text: congrats.
+  - text: What?! This is preposterous!
+  - text: You dare beat me at my own game?!
+  - text: Nooooooo...

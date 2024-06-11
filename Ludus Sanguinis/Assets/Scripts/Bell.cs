@@ -21,7 +21,6 @@ public class Bell : MonoBehaviour, IInteractable
 
     public void EndInteractHover()
     {
-        Debug.Log($"ended hover");
         hovering = false;
         endTurnText.SetActive(false);
     }
@@ -34,10 +33,8 @@ public class Bell : MonoBehaviour, IInteractable
 
     void Update()
     {
-        Debug.Log($"hovering: {hovering}. player played cards empty: {GameManager.Instance.Table.PlayerCards.IsEmpty()}");
         if (hovering && !GameManager.Instance.Table.PlayerCards.IsEmpty())
         {
-            Debug.Log($"set endturn text to active");
             endTurnText.SetActive(true);
         }
     }

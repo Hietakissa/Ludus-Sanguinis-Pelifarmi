@@ -44,6 +44,17 @@ public class GameManager : MonoBehaviour
     public bool IsPaused;
     public int TotalHealth { get; private set; }
     bool isGameRunning;
+    float timeWaitedForPlayer;
+
+    [Header("Dealer Ambiance Dialogue")]
+    [SerializeField] TextCollectionSO phase1DealerPlaceCard;
+    [SerializeField] TextCollectionSO phase1DealerReactToIdle;
+    [SerializeField] TextCollectionSO phase2DealerPlaceCard;
+    [SerializeField] TextCollectionSO phase2DealerReactToIdle;
+    [SerializeField] TextCollectionSO phase3LowDealerPlaceCard;
+    [SerializeField] TextCollectionSO phase3LowDealerReactToIdle;
+    [SerializeField] TextCollectionSO phase3HighDealerPlaceCard;
+    [SerializeField] TextCollectionSO phase3HighDealerReactToIdle;
 
     void Awake()
     {
@@ -138,6 +149,7 @@ public class GameManager : MonoBehaviour
         }
         
         yield return QOL.WaitForSeconds.Get(2f);
+        SetPlayerCardLock(true);
         yield return MoveCardsFromDeckToHands();
         yield return QOL.WaitForSeconds.Get(1.5f);
 
@@ -186,9 +198,41 @@ public class GameManager : MonoBehaviour
         yield return Dealer.PlayTurn(table, dealer);
         SetPlayerCardLock(false);
 
+        int phase = 3 - dealer.Health + 1;
+        int dealerHealth = dealer.Health;
+        // Play dealer ambiance dialogue
+        if (Maf.RandomBool(10))
+        {
+            if (phase == 1) UIManager.Instance.PlayDialogue(phase1DealerPlaceCard);
+            else if (phase == 2) UIManager.Instance.PlayDialogue(phase2DealerPlaceCard);
+            else if (phase == 3)
+            {
+                if (dealerHealth == 1) UIManager.Instance.PlayDialogue(phase3LowDealerPlaceCard);
+                else UIManager.Instance.PlayDialogue(phase3HighDealerPlaceCard);
+            }
+        }
+
         QOL.Log($"Waiting for the player's turn!");
         IsPlayerTurn = true;
-        while (!playerPlayedCards) yield return null;
+        while (!playerPlayedCards)
+        {
+            const float CONST_MAX_IDLE_TIME = 30f;
+            timeWaitedForPlayer += Time.deltaTime;
+
+            if (timeWaitedForPlayer >= CONST_MAX_IDLE_TIME)
+            {
+                timeWaitedForPlayer -= CONST_MAX_IDLE_TIME;
+                if (phase == 1) UIManager.Instance.PlayDialogue(phase1DealerReactToIdle);
+                else if (phase == 2) UIManager.Instance.PlayDialogue(phase1DealerReactToIdle);
+                else if (phase == 3)
+                {
+                    if (dealerHealth == 1) UIManager.Instance.PlayDialogue(phase3LowDealerReactToIdle);
+                    else UIManager.Instance.PlayDialogue(phase3HighDealerReactToIdle);
+                }
+            }
+            yield return null;
+        }
+        timeWaitedForPlayer = 0f;
         table.HookActive = false;
         table.CouponActive = false;
         IsPlayerTurn = false;
@@ -351,9 +395,11 @@ public class GameManager : MonoBehaviour
             if (damagedPlayer.Health > 0)
             {
                 yield return UIManager.Instance.FadeToBlackFastCor();
+
                 EventManager.PlayerDamaged(damagedPlayer, damagedPlayer.Health);
                 TotalHealth = Player.Health + dealer.Health;
                 EventManager.PlayerDamaged(null, TotalHealth);
+
                 yield return QOL.WaitForSeconds.Get(0.5f);
                 yield return UIManager.Instance.FadeToNoneCor();
             }
@@ -443,10 +489,8 @@ public class GameManager : MonoBehaviour
         }
         else yield return UIManager.Instance.DealerWinSequenceCor();
 
-        //yield return QOL.WaitForSeconds.Get(5);
-
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        //EventManager.EndGame();
+        TotalHealth = Player.Health + dealer.Health;
+        EventManager.PlayerDamaged(null, TotalHealth);
     }
 
     void EndOfRoundCleanup()

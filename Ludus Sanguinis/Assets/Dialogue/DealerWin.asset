@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: i won.
-  - text: haha. loser.
+  - text: 'This outcome was inevitable. Now then, shall we proceed with the terms
+      set by the contract? '
+  - text: A shame, really. I was starting to like you, but alas, you have signed
+      the contract and I plan on upholding my end of the deal.

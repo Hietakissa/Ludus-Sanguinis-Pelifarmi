@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   dialogue:
-  - text: I know your situation is dire, but I can assure you, a single game is all
-      it takes to change your fate, my dearest friend.
-  - text: All I need is your signature here. <color=#0e52f0>Ring</color> the bell
-      once you're ready to continue.
+  - text: I know your situation is dire, but I can assure you, <color=#f0290e>a single
+      game</color> is all it takes to change your fate, my dearest friend.
+  - text: All I need is your signature <color=#f0290e>here</color>. <color=#0e52f0>Ring</color>
+      the bell once you're ready to continue.
